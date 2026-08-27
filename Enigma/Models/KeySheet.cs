@@ -53,12 +53,23 @@ public class KeySheet
             .ToList();
     }
 
+    /// <summary>The same key sheet with the rotors started somewhere else.</summary>
+    public KeySheet WithPositions(string positions) => new()
+    {
+        Name = Name,
+        Reflector = Reflector,
+        Rotors = Rotors,
+        RingSettings = RingSettings,
+        Positions = positions,
+        Plugboard = Plugboard
+    };
+
     /// <summary>The plugboard cables, as pairs of zero-based letter indices.</summary>
     public IReadOnlyDictionary<int, int> Cables() => ParsePlugboard(Plugboard);
 
     private static List<string> ParseRotors(string value)
     {
-        var rotors = Split(value).Select(name => name.ToUpperInvariant()).ToList();
+        var rotors = SplitNames(value).Select(name => name.ToUpperInvariant()).ToList();
 
         if (rotors.Count == 0)
         {
@@ -74,7 +85,7 @@ public class KeySheet
     /// </summary>
     private static List<int> ParseWheelSettings(string value, int expected, string field)
     {
-        var tokens = Split(value);
+        var tokens = SplitNames(value);
 
         if (tokens.Count == 0)
         {
@@ -127,7 +138,7 @@ public class KeySheet
         var pairs = new Dictionary<int, int>();
         var used = new HashSet<char>();
 
-        foreach (var pair in Split(value))
+        foreach (var pair in SplitPairs(value))
         {
             var cable = pair.ToUpperInvariant();
 
@@ -157,7 +168,15 @@ public class KeySheet
         return pairs;
     }
 
-    private static List<string> Split(string? value) =>
+    // Rotor names may contain a hyphen, as "K-I" or "UKW-D" do, so names are split
+    // only on whitespace and commas. The hyphen is a separator in plugboard
+    // notation alone, where "AV-BS" and "AV BS" mean the same thing.
+    private static List<string> SplitNames(string? value) =>
+        (value ?? string.Empty)
+            .Split([' ', '\t', ','], StringSplitOptions.RemoveEmptyEntries)
+            .ToList();
+
+    private static List<string> SplitPairs(string? value) =>
         (value ?? string.Empty)
             .Split([' ', '\t', ',', '-', '/'], StringSplitOptions.RemoveEmptyEntries)
             .ToList();

@@ -8,6 +8,7 @@ namespace Enigma.Cmd;
 public class EnigmaConsole : BackgroundService
 {
     private readonly IEnigmaMachineFactory _factory;
+    private readonly IIndicatorProcedure _procedure;
     private readonly ICharacterMap _characterMap;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly ILogger<EnigmaConsole> _logger;
@@ -16,6 +17,7 @@ public class EnigmaConsole : BackgroundService
 
     public EnigmaConsole(
         IEnigmaMachineFactory factory,
+        IIndicatorProcedure procedure,
         ICharacterMap characterMap,
         IHostApplicationLifetime lifetime,
         ILogger<EnigmaConsole> logger,
@@ -23,6 +25,7 @@ public class EnigmaConsole : BackgroundService
         IOptions<KeySheet> keySheet)
     {
         _factory = factory;
+        _procedure = procedure;
         _characterMap = characterMap;
         _lifetime = lifetime;
         _logger = logger;
@@ -62,7 +65,7 @@ public class EnigmaConsole : BackgroundService
 
     private async Task RunAsync(CancellationToken stoppingToken)
     {
-        var machine = _factory.Create(_keySheet);
+        var machine = _factory.Create(KeyTheMachine());
 
         // Only the streams we opened get disposed: closing Console.In or Console.Out
         // would take standard input and output down with them.
@@ -97,6 +100,37 @@ public class EnigmaConsole : BackgroundService
                 await fileWriter.DisposeAsync();
             }
         }
+    }
+
+    /// <summary>
+    /// Works out where the rotors start. With no indicator procedure that is simply
+    /// what the key sheet says. With one, the key sheet's positions are the ground
+    /// setting, and the rotors start at the message key instead.
+    /// </summary>
+    private KeySheet KeyTheMachine()
+    {
+        if (_options.MessageKey is { } messageKey)
+        {
+            var indicator = _procedure.EncipherMessageKey(
+                _keySheet, _keySheet.Positions, messageKey, _options.Doubled);
+
+            // This travels with the message, so it goes to the operator rather than
+            // into the ciphertext on standard output.
+            Console.Error.WriteLine($"Ground setting {_keySheet.Positions}, indicator {indicator}");
+
+            return _keySheet.WithPositions(messageKey);
+        }
+
+        if (_options.Indicator is { } sent)
+        {
+            var recovered = _procedure.RecoverMessageKey(_keySheet, _keySheet.Positions, sent);
+
+            _logger.LogDebug("Recovered message key {MessageKey}", recovered);
+
+            return _keySheet.WithPositions(recovered);
+        }
+
+        return _keySheet;
     }
 
     private string Translate(IEnigmaMachine machine, string line)

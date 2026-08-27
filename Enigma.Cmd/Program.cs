@@ -1,8 +1,10 @@
+using Enigma;
 using System.CommandLine;
 using System.Text.Json;
 using Enigma.Cmd;
 using Enigma.Extensions.DependencyInjection;
 using Enigma.Models;
+using Enigma.Parts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +16,11 @@ using Serilog.Events;
 var keySheetOption = new Option<FileInfo?>("--key-sheet", "-k", "--settings")
 {
     Description = "Key sheet file to use. Defaults to the KeySheet section of appsettings.json."
+};
+
+var partsOption = new Option<FileInfo?>("--parts")
+{
+    Description = "File defining extra rotors and reflectors, or replacing built-in ones."
 };
 
 var presetOption = new Option<string?>("--preset", "-p")
@@ -36,6 +43,21 @@ var outputOption = new Option<FileInfo?>("--output", "-o")
     Description = "Write the result to this file instead of standard output."
 };
 
+var messageKeyOption = new Option<string?>("--message-key")
+{
+    Description = "Encipher with this message key, using the key sheet positions as the ground setting."
+};
+
+var indicatorOption = new Option<string?>("--indicator")
+{
+    Description = "Recover the message key from this indicator, then decipher with it."
+};
+
+var doubledOption = new Option<bool>("--doubled")
+{
+    Description = "Send the message key twice, as the procedure required until 1938."
+};
+
 var verboseOption = new Option<bool>("--verbose", "-v")
 {
     Description = "Trace every character through the plugboard, rotors and reflector."
@@ -56,10 +78,14 @@ var root = new RootCommand(
     "Because the machine is reciprocal, the same settings both encipher and decipher.")
 {
     keySheetOption,
+    partsOption,
     presetOption,
     listPresetsOption,
     inputOption,
     outputOption,
+    messageKeyOption,
+    indicatorOption,
+    doubledOption,
     verboseOption,
     logFileOption,
     initKeySheetOption
@@ -71,10 +97,14 @@ root.TreatUnmatchedTokensAsErrors = false;
 
 root.SetAction((parseResult, cancellationToken) => RunAsync(
     parseResult.GetValue(keySheetOption),
+    parseResult.GetValue(partsOption),
     parseResult.GetValue(presetOption),
     parseResult.GetValue(listPresetsOption),
     parseResult.GetValue(inputOption),
     parseResult.GetValue(outputOption),
+    parseResult.GetValue(messageKeyOption),
+    parseResult.GetValue(indicatorOption),
+    parseResult.GetValue(doubledOption),
     parseResult.GetValue(verboseOption),
     parseResult.GetValue(logFileOption),
     parseResult.GetValue(initKeySheetOption),
@@ -85,10 +115,14 @@ return await root.Parse(args).InvokeAsync();
 
 async Task<int> RunAsync(
     FileInfo? keySheetFile,
+    FileInfo? partsFile,
     string? preset,
     bool listPresets,
     FileInfo? input,
     FileInfo? output,
+    string? messageKey,
+    string? indicator,
+    bool doubled,
     bool verbose,
     FileInfo? logFile,
     FileInfo? initKeySheet,
@@ -119,6 +153,20 @@ async Task<int> RunAsync(
         return 1;
     }
 
+    if (partsFile is not null && !partsFile.Exists)
+    {
+        await Console.Error.WriteLineAsync($"Parts file not found: {partsFile.FullName}");
+        return 1;
+    }
+
+    if (messageKey is not null && indicator is not null)
+    {
+        await Console.Error.WriteLineAsync(
+            "Give either --message-key to encipher or --indicator to decipher, not both.");
+
+        return 1;
+    }
+
     if (input is not null && !input.Exists)
     {
         await Console.Error.WriteLineAsync($"Input file not found: {input.FullName}");
@@ -134,7 +182,22 @@ async Task<int> RunAsync(
     ConfigureLogging(builder, verbose, logFile);
 
     builder.Services.AddEnigmaServices();
-    builder.Services.AddSingleton(new ConsoleOptions(input, output));
+
+    if (partsFile is not null)
+    {
+        var definitions = new ConfigurationBuilder()
+            .AddJsonFile(partsFile.FullName, optional: false)
+            .Build()
+            .Get<PartsFile>() ?? new PartsFile();
+
+        // Layered over the built-in catalogue rather than replacing it, so a file
+        // need only define the parts the machine actually needs.
+        builder.Services.AddSingleton<IPartsCatalogue>(provider => new PartsCatalogue(
+            ActivatorUtilities.CreateInstance<BuiltInPartsCatalogue>(provider),
+            definitions,
+            provider.GetService<ILogger<PartsCatalogue>>()));
+    }
+    builder.Services.AddSingleton(new ConsoleOptions(input, output, messageKey, indicator, doubled));
     builder.Services.AddHostedService<EnigmaConsole>();
     if (preset is not null && KeySheets.TryGet(preset, out var packaged))
     {

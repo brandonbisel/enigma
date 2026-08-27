@@ -1,3 +1,4 @@
+using Enigma.Parts;
 using Enigma.Reflectors;
 using Enigma.Rotors;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +36,9 @@ public static class ServiceCollectionExtensions
         // The board is patched per machine, so it is transient for the same reason as the rotors.
         services.AddTransient<IPlugBoard, PlugBoard>();
 
+        services.AddSingleton<IPartsCatalogue, BuiltInPartsCatalogue>();
         services.AddSingleton<IEnigmaMachineFactory, EnigmaMachineFactory>();
+        services.AddSingleton<IIndicatorProcedure, IndicatorProcedure>();
 
         return services;
     }

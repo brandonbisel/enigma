@@ -104,6 +104,32 @@ public class EnigmaMachineFactoryTests
     }
 
     [Fact]
+    public void ARotorNameMayContainAHyphen()
+    {
+        // "K-I" is one rotor, not a "K" and an "I". The hyphen separates plugboard
+        // pairs, but never rotor names. Parsed directly, since the library ships
+        // no hyphenated wheel of its own.
+        var keySheet = DefaultKeySheet();
+        keySheet.Rotors = "K-I K-II K-III";
+
+        Assert.Equal(
+            ["K-I", "K-II", "K-III"],
+            keySheet.Wheels().Select(wheel => wheel.Name));
+    }
+
+    [Fact]
+    public void PlugboardPairsMayBeSeparatedByHyphens()
+    {
+        var keySheet = DefaultKeySheet();
+        keySheet.Plugboard = "AZ-BC";
+
+        var machine = BuildFactory().Create(keySheet);
+
+        Assert.True(machine.PlugBoard.IsConnected(0, 25));
+        Assert.True(machine.PlugBoard.IsConnected(1, 2));
+    }
+
+    [Fact]
     public void AMachineBuiltFromAKeySheetMatchesTheKnownVector()
     {
         var machine = BuildFactory().Create(DefaultKeySheet());

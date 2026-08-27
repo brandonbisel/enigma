@@ -7,7 +7,7 @@ for what the project is and how to use it.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 128 tests
+dotnet test               # whole suite, currently 151 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
@@ -60,6 +60,18 @@ the parsed per-rotor result.
 by a test that decrypts the real intercept it came from, so do not add a key sheet
 without a verified message to prove it, and do not adjust one to make a test pass.
 
+## Parts and procedure
+
+`IPartsCatalogue` is where rotors and reflectors come from. `BuiltInPartsCatalogue`
+resolves the keyed registrations; `PartsCatalogue` lays a `PartsFile` over it and
+reports any built-in name a definition replaces. The factory goes through the
+catalogue and never resolves wheels from the container itself.
+
+`IIndicatorProcedure` is the operating procedure rather than the machine: it
+enciphers a message key at a ground setting to give the indicator, and recovers it
+again. A six letter indicator is the pre-1938 doubled form, and its halves must
+agree. Note that the halves differ from each other — the rotors move between them.
+
 ## Domain rules that are easy to get wrong
 
 - **Modular arithmetic.** C#'s `%` is a remainder and keeps the sign of its left
@@ -95,6 +107,10 @@ without a verified message to prove it, and do not adjust one to make a test pas
 - **Lifetimes.** Rotors and plugboards carry state and must stay transient in DI.
   Making them singletons lets two machines corrupt each other's positions, and the
   result is plausible-looking wrong ciphertext rather than an exception.
+- **Separators in a key sheet.** Rotor names may contain a hyphen ("K-I",
+  "UKW-D"), so names split on whitespace and commas only. The hyphen separates
+  plugboard pairs, and only there. Splitting names on it silently turned one rotor
+  into two.
 - **Deferred execution.** `Translate(IEnumerable<int>)` materialises its result on
   purpose: the rotors advance per character, so lazy evaluation would make the
   output depend on when it is enumerated.

@@ -1,4 +1,5 @@
 using Enigma.Models;
+using Enigma.Parts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -7,11 +8,13 @@ namespace Enigma;
 public class EnigmaMachineFactory : IEnigmaMachineFactory
 {
     private readonly IServiceProvider _services;
+    private readonly IPartsCatalogue _parts;
     private readonly ILogger<EnigmaMachineFactory>? _logger;
 
-    public EnigmaMachineFactory(IServiceProvider services)
+    public EnigmaMachineFactory(IServiceProvider services, IPartsCatalogue parts)
     {
         _services = services;
+        _parts = parts;
         _logger = services.GetService<ILogger<EnigmaMachineFactory>>();
     }
 
@@ -21,10 +24,7 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
         var cables = keySheet.Cables();
 
         var rotors = wheels.Select(CreateRotor).ToList();
-        var reflector = _services.GetKeyedService<IReflector>(keySheet.ReflectorName())
-            ?? throw new ArgumentException(
-                $"Unknown reflector '{keySheet.Reflector}'. " +
-                $"Known reflectors: {string.Join(", ", MachineParts.ReflectorNames)}.");
+        var reflector = _parts.GetReflector(keySheet.ReflectorName());
         var plugBoard = _services.GetRequiredService<IPlugBoard>();
 
         foreach (var (input, output) in cables)
@@ -98,10 +98,7 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
 
     private IRotor CreateRotor(RotorPlacement placement)
     {
-        var rotor = _services.GetKeyedService<IRotor>(placement.Name)
-            ?? throw new ArgumentException(
-                $"Unknown rotor '{placement.Name}'. " +
-                $"Known rotors: {string.Join(", ", MachineParts.RotorNames)}.");
+        var rotor = _parts.CreateRotor(placement.Name);
 
         rotor.SetRingSetting(placement.RingSetting);
         rotor.SetPosition(placement.Position);

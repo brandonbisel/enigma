@@ -148,6 +148,68 @@ AUFKLXABTEILUNGXVONXKURTINOWAXKURTINOWAXNORDWESTLXSEBEZ...
 That is *Aufklärungsabteilung von Kurtinowa nordwestlich Sebez* — a reconnaissance
 report, with `X` for spaces and `Q` for *ch*.
 
+## The indicator procedure
+
+A key sheet fixed the wheel order, ring settings and plugboard for the day, but not
+where the rotors started. The sender chose that himself: he set the rotors to a
+**ground setting** (*Grundstellung*), enciphered his chosen **message key**
+(*Spruchschlüssel*) at it, and transmitted the ground setting in clear together
+with the enciphered result — the **indicator**. The receiver set the same ground
+setting, deciphered the indicator to recover the message key, and set his rotors
+to it.
+
+With `--message-key` the key sheet's positions are taken as the ground setting,
+and the indicator is reported on standard error so it does not contaminate the
+ciphertext:
+
+```bash
+$ echo "ATTACKATDAWN" | dotnet run --project Enigma.Cmd -- --message-key RTZ
+Ground setting AAA, indicator VZA
+YDFDLZKIPIQE
+```
+
+The receiver needs only the day's key sheet, the ground setting and that indicator:
+
+```bash
+$ echo "YDFDLZKIPIQE" | dotnet run --project Enigma.Cmd -- --indicator VZA
+ATTACKATDAWN
+```
+
+Until 1938 the message key was sent **twice**, so the receiver could tell a
+garbled indicator from a good one. `--doubled` does that, and a six-letter
+indicator whose halves disagree is rejected on the way back. The two halves
+encipher differently because the rotors move between them — the repetition that
+gave Rejewski the relation he used to reconstruct the wiring.
+
+## Custom rotors and reflectors
+
+A parts file defines wheels and reflectors the library does not ship with, which
+is enough to run machines it knows nothing about:
+
+```json
+{
+  "Rotors": [
+    { "Name": "K-I",  "Wiring": "PEZUOHXSCVFMTBGLRINQJWAYDK", "Notches": "Y" },
+    { "Name": "K-II", "Wiring": "ZOUESYDKFWPCIQXHMVBLGNJRAT", "Notches": "E" }
+  ],
+  "Reflectors": [
+    { "Name": "UKW-K", "Wiring": "IMETCGFRAYSQBZXWLHKDVUPOJN" }
+  ]
+}
+```
+
+`Notches` lists the letters showing in the window when the wheel turns the one to
+its left. Add `"Thin": true` for a half-width wheel, which then takes no notches.
+Definitions are checked when the file is read, so a wiring that is not a
+permutation, or a reflector that is not paired, is reported before any enciphering
+starts.
+
+The file is laid over the built-in parts rather than replacing them, so it need
+only define what is missing. A definition whose name matches a built-in part
+**takes its place**, which is what makes it possible to model a machine whose
+wheels happen to share our names — the substitution is reported as a warning,
+because ciphertext produced that way cannot be reproduced without the same file.
+
 ## Using the library
 
 ```csharp
