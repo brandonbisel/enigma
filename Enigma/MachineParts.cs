@@ -8,13 +8,18 @@ namespace Enigma;
 public static class MachineParts
 {
     public static IReadOnlyList<string> RotorNames { get; } =
-        ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "BETA", "GAMMA"];
+        [
+            "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "BETA", "GAMMA",
+            "G-I", "G-II", "G-III", "G312-I", "G312-II", "G312-III"
+        ];
 
     public static IReadOnlyList<string> ReflectorNames { get; } =
-        ["A", "B", "C", "B-THIN", "C-THIN"];
+        ["A", "B", "C", "B-THIN", "C-THIN", "G", "G312"];
 
     public static IReadOnlyList<string> EntryWheelNames { get; } =
         ["STANDARD", "QWERTZ"];
 
     public static IReadOnlyList<string> CharacterMapNames { get; } = ["LATIN"];
+
+    public static IReadOnlyList<string> LayoutNames { get; } = ["SERVICE", "G-31"];
 }

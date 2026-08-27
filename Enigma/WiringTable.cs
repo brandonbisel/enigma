@@ -88,6 +88,23 @@ public static class WiringTable
         return table;
     }
 
+    /// <summary>
+    /// The turnover positions a wheel's notches sit at, given as the letters shown
+    /// in the window, e.g. "Q" or the seventeen of a Zählwerk wheel.
+    /// </summary>
+    public static int[] Notches(string notches, ICharacterMap? characterMap = null)
+    {
+        var alphabet = characterMap ?? CharacterMap.Latin;
+
+        return (notches ?? string.Empty)
+            .Where(character => !char.IsWhiteSpace(character))
+            .Select(character => alphabet.GetIndex(char.ToUpperInvariant(character)) is var index && index >= 0
+                ? index
+                : throw new ArgumentException(
+                    $"Notch '{character}' is not in the {alphabet.Name} alphabet.", nameof(notches)))
+            .ToArray();
+    }
+
     public static IDictionary<int, int> Invert(IDictionary<int, int> wiring)
     {
         var table = new Dictionary<int, int>(wiring.Count);

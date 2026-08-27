@@ -1,3 +1,4 @@
+using Enigma.Machines;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -7,6 +8,7 @@ public class EnigmaMachine : IEnigmaMachine
 {
     private readonly IRotor[] _rotors;
     private readonly IEntryWheel _entryWheel;
+    private readonly IStepping _stepping;
     private readonly ILogger _logger;
 
     public IPlugBoard PlugBoard { get; }
@@ -23,9 +25,11 @@ public class EnigmaMachine : IEnigmaMachine
         IReflector reflector,
         ILogger<EnigmaMachine>? logger = null,
         ICharacterMap? characterMap = null,
-        IEntryWheel? entryWheel = null)
+        IEntryWheel? entryWheel = null,
+        IStepping? stepping = null)
     {
         _entryWheel = entryWheel ?? EntryWheel.Standard;
+        _stepping = stepping ?? new PawlDrive();
         PlugBoard = plugBoard;
         Reflector = reflector;
         _rotors = rotors.ToArray();
@@ -40,7 +44,7 @@ public class EnigmaMachine : IEnigmaMachine
 
     public int Translate(int input)
     {
-        StepRotors();
+        _stepping.Advance(_rotors, Reflector);
 
         // The trace is only assembled when someone is listening, so the ordinary
         // path costs nothing more than a null check per component.
@@ -95,38 +99,6 @@ public class EnigmaMachine : IEnigmaMachine
         trace?.Add($"{name} {Format(value)}>{Format(output)}");
 
         return output;
-    }
-
-    private void StepRotors()
-    {
-        var fast = _rotors[^1];
-
-        if (_rotors.Length >= 3)
-        {
-            var middle = _rotors[^2];
-
-            if (middle.IsTurnoverPosition())
-            {
-                // The double step: sitting on its own turnover, the middle rotor is driven
-                // by the pawl to its right and carries its left neighbour with it.
-                middle.Step();
-                _rotors[^3].Step();
-
-                _logger.LogTrace("Double step: {Rotor} and {Left} advanced", middle.Name, _rotors[^3].Name);
-            }
-            else if (fast.IsTurnoverPosition())
-            {
-                middle.Step();
-
-                _logger.LogTrace("Turnover: {Rotor} advanced {Middle}", fast.Name, middle.Name);
-            }
-        }
-        else if (_rotors.Length == 2 && fast.IsTurnoverPosition())
-        {
-            _rotors[0].Step();
-        }
-
-        fast.Step();
     }
 
     private string Window() => string.Concat(_rotors.Select(rotor => Format(rotor.Position)));

@@ -81,6 +81,11 @@ public class PartsCatalogue : IPartsCatalogue
     public IReadOnlyList<string> ReflectorNames =>
         _reflectors.Keys.Union(_builtIn.ReflectorNames, StringComparer.OrdinalIgnoreCase).Order().ToList();
 
+    // Layouts are not definable in a parts file: a machine's drive is code, not data.
+    public IReadOnlyList<string> LayoutNames => _builtIn.LayoutNames;
+
+    public IMachineLayout GetLayout(string name) => _builtIn.GetLayout(name);
+
     public IReadOnlyList<string> CharacterMapNames =>
         _characterMaps.Keys.Union(_builtIn.CharacterMapNames, StringComparer.OrdinalIgnoreCase).Order().ToList();
 
@@ -168,6 +173,9 @@ public class PartsCatalogue : IPartsCatalogue
 
     internal static ArgumentException UnknownEntryWheel(string name, IEnumerable<string> known) =>
         new($"Unknown entry wheel '{name}'. Known entry wheels: {string.Join(", ", known)}.");
+
+    internal static ArgumentException UnknownLayout(string name, IEnumerable<string> known) =>
+        new($"Unknown machine model '{name}'. Known models: {string.Join(", ", known)}.");
 
     internal static ArgumentException UnknownCharacterMap(string name, IEnumerable<string> known) =>
         new($"Unknown character map '{name}'. Known character maps: {string.Join(", ", known)}.");

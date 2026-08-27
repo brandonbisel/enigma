@@ -1,3 +1,5 @@
+using Enigma.Machines;
+using Microsoft.Extensions.Logging;
 using Enigma.Parts;
 using Enigma.Reflectors;
 using Enigma.Rotors;
@@ -31,12 +33,24 @@ public static class ServiceCollectionExtensions
         services.AddKeyedTransient<IRotor, RotorBeta>("BETA");
         services.AddKeyedTransient<IRotor, RotorGamma>("GAMMA");
 
+        // The Zählwerk wheels, with seventeen, fifteen and eleven notches.
+        services.AddKeyedTransient<IRotor, RotorGI>("G-I");
+        services.AddKeyedTransient<IRotor, RotorGII>("G-II");
+        services.AddKeyedTransient<IRotor, RotorGIII>("G-III");
+        services.AddKeyedTransient<IRotor, RotorG312I>("G312-I");
+        services.AddKeyedTransient<IRotor, RotorG312II>("G312-II");
+        services.AddKeyedTransient<IRotor, RotorG312III>("G312-III");
+
         // Reflectors hold no state, so one of each is enough.
         services.AddKeyedSingleton<IReflector, ReflectorA>("A");
         services.AddKeyedSingleton<IReflector, ReflectorB>("B");
         services.AddKeyedSingleton<IReflector, ReflectorC>("C");
         services.AddKeyedSingleton<IReflector, ReflectorBThin>("B-THIN");
         services.AddKeyedSingleton<IReflector, ReflectorCThin>("C-THIN");
+
+        // The Zählwerk reflectors turn, so each machine needs its own.
+        services.AddKeyedTransient<IReflector, ReflectorG>("G");
+        services.AddKeyedTransient<IReflector, ReflectorG312>("G312");
 
         // The board is patched per machine, so it is transient for the same reason as the rotors.
         services.AddTransient<IPlugBoard, PlugBoard>();
@@ -45,6 +59,13 @@ public static class ServiceCollectionExtensions
         // straight-through one.
         services.AddKeyedSingleton<IEntryWheel>("STANDARD", (_, _) => EntryWheel.Standard);
         services.AddKeyedSingleton<IEntryWheel>("QWERTZ", (_, _) => EntryWheel.Qwertz);
+
+        services.AddSingleton<IStepping, PawlDrive>();
+        services.AddKeyedSingleton<IMachineLayout>("SERVICE",
+            (provider, _) => new ServiceLayout(provider.GetRequiredService<IStepping>()));
+        services.AddKeyedSingleton<IMachineLayout>("G-31",
+            (provider, _) => new GearLayout(
+                new GearDrive(provider.GetService<ILogger<GearDrive>>())));
 
         services.AddSingleton<IPartsCatalogue, BuiltInPartsCatalogue>();
         services.AddSingleton<IEnigmaMachineFactory, EnigmaMachineFactory>();

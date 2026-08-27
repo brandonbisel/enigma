@@ -45,12 +45,12 @@ public abstract class RotorBase : IRotor
 
     public int Translate(int input)
     {
-        return Mod(Wiring[Mod(input + Offset)] - Offset);
+        return Wheel.Translate(Wiring, input, Offset);
     }
 
     public int TranslateReverse(int input)
     {
-        return Mod(InverseWiring[Mod(input + Offset)] - Offset);
+        return Wheel.Translate(InverseWiring, input, Offset);
     }
 
     public bool IsTurnoverPosition()
@@ -65,6 +65,6 @@ public abstract class RotorBase : IRotor
 
     private int Mod(int value)
     {
-        return ((value % Wiring.Count) + Wiring.Count) % Wiring.Count;
+        return Wheel.Mod(value, Wiring.Count);
     }
 }

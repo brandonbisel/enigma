@@ -276,7 +276,85 @@ so on give away the very advantage the box was fitted to provide.
 `EnigmaUhr.IsReciprocalAt` reports it, and a test derives the same set from the
 wiring rather than asserting it by hand.
 
-## The entry wheel## The entry wheel
+## The Zählwerk Enigma (G-31)
+
+The Abwehr's Enigma G is the one machine here that differs in *mechanism* rather
+than in wiring. Name it as the model:
+
+```json
+{
+  "Model": "G-31",
+  "Reflector": "G",
+  "Rotors": "G-I G-II G-III",
+  "RingSettings": "AAA",
+  "Positions": "AAA",
+  "ReflectorPosition": "A",
+  "ReflectorRingSetting": "A"
+}
+```
+
+Four things set it apart:
+
+- **Cogwheels rather than pawls.** The wheels turn as a plain odometer, so there is
+  **no double step** — the middle wheel advances only when the wheel to its right
+  passes a notch, never twice in succession.
+- **The reflector turns.** It is set to a starting position like a wheel, and is
+  driven round by the leftmost wheel during encipherment, so it takes an active part
+  in the cipher.
+- **Many notches.** Seventeen, fifteen and eleven on wheels I, II and III, numbers
+  chosen because they are relatively prime to twenty six, which stretches the
+  machine's period enormously.
+- **No plugboard.** The Steckerbrett was reserved for the Army, and a key sheet that
+  gives cables to a G-31 is refused.
+
+The entry wheel is the keyboard-wired one, and a key sheet need not say so: leave
+`EntryWheel` unset and the model supplies it. The commercial A28/G31 wheels are
+`G-I`…`G-III` with reflector `G`; the Abwehr set from the Bletchley Park machine is
+`G312-I`…`G312-III` with reflector `G312`.
+
+Because of all this a Zählwerk machine cannot exchange messages with an Enigma I,
+which is exactly what its makers intended.
+
+## The entry wheel## The Zählwerk Enigma (G-31)
+
+The Abwehr's Enigma G is the one machine here that differs in *mechanism* rather
+than in wiring. Name it as the model:
+
+```json
+{
+  "Model": "G-31",
+  "Reflector": "G",
+  "Rotors": "G-I G-II G-III",
+  "RingSettings": "AAA",
+  "Positions": "AAA",
+  "ReflectorPosition": "A",
+  "ReflectorRingSetting": "A"
+}
+```
+
+Four things set it apart:
+
+- **Cogwheels rather than pawls.** The wheels turn as a plain odometer, so there is
+  **no double step** — the middle wheel advances only when the wheel to its right
+  passes a notch, never twice in succession.
+- **The reflector turns.** It is set to a starting position like a wheel, and is
+  driven round by the leftmost wheel during encipherment, so it takes an active part
+  in the cipher.
+- **Many notches.** Seventeen, fifteen and eleven on wheels I, II and III, numbers
+  chosen because they are relatively prime to twenty six, which stretches the
+  machine's period enormously.
+- **No plugboard.** The Steckerbrett was reserved for the Army, and a key sheet that
+  gives cables to a G-31 is refused.
+
+The entry wheel is the keyboard-wired one, and a key sheet need not say so: leave
+`EntryWheel` unset and the model supplies it. The commercial A28/G31 wheels are
+`G-I`…`G-III` with reflector `G`; the Abwehr set from the Bletchley Park machine is
+`G312-I`…`G312-III` with reflector `G312`.
+
+Because of all this a Zählwerk machine cannot exchange messages with an Enigma I,
+which is exactly what its makers intended.
+
+## The entry wheel
 
 The entry wheel (*Eintrittswalze*) is the fixed stator between the plugboard and
 the first rotor, deciding which contact each key is wired to. Every service Enigma
@@ -423,6 +501,16 @@ rather than reconstructed, and each is pinned by a test.
   [companion post](https://arduinoenigma.blogspot.com/2020/05/designing-uhr-switch-for-arduino-based.html)
   gives an independent vector with a different plug set, which the same table
   reproduces.
+
+- **[Palloks, *Universal Enigma*](https://palloks.2ix.de/enigma/index_en.html)** —
+  the geared drive. Its `engage_gear` gives the carry chain the Zählwerk machines
+  use and where it ends, and its `etq` table independently confirms the direction of
+  the keyboard-wired entry wheel used here.
+- **Reuvers & Simons, *Enigma G-111: A rare version of Zählwerk Enigma G31***
+  (Crypto Museum, 2013) — the mechanism in the machine's own terms: cogwheels rather
+  than pawls and levers, no double stepping anomaly, notches attached to the letter
+  ring, and the statement that the UKW "can be moved by wheel 3", which is what puts
+  the reflector at the end of the carry chain.
 
 The historical messages — Barbarossa, Scharnhorst, U-264 and the 1930 instruction
 manual — are widely published intercepts, and each is decrypted in the test suite

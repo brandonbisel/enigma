@@ -36,6 +36,12 @@ public class KeySheet
     public string Plugboard { get; set; } = string.Empty;
 
     /// <summary>
+    /// Which machine this is. "Service" covers the Enigma I, M3 and M4, which
+    /// differ in the wheels fitted rather than in how they work.
+    /// </summary>
+    public string Model { get; set; } = "Service";
+
+    /// <summary>
     /// The Enigma Uhr's dial setting, if the machine had one fitted. Either the
     /// number, "06", or the two letter group read off the plates inside the lid,
     /// "GD". An Uhr needs exactly ten cables, given in the order the key sheet
@@ -51,6 +57,15 @@ public class KeySheet
     public string CharacterMap { get; set; } = "Latin";
 
     /// <summary>
+    /// Where a turning reflector starts, on the machines that have one. Ignored by
+    /// every model whose reflector is fixed.
+    /// </summary>
+    public string ReflectorPosition { get; set; } = string.Empty;
+
+    /// <summary>The ring setting of a turning reflector.</summary>
+    public string ReflectorRingSetting { get; set; } = string.Empty;
+
+    /// <summary>
     /// Thirteen wire pairs for a reflector that is rewired in the field, as UKW-D
     /// was, e.g. "AQ BG CK DI EL FX HZ MW NV OT PU RS JY". When this is set the
     /// reflector is built from it and <see cref="Reflector"/> only names it.
@@ -60,19 +75,25 @@ public class KeySheet
     /// <summary>
     /// Entry wheel (Eintrittswalze). Every service Enigma used "Standard", which is
     /// wired straight through; the commercial and railway machines used "QWERTZ".
+    /// Left empty, the model decides, which is what makes a G-31 keyboard wired
+    /// without having to say so.
     /// </summary>
-    public string EntryWheel { get; set; } = "Standard";
+    public string EntryWheel { get; set; } = string.Empty;
 
     /// <summary>The reflector name, normalised.</summary>
     public string ReflectorName() => (Reflector ?? string.Empty).Trim().ToUpperInvariant();
+
+    /// <summary>The machine model name, normalised.</summary>
+    public string ModelName() =>
+        string.IsNullOrWhiteSpace(Model) ? "SERVICE" : Model.Trim().ToUpperInvariant();
 
     /// <summary>The entry wheel name, normalised, defaulting to the straight-through one.</summary>
     /// <summary>The character map name, normalised, defaulting to the Latin alphabet.</summary>
     public string CharacterMapName() =>
         string.IsNullOrWhiteSpace(CharacterMap) ? "LATIN" : CharacterMap.Trim().ToUpperInvariant();
 
-    public string EntryWheelName() =>
-        string.IsNullOrWhiteSpace(EntryWheel) ? "STANDARD" : EntryWheel.Trim().ToUpperInvariant();
+    public string EntryWheelName(string fallback = "STANDARD") =>
+        string.IsNullOrWhiteSpace(EntryWheel) ? fallback : EntryWheel.Trim().ToUpperInvariant();
 
     /// <summary>
     /// The rotors in the order they sit in the machine, left to right, with the
@@ -101,6 +122,9 @@ public class KeySheet
         Plugboard = Plugboard,
         Uhr = Uhr,
         EntryWheel = EntryWheel,
+        Model = Model,
+        ReflectorPosition = ReflectorPosition,
+        ReflectorRingSetting = ReflectorRingSetting,
         ReflectorPairs = ReflectorPairs,
         CharacterMap = CharacterMap
     };
@@ -137,6 +161,25 @@ public class KeySheet
     /// </summary>
     public IReadOnlyList<Tuple<int, int>> CableOrder(ICharacterMap? characterMap = null) =>
         ParsePlugboardPairs(Plugboard, characterMap ?? Enigma.CharacterMap.Latin);
+
+    /// <summary>
+    /// Where a turning reflector is set, or null when the key sheet says nothing.
+    /// </summary>
+    public (int Position, int RingSetting)? ReflectorSetting(ICharacterMap? characterMap = null)
+    {
+        if (string.IsNullOrWhiteSpace(ReflectorPosition) && string.IsNullOrWhiteSpace(ReflectorRingSetting))
+        {
+            return null;
+        }
+
+        var alphabet = characterMap ?? Enigma.CharacterMap.Latin;
+
+        return (Setting(ReflectorPosition, nameof(ReflectorPosition), alphabet),
+                Setting(ReflectorRingSetting, nameof(ReflectorRingSetting), alphabet));
+    }
+
+    private static int Setting(string value, string field, ICharacterMap alphabet) =>
+        string.IsNullOrWhiteSpace(value) ? 0 : ParseWheelSetting(value.Trim(), field, alphabet);
 
     /// <summary>The plugboard cables, as pairs of zero-based letter indices.</summary>
     public IReadOnlyDictionary<int, int> Cables(ICharacterMap? characterMap = null) =>

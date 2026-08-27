@@ -7,7 +7,7 @@ for what the project is and how to use it.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 264 tests
+dotnet test               # whole suite, currently 281 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
@@ -111,6 +111,24 @@ and it would silently alter words.
 enciphers a message key at a ground setting to give the indicator, and recovers it
 again. A six letter indicator is the pre-1938 doubled form, and its halves must
 agree. Note that the halves differ from each other — the rotors move between them.
+
+## Machines and drives
+
+`IMachineLayout` is the model: its drive, its default entry wheel, whether it has a
+plugboard, and which arrangements of parts could be assembled. `ServiceLayout`
+covers the Enigma I, M3 and M4; `GearLayout` the Zählwerk G-31. A key sheet names
+one with `Model`. Fitment rules belong here and not in the factory, which keeps only
+the check that every part has as many contacts as the alphabet.
+
+`IStepping` is the drive. `PawlDrive` has the double step; `GearDrive` is a plain
+odometer carry that ends at the reflector, because on those machines the reflector
+turns too. Both the reference simulator and the Crypto Museum G-111 paper were used
+to pin that, and the G output is checked against an independent implementation — do
+not adjust the drive without re-running that comparison.
+
+Note that `KeySheet.EntryWheel` defaults to empty rather than to "Standard", so the
+model can supply it. Setting a literal default there silently gave the G-31 a
+straight-through stator, which the differential test caught.
 
 ## Domain rules that are easy to get wrong
 

@@ -1,4 +1,5 @@
 using Enigma.Models;
+using Enigma.Machines;
 using Enigma.Parts;
 using Enigma.Reflectors;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,7 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
         // The alphabet comes first: it decides how many contacts everything has and
         // what the letters on the key sheet mean.
         var alphabet = _parts.GetCharacterMap(keySheet.CharacterMapName());
+        var layout = _parts.GetLayout(keySheet.ModelName());
 
         var wheels = keySheet.Wheels(alphabet);
         var cables = keySheet.Cables(alphabet);
@@ -40,10 +42,25 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
         var reflector = string.IsNullOrWhiteSpace(keySheet.ReflectorPairs)
             ? _parts.GetReflector(keySheet.ReflectorName(), alphabet)
             : new RewirableReflector(keySheet.ReflectorName(), keySheet.ReflectorPairs, alphabet);
-        var entryWheel = _parts.GetEntryWheel(keySheet.EntryWheelName(), alphabet);
+        if (reflector is IRotatingReflector turning &&
+            keySheet.ReflectorSetting(alphabet) is { } setting)
+        {
+            turning.SetRingSetting(setting.RingSetting);
+            turning.SetPosition(setting.Position);
+        }
+
+        var entryWheel = _parts.GetEntryWheel(
+            keySheet.EntryWheelName(layout.DefaultEntryWheel), alphabet);
         var plugBoard = BuildPlugBoard(keySheet, alphabet, cables);
 
-        Validate(rotors, reflector, entryWheel, alphabet);
+        ValidateContacts(rotors, reflector, entryWheel, alphabet);
+        layout.Validate(rotors, reflector, entryWheel);
+
+        if (!layout.AllowsPlugBoard && cables.Count > 0)
+        {
+            throw new ArgumentException(
+                $"A {layout.Name} machine has no plugboard, but {cables.Count} cables were given.");
+        }
 
         _logger?.LogDebug(
             "Key sheet {Name}: rotors {Rotors}, reflector {Reflector}, Ringstellung {Rings}, Grundstellung {Positions}, {Cables} cables",
@@ -60,22 +77,20 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
             reflector,
             _services.GetService<ILogger<EnigmaMachine>>(),
             alphabet,
-            entryWheel);
+            entryWheel,
+            layout.Drive);
     }
 
     /// <summary>
-    /// Rejects machines that could not be assembled. The thin rotors are half width
-    /// and only fit in the space a thin reflector frees, so the fourth wheel and the
-    /// thin reflector always come as a pair, and the thin wheel is always leftmost.
+    /// One authority for size. Without this a wheel built for a different alphabet
+    /// would fail somewhere downstream with an index error instead.
     /// </summary>
-    private static void Validate(
+    private static void ValidateContacts(
         IReadOnlyList<IRotor> rotors,
         IReflector reflector,
         IEntryWheel entryWheel,
         ICharacterMap alphabet)
     {
-        // One authority for size. Without this a wheel built for a different
-        // alphabet would fail somewhere downstream with an index error instead.
         foreach (var part in rotors.Select(rotor => (rotor.Name, rotor.Contacts))
                      .Append((reflector.Name, reflector.Contacts))
                      .Append((entryWheel.Name, entryWheel.Contacts)))
@@ -86,43 +101,6 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
                     $"'{part.Item1}' has {part.Item2} contacts, but the {alphabet.Name} alphabet " +
                     $"has {alphabet.Count} characters.");
             }
-        }
-
-        if (rotors.Count is not (3 or 4))
-        {
-            throw new ArgumentException(
-                $"An Enigma carries three rotors, or four on the naval M4, but {rotors.Count} were given.");
-        }
-
-        var thin = rotors.Where(rotor => rotor.IsThin).ToList();
-
-        if (rotors.Count == 4)
-        {
-            if (!reflector.IsThin)
-            {
-                throw new ArgumentException(
-                    $"A fourth rotor only fits beside a thin reflector, but {reflector.Name} is full width.");
-            }
-
-            if (thin.Count != 1 || !rotors[0].IsThin)
-            {
-                throw new ArgumentException(
-                    "A four rotor machine carries exactly one thin rotor, and it sits leftmost.");
-            }
-
-            return;
-        }
-
-        if (reflector.IsThin)
-        {
-            throw new ArgumentException(
-                $"The thin reflector {reflector.Name} leaves a gap unless a fourth rotor fills it.");
-        }
-
-        if (thin.Count > 0)
-        {
-            throw new ArgumentException(
-                $"The thin rotor {thin[0].Name} only fits in a four rotor machine beside a thin reflector.");
         }
     }
 

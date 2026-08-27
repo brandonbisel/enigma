@@ -16,6 +16,7 @@ public class BuiltInPartsCatalogue : IPartsCatalogue
     public IReadOnlyList<string> ReflectorNames => MachineParts.ReflectorNames;
     public IReadOnlyList<string> EntryWheelNames => MachineParts.EntryWheelNames;
     public IReadOnlyList<string> CharacterMapNames => MachineParts.CharacterMapNames;
+    public IReadOnlyList<string> LayoutNames => MachineParts.LayoutNames;
 
     public IRotor CreateRotor(string name, ICharacterMap? characterMap = null) =>
         _services.GetKeyedService<IRotor>(Normalise(name))
@@ -41,6 +42,10 @@ public class BuiltInPartsCatalogue : IPartsCatalogue
     public ICharacterMap GetCharacterMap(string name) =>
         _services.GetKeyedService<ICharacterMap>(Normalise(name))
         ?? throw PartsCatalogue.UnknownCharacterMap(name, CharacterMapNames);
+
+    public IMachineLayout GetLayout(string name) =>
+        _services.GetKeyedService<IMachineLayout>(Normalise(name))
+        ?? throw PartsCatalogue.UnknownLayout(name, LayoutNames);
 
     private static string Normalise(string name) => (name ?? string.Empty).Trim().ToUpperInvariant();
 }

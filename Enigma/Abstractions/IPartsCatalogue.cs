@@ -11,6 +11,7 @@ public interface IPartsCatalogue
     IReadOnlyList<string> ReflectorNames { get; }
     IReadOnlyList<string> EntryWheelNames { get; }
     IReadOnlyList<string> CharacterMapNames { get; }
+    IReadOnlyList<string> LayoutNames { get; }
 
     /// <summary>
     /// A fresh rotor: rotors carry a position, so every machine needs its own.
@@ -22,4 +23,6 @@ public interface IPartsCatalogue
     IEntryWheel GetEntryWheel(string name, ICharacterMap? characterMap = null);
 
     ICharacterMap GetCharacterMap(string name);
+
+    IMachineLayout GetLayout(string name);
 }
