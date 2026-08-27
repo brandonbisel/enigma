@@ -35,8 +35,18 @@ public class KeySheet
     /// <summary>Plugboard pairs (Steckerverbindungen), e.g. "AV BS CG DL".</summary>
     public string Plugboard { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Entry wheel (Eintrittswalze). Every service Enigma used "Standard", which is
+    /// wired straight through; the commercial and railway machines used "QWERTZ".
+    /// </summary>
+    public string EntryWheel { get; set; } = "Standard";
+
     /// <summary>The reflector name, normalised.</summary>
     public string ReflectorName() => (Reflector ?? string.Empty).Trim().ToUpperInvariant();
+
+    /// <summary>The entry wheel name, normalised, defaulting to the straight-through one.</summary>
+    public string EntryWheelName() =>
+        string.IsNullOrWhiteSpace(EntryWheel) ? "STANDARD" : EntryWheel.Trim().ToUpperInvariant();
 
     /// <summary>
     /// The rotors in the order they sit in the machine, left to right, with the
@@ -61,7 +71,8 @@ public class KeySheet
         Rotors = Rotors,
         RingSettings = RingSettings,
         Positions = positions,
-        Plugboard = Plugboard
+        Plugboard = Plugboard,
+        EntryWheel = EntryWheel
     };
 
     /// <summary>The plugboard cables, as pairs of zero-based letter indices.</summary>

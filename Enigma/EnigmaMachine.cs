@@ -6,6 +6,7 @@ namespace Enigma;
 public class EnigmaMachine : IEnigmaMachine
 {
     private readonly IRotor[] _rotors;
+    private readonly IEntryWheel _entryWheel;
     private readonly ILogger _logger;
     private readonly ICharacterMap? _characterMap;
 
@@ -21,8 +22,10 @@ public class EnigmaMachine : IEnigmaMachine
         IEnumerable<IRotor> rotors,
         IReflector reflector,
         ILogger<EnigmaMachine>? logger = null,
-        ICharacterMap? characterMap = null)
+        ICharacterMap? characterMap = null,
+        IEntryWheel? entryWheel = null)
     {
+        _entryWheel = entryWheel ?? EntryWheel.Standard;
         PlugBoard = plugBoard;
         Reflector = reflector;
         _rotors = rotors.ToArray();
@@ -46,6 +49,8 @@ public class EnigmaMachine : IEnigmaMachine
         var value = PlugBoard.Translate(input);
         trace?.Add($"plug {Format(input)}>{Format(value)}");
 
+        value = Step(_entryWheel.Name, value, _entryWheel.ToContact, trace);
+
         for (var i = _rotors.Length - 1; i >= 0; i--)
         {
             value = Step(_rotors[i].Name, value, _rotors[i].Translate, trace);
@@ -57,6 +62,8 @@ public class EnigmaMachine : IEnigmaMachine
         {
             value = Step($"{_rotors[i].Name}'", value, _rotors[i].TranslateReverse, trace);
         }
+
+        value = Step($"{_entryWheel.Name}'", value, _entryWheel.ToLamp, trace);
 
         var output = PlugBoard.Translate(value);
         trace?.Add($"plug {Format(value)}>{Format(output)}");

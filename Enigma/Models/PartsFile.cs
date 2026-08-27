@@ -8,6 +8,19 @@ public class PartsFile
 {
     public IList<RotorDefinition> Rotors { get; set; } = [];
     public IList<ReflectorDefinition> Reflectors { get; set; } = [];
+    public IList<EntryWheelDefinition> EntryWheels { get; set; } = [];
+}
+
+public class EntryWheelDefinition
+{
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The keyboard in the order its keys are wired to contacts, so
+    /// "QWERTZUIOASDFGHJKPYXCVBNML" is the keyboard read left to right and
+    /// "ABCDEFGHIJKLMNOPQRSTUVWXYZ" is a wheel wired straight through.
+    /// </summary>
+    public string Keyboard { get; set; } = string.Empty;
 }
 
 public class RotorDefinition

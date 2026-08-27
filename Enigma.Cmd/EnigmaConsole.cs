@@ -135,12 +135,17 @@ public class EnigmaConsole : BackgroundService
 
     private string Translate(IEnigmaMachine machine, string line)
     {
-        var input = line
-            .ToUpperInvariant()
+        // Preparing first means the substitutions are enciphered, which is what
+        // happened: the signaller fitted the text to the keyboard, then typed it.
+        var text = _options.Prepare ? MessageText.Prepare(line) : line.ToUpperInvariant();
+
+        var input = text
             .Select(_characterMap.GetIndex)
             .Where(index => index >= 0);
 
-        return string.Concat(machine.Translate(input).Select(_characterMap.GetCharacter));
+        var output = string.Concat(machine.Translate(input).Select(_characterMap.GetCharacter));
+
+        return _options.Groups is { } size ? MessageText.InGroups(output, size) : output;
     }
 
     private void WriteBanner(IEnigmaMachine machine)

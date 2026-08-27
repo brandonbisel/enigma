@@ -7,7 +7,7 @@ for what the project is and how to use it.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 151 tests
+dotnet test               # whole suite, currently 170 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
@@ -66,6 +66,18 @@ without a verified message to prove it, and do not adjust one to make a test pas
 resolves the keyed registrations; `PartsCatalogue` lays a `PartsFile` over it and
 reports any built-in name a definition replaces. The factory goes through the
 catalogue and never resolves wheels from the container itself.
+
+`IEntryWheel` is the stator between the plugboard and the first rotor. It is
+described by its **keyboard order**: the letter at position i is the key wired to
+contact i, which is the form the wiring is published in. Every machine the library
+ships with uses the straight-through wheel, so it is exercised mainly through
+`--parts` and the QWERTZ one; do not "simplify" it away on the grounds that it is
+the identity.
+
+`MessageText` holds the signalling conventions rather than any cryptography:
+preparing text for a keyboard with no space bar and no digits, and grouping the
+output. It deliberately does not rewrite "ch" to Q — that was a habit, not a rule,
+and it would silently alter words.
 
 `IIndicatorProcedure` is the operating procedure rather than the machine: it
 enciphers a message key at a ground setting to give the indicator, and recovers it

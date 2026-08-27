@@ -36,6 +36,11 @@ public static class ServiceCollectionExtensions
         // The board is patched per machine, so it is transient for the same reason as the rotors.
         services.AddTransient<IPlugBoard, PlugBoard>();
 
+        // Entry wheels hold no state, and the service machines all used the
+        // straight-through one.
+        services.AddKeyedSingleton<IEntryWheel>("STANDARD", (_, _) => EntryWheel.Standard);
+        services.AddKeyedSingleton<IEntryWheel>("QWERTZ", (_, _) => EntryWheel.Qwertz);
+
         services.AddSingleton<IPartsCatalogue, BuiltInPartsCatalogue>();
         services.AddSingleton<IEnigmaMachineFactory, EnigmaMachineFactory>();
         services.AddSingleton<IIndicatorProcedure, IndicatorProcedure>();

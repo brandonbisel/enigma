@@ -15,6 +15,7 @@ public class PartsCatalogue : IPartsCatalogue
     private readonly IPartsCatalogue _builtIn;
     private readonly Dictionary<string, RotorDefinition> _rotors;
     private readonly Dictionary<string, ReflectorDefinition> _reflectors;
+    private readonly Dictionary<string, EntryWheelDefinition> _entryWheels;
 
     public PartsCatalogue(IPartsCatalogue builtIn, PartsFile parts, ILogger<PartsCatalogue>? logger = null)
     {
@@ -26,6 +27,9 @@ public class PartsCatalogue : IPartsCatalogue
         _reflectors = parts.Reflectors.ToDictionary(
             reflector => Normalise(reflector.Name), StringComparer.OrdinalIgnoreCase);
 
+        _entryWheels = parts.EntryWheels.ToDictionary(
+            wheel => Normalise(wheel.Name), StringComparer.OrdinalIgnoreCase);
+
         // Build every definition once, so a bad wiring is reported when the file is
         // read rather than part way through enciphering a message.
         foreach (var name in _rotors.Keys)
@@ -36,6 +40,11 @@ public class PartsCatalogue : IPartsCatalogue
         foreach (var name in _reflectors.Keys)
         {
             GetReflector(name);
+        }
+
+        foreach (var name in _entryWheels.Keys)
+        {
+            GetEntryWheel(name);
         }
 
         foreach (var shadowed in _rotors.Keys.Intersect(builtIn.RotorNames, StringComparer.OrdinalIgnoreCase))
@@ -54,6 +63,24 @@ public class PartsCatalogue : IPartsCatalogue
 
     public IReadOnlyList<string> ReflectorNames =>
         _reflectors.Keys.Union(_builtIn.ReflectorNames, StringComparer.OrdinalIgnoreCase).Order().ToList();
+
+    public IReadOnlyList<string> EntryWheelNames =>
+        _entryWheels.Keys.Union(_builtIn.EntryWheelNames, StringComparer.OrdinalIgnoreCase).Order().ToList();
+
+    public IEntryWheel GetEntryWheel(string name)
+    {
+        if (_entryWheels.TryGetValue(Normalise(name), out var definition))
+        {
+            return new EntryWheel(definition.Name, definition.Keyboard);
+        }
+
+        if (!_builtIn.EntryWheelNames.Contains(Normalise(name), StringComparer.OrdinalIgnoreCase))
+        {
+            throw UnknownEntryWheel(name, EntryWheelNames);
+        }
+
+        return _builtIn.GetEntryWheel(name);
+    }
 
     public IRotor CreateRotor(string name)
     {
@@ -94,4 +121,7 @@ public class PartsCatalogue : IPartsCatalogue
 
     internal static ArgumentException UnknownReflector(string name, IEnumerable<string> known) =>
         new($"Unknown reflector '{name}'. Known reflectors: {string.Join(", ", known)}.");
+
+    internal static ArgumentException UnknownEntryWheel(string name, IEnumerable<string> known) =>
+        new($"Unknown entry wheel '{name}'. Known entry wheels: {string.Join(", ", known)}.");
 }

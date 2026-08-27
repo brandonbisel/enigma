@@ -14,6 +14,7 @@ public class BuiltInPartsCatalogue : IPartsCatalogue
 
     public IReadOnlyList<string> RotorNames => MachineParts.RotorNames;
     public IReadOnlyList<string> ReflectorNames => MachineParts.ReflectorNames;
+    public IReadOnlyList<string> EntryWheelNames => MachineParts.EntryWheelNames;
 
     public IRotor CreateRotor(string name) =>
         _services.GetKeyedService<IRotor>(Normalise(name))
@@ -22,6 +23,10 @@ public class BuiltInPartsCatalogue : IPartsCatalogue
     public IReflector GetReflector(string name) =>
         _services.GetKeyedService<IReflector>(Normalise(name))
         ?? throw PartsCatalogue.UnknownReflector(name, ReflectorNames);
+
+    public IEntryWheel GetEntryWheel(string name) =>
+        _services.GetKeyedService<IEntryWheel>(Normalise(name))
+        ?? throw PartsCatalogue.UnknownEntryWheel(name, EntryWheelNames);
 
     private static string Normalise(string name) => (name ?? string.Empty).Trim().ToUpperInvariant();
 }

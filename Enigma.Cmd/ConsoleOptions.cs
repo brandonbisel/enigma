@@ -9,7 +9,9 @@ public record ConsoleOptions(
     FileInfo? Output,
     string? MessageKey = null,
     string? Indicator = null,
-    bool Doubled = false)
+    bool Doubled = false,
+    bool Prepare = false,
+    int? Groups = null)
 {
     // A banner would corrupt piped ciphertext or a file, so it is only shown when
     // a person is plainly sitting at the terminal.

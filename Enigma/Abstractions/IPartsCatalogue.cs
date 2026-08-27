@@ -9,6 +9,7 @@ public interface IPartsCatalogue
 {
     IReadOnlyList<string> RotorNames { get; }
     IReadOnlyList<string> ReflectorNames { get; }
+    IReadOnlyList<string> EntryWheelNames { get; }
 
     /// <summary>
     /// A fresh rotor: rotors carry a position, so every machine needs its own.
@@ -16,4 +17,6 @@ public interface IPartsCatalogue
     IRotor CreateRotor(string name);
 
     IReflector GetReflector(string name);
+
+    IEntryWheel GetEntryWheel(string name);
 }

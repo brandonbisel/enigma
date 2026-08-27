@@ -25,6 +25,7 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
 
         var rotors = wheels.Select(CreateRotor).ToList();
         var reflector = _parts.GetReflector(keySheet.ReflectorName());
+        var entryWheel = _parts.GetEntryWheel(keySheet.EntryWheelName());
         var plugBoard = _services.GetRequiredService<IPlugBoard>();
 
         foreach (var (input, output) in cables)
@@ -48,7 +49,8 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
             rotors,
             reflector,
             _services.GetService<ILogger<EnigmaMachine>>(),
-            _services.GetService<ICharacterMap>());
+            _services.GetService<ICharacterMap>(),
+            entryWheel);
     }
 
     /// <summary>

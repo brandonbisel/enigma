@@ -12,4 +12,7 @@ public static class MachineParts
 
     public static IReadOnlyList<string> ReflectorNames { get; } =
         ["A", "B", "C", "B-THIN", "C-THIN"];
+
+    public static IReadOnlyList<string> EntryWheelNames { get; } =
+        ["STANDARD", "QWERTZ"];
 }

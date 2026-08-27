@@ -58,6 +58,16 @@ var doubledOption = new Option<bool>("--doubled")
     Description = "Send the message key twice, as the procedure required until 1938."
 };
 
+var prepareOption = new Option<bool>("--prepare")
+{
+    Description = "Fit the text to the keyboard first: umlauts expanded, digits spelled out, spaces as X."
+};
+
+var groupsOption = new Option<int?>("--groups")
+{
+    Description = "Write the result in groups of this many letters, as a signaller would. Try 5."
+};
+
 var verboseOption = new Option<bool>("--verbose", "-v")
 {
     Description = "Trace every character through the plugboard, rotors and reflector."
@@ -86,6 +96,8 @@ var root = new RootCommand(
     messageKeyOption,
     indicatorOption,
     doubledOption,
+    prepareOption,
+    groupsOption,
     verboseOption,
     logFileOption,
     initKeySheetOption
@@ -105,6 +117,8 @@ root.SetAction((parseResult, cancellationToken) => RunAsync(
     parseResult.GetValue(messageKeyOption),
     parseResult.GetValue(indicatorOption),
     parseResult.GetValue(doubledOption),
+    parseResult.GetValue(prepareOption),
+    parseResult.GetValue(groupsOption),
     parseResult.GetValue(verboseOption),
     parseResult.GetValue(logFileOption),
     parseResult.GetValue(initKeySheetOption),
@@ -123,6 +137,8 @@ async Task<int> RunAsync(
     string? messageKey,
     string? indicator,
     bool doubled,
+    bool prepare,
+    int? groups,
     bool verbose,
     FileInfo? logFile,
     FileInfo? initKeySheet,
@@ -156,6 +172,12 @@ async Task<int> RunAsync(
     if (partsFile is not null && !partsFile.Exists)
     {
         await Console.Error.WriteLineAsync($"Parts file not found: {partsFile.FullName}");
+        return 1;
+    }
+
+    if (groups is { } size && size < 1)
+    {
+        await Console.Error.WriteLineAsync("--groups must be at least 1.");
         return 1;
     }
 
@@ -197,7 +219,8 @@ async Task<int> RunAsync(
             definitions,
             provider.GetService<ILogger<PartsCatalogue>>()));
     }
-    builder.Services.AddSingleton(new ConsoleOptions(input, output, messageKey, indicator, doubled));
+    builder.Services.AddSingleton(
+        new ConsoleOptions(input, output, messageKey, indicator, doubled, prepare, groups));
     builder.Services.AddHostedService<EnigmaConsole>();
     if (preset is not null && KeySheets.TryGet(preset, out var packaged))
     {
