@@ -7,7 +7,7 @@ for what the project is and how to use it.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 196 tests
+dotnet test               # whole suite, currently 213 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
@@ -84,7 +84,10 @@ would silently break any non-paired board.
 part looked up by name. Its pairs are plain alphabet letters; the historical
 contact lettering is deliberately not applied, because there is no verified source
 for it here. The Uhr's forty position dial is not modelled for the same reason —
-see the README. Do not add either from memory; they need a reference, the way the
+see the README. `UhrSetting` covers only the two letter notation that carried a
+dial setting, which the plates inside the Uhr's lid document in full; the plates
+are stamped letters, so it is Latin by construction and does not follow a machine's
+character map. Do not add either from memory; they need a reference, the way the
 rotor wirings were pinned by real intercepts.
 
 `IEntryWheel` is the stator between the plugboard and the first rotor. It is

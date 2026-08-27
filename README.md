@@ -245,11 +245,29 @@ rather than forwards. It is worth knowing why that works: reciprocity requires t
 *reflector* to be paired, and never required it of the plugboard — the ordinary
 board simply happens to be its own inverse.
 
-What is **not** modelled is the dial. Turning it selected one of forty fixed
-scramblings of the ten cables, and this implementation has no verified source for
-that table, nor for which position reproduces a plain board. Rather than ship a
-plausible guess, the substitution is taken directly. If you know the machine's
-setting, you can express it; you cannot yet say "cables X, dial 27".
+What is **not** modelled is the dial itself. Turning it selected one of forty fixed
+scramblings of the ten cables, and the internal wiring of the scrambler disc is not
+published in a form this implementation could verify. Rather than ship a plausible
+guess, the substitution is taken directly: if you know the machine's setting you can
+express it, but you cannot yet say "cables X, dial 27".
+
+The **setting notation** is modelled, because it is fully documented by the plates
+inside the Uhr's lid. A dial setting travelled as a two letter group: "Alphabet I"
+divides the twenty six letters into four bands giving the tens digit, "Alphabet II"
+into ten bands giving the units, and four times ten is the forty positions.
+
+```csharp
+UhrSetting.Encode(11);        // "GD"
+UhrSetting.Decode("GD");      // 11
+UhrSetting.AllGroupsFor(11);  // GD, GE, HD, HE, ... fourteen in all
+```
+
+The bands are uneven, so several groups stand for the same setting and the operator
+picked one. Between them the forty settings account for all 676 pairs of letters
+exactly once, which is what makes the notation unambiguous to read.
+
+There is no command line option for this: until the disc wiring is known there is
+nothing to apply a setting to.
 
 ## The entry wheel
 
