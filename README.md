@@ -235,45 +235,29 @@ real wheel is not forced, for the same reason.
 ## The Uhr
 
 The Enigma Uhr replaced the plugboard cables with a forty position switch. Its
-cryptographic significance is that the plugboard stopped being a set of pairs: an
-ordinary board joins A to V and V back to A, while under the Uhr A may go to V
-with V going somewhere else entirely.
+cryptographic point is that the plugboard stopped being a set of pairs: an ordinary
+board joins A to V and V back to A, while under the Uhr A may go to V with V going
+somewhere else entirely.
 
-That part **is** modelled. `SubstitutionPlugBoard` takes any permutation, and the
-machine stays reciprocal because the return leg runs the substitution backwards
-rather than forwards. It is worth knowing why that works: reciprocity requires the
-*reflector* to be paired, and never required it of the plugboard — the ordinary
-board simply happens to be its own inverse.
+Fit one by naming the dial setting. Ten cables are required, and the order they are
+written in is part of the setting, because the first pair is the box's cable 1:
 
-What is **not** modelled is the dial itself. Turning it selected one of forty fixed
-scramblings of the ten cables, and the internal wiring of the scrambler disc is not
-published in a form this implementation could verify. Rather than ship a plausible
-guess, the substitution is taken directly: if you know the machine's setting you can
-express it, but you cannot yet say "cables X, dial 27".
+```json
+{
+  "Rotors": "II IV V",
+  "RingSettings": "BUL",
+  "Positions": "BLA",
+  "Plugboard": "AV BS CG DL FU HZ IN KM OW RX",
+  "Uhr": "GD"
+}
+```
 
-What is known about the real device, and what any implementation of the dial would
-have to satisfy:
-
-- The scrambler was a rotor of **eighty** contacts in two rings of forty, of which
-  only the odd or the even set was in circuit at any position. So the box's own
-  contacts formed two rings of twenty, the outer wired to the `a` plugs and the
-  inner to the `b` plugs.
-- The `a` wires ran to those contacts in order; the `b` wires were scrambled.
-- The input of an `a` plug always reached the output of a `b` plug, and the other
-  way about, **in every position** and not merely at rest.
-- At position 00 the box behaved exactly like ten ordinary patch cords.
-- Because the `b` wires were paired rather than fully scrambled, **every fourth
-  position was reciprocal** — a flaw in the device, and the sharpest test of any
-  reconstruction.
-
-The authoritative wiring is in a paper in *Cryptologia*, July 1999. With that table
-in hand the dial drops into `SubstitutionPlugBoard`, and the five points above are
-its acceptance criteria.
-
-The **setting notation** is modelled, because it is fully documented by the plates
-inside the Uhr's lid. A dial setting travelled as a two letter group: "Alphabet I"
-divides the twenty six letters into four bands giving the tens digit, "Alphabet II"
-into ten bands giving the units, and four times ten is the forty positions.
+The setting may be written as the number, `"11"`, or as the two letter group read
+off the plates inside the lid of the Uhr's box, `"GD"`. Those plates divide the
+alphabet into four bands giving the tens digit and ten bands giving the units,
+which is where the forty positions come from. Several groups stand for the same
+setting, and between them the forty settings account for all 676 pairs of letters
+exactly once.
 
 ```csharp
 UhrSetting.Encode(11);        // "GD"
@@ -281,14 +265,18 @@ UhrSetting.Decode("GD");      // 11
 UhrSetting.AllGroupsFor(11);  // GD, GE, HD, HE, ... fourteen in all
 ```
 
-The bands are uneven, so several groups stand for the same setting and the operator
-picked one. Between them the forty settings account for all 676 pairs of letters
-exactly once, which is what makes the notation unambiguous to read.
+At position 00 the box reproduces ten ordinary patch cords exactly. The machine
+stays reciprocal at every other position too, which is worth understanding: it
+requires the *reflector* to be paired and never required it of the plugboard, since
+the current passes through the board twice, once each way.
 
-There is no command line option for this: until the disc wiring is known there is
-nothing to apply a setting to.
+The device had a flaw. Because its `b` wires were paired rather than fully
+scrambled, **every fourth position is reciprocal after all** — positions 0, 4, 8 and
+so on give away the very advantage the box was fitted to provide.
+`EnigmaUhr.IsReciprocalAt` reports it, and a test derives the same set from the
+wiring rather than asserting it by hand.
 
-## The entry wheel
+## The entry wheel## The entry wheel
 
 The entry wheel (*Eintrittswalze*) is the fixed stator between the plugboard and
 the first rotor, deciding which contact each key is wired to. Every service Enigma
@@ -413,3 +401,29 @@ and anchored on the published vectors. Randomised configurations are run through
 both and compared, which covers ground fixed vectors cannot: a bug that reads the
 notch from the ring-adjusted offset rather than the window position, for instance,
 is invisible to every vector taken at ring setting zero.
+
+## Sources
+
+The wirings, key sheets and test vectors here are taken from published sources
+rather than reconstructed, and each is pinned by a test.
+
+- **[Crypto Museum](https://www.cryptomuseum.com/crypto/enigma/uhr/index.htm)** —
+  the Enigma Uhr, including the photograph of the plates inside the lid from which
+  the two letter setting notation is read, and the cable ordering `1a-1b` through
+  `10a-10b`.
+- **[John Savard, quadibloc](http://www.quadibloc.com/crypto/ro020402.htm)** — the
+  Uhr's construction: eighty contacts in two rings, the `a` wires in order and the
+  `b` wires scrambled, and the reason every fourth position is reciprocal. Savard
+  credits Frode Weierud for the facts behind it, and cites a paper in *Cryptologia*,
+  July 1999, for the authoritative account.
+- **[Arduino Enigma](https://arduinoenigma.blogspot.com/2020/03/enigma-uhr-switch-test-vectors.html)**
+  — test vectors for all forty dial positions, generated with Daniel Palloks'
+  Universal Enigma and partly hand verified. The Uhr table in this repository is
+  derived from those vectors, and every one of them is a test. A
+  [companion post](https://arduinoenigma.blogspot.com/2020/05/designing-uhr-switch-for-arduino-based.html)
+  gives an independent vector with a different plug set, which the same table
+  reproduces.
+
+The historical messages — Barbarossa, Scharnhorst, U-264 and the 1930 instruction
+manual — are widely published intercepts, and each is decrypted in the test suite
+with its own key sheet.

@@ -41,12 +41,7 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
             ? _parts.GetReflector(keySheet.ReflectorName(), alphabet)
             : new RewirableReflector(keySheet.ReflectorName(), keySheet.ReflectorPairs, alphabet);
         var entryWheel = _parts.GetEntryWheel(keySheet.EntryWheelName(), alphabet);
-        var plugBoard = _plugBoards(alphabet);
-
-        foreach (var (input, output) in cables)
-        {
-            plugBoard.Connect(input, output);
-        }
+        var plugBoard = BuildPlugBoard(keySheet, alphabet, cables);
 
         Validate(rotors, reflector, entryWheel, alphabet);
 
@@ -129,6 +124,28 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
             throw new ArgumentException(
                 $"The thin rotor {thin[0].Name} only fits in a four rotor machine beside a thin reflector.");
         }
+    }
+
+    // With an Uhr fitted the cables run into the box rather than into each other,
+    // and the order they were listed in is part of the setting.
+    private IPlugBoard BuildPlugBoard(
+        KeySheet keySheet,
+        ICharacterMap alphabet,
+        IReadOnlyDictionary<int, int> cables)
+    {
+        if (keySheet.UhrPosition() is not { } position)
+        {
+            var board = _plugBoards(alphabet);
+
+            foreach (var (input, output) in cables)
+            {
+                board.Connect(input, output);
+            }
+
+            return board;
+        }
+
+        return new EnigmaUhr(alphabet, keySheet.CableOrder(alphabet), position);
     }
 
     private IRotor CreateRotor(RotorPlacement placement, ICharacterMap alphabet)

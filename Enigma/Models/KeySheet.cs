@@ -36,6 +36,14 @@ public class KeySheet
     public string Plugboard { get; set; } = string.Empty;
 
     /// <summary>
+    /// The Enigma Uhr's dial setting, if the machine had one fitted. Either the
+    /// number, "06", or the two letter group read off the plates inside the lid,
+    /// "GD". An Uhr needs exactly ten cables, given in the order the key sheet
+    /// lists them, because the order is part of the setting.
+    /// </summary>
+    public string Uhr { get; set; } = string.Empty;
+
+    /// <summary>
     /// The alphabet the machine works in. Every service Enigma used the twenty six
     /// capital letters, which is what "Latin" names; other machines can name a map
     /// defined in a parts file.
@@ -91,14 +99,49 @@ public class KeySheet
         RingSettings = RingSettings,
         Positions = positions,
         Plugboard = Plugboard,
+        Uhr = Uhr,
         EntryWheel = EntryWheel,
         ReflectorPairs = ReflectorPairs,
         CharacterMap = CharacterMap
     };
 
+    /// <summary>
+    /// The dial setting, or null when no Uhr is fitted.
+    /// </summary>
+    public int? UhrPosition()
+    {
+        if (string.IsNullOrWhiteSpace(Uhr))
+        {
+            return null;
+        }
+
+        var setting = Uhr.Trim();
+
+        if (int.TryParse(setting, out var position))
+        {
+            if (position is < 0 or >= UhrSetting.Positions)
+            {
+                throw new FormatException(
+                    $"Uhr setting '{Uhr}' is out of range. The dial is numbered 00 to {UhrSetting.Positions - 1}.");
+            }
+
+            return position;
+        }
+
+        return UhrSetting.Decode(setting);
+    }
+
+    /// <summary>
+    /// The cables in the order the key sheet writes them, which matters to an Uhr
+    /// because the first pair is its cable 1, the second its cable 2, and so on.
+    /// </summary>
+    public IReadOnlyList<Tuple<int, int>> CableOrder(ICharacterMap? characterMap = null) =>
+        ParsePlugboardPairs(Plugboard, characterMap ?? Enigma.CharacterMap.Latin);
+
     /// <summary>The plugboard cables, as pairs of zero-based letter indices.</summary>
     public IReadOnlyDictionary<int, int> Cables(ICharacterMap? characterMap = null) =>
-        ParsePlugboard(Plugboard, characterMap ?? Enigma.CharacterMap.Latin);
+        ParsePlugboardPairs(Plugboard, characterMap ?? Enigma.CharacterMap.Latin)
+            .ToDictionary(cable => cable.Item1, cable => cable.Item2);
 
     private static List<string> ParseRotors(string value)
     {
@@ -169,9 +212,9 @@ public class KeySheet
     /// Accepts pairs as "AV BS CG", "AV-BS-CG" or "av bs cg". Each pair is one
     /// cable, so a letter may appear only once across the whole board.
     /// </summary>
-    private static Dictionary<int, int> ParsePlugboard(string value, ICharacterMap alphabet)
+    private static List<Tuple<int, int>> ParsePlugboardPairs(string value, ICharacterMap alphabet)
     {
-        var pairs = new Dictionary<int, int>();
+        var pairs = new List<Tuple<int, int>>();
         var used = new HashSet<char>();
 
         foreach (var pair in SplitPairs(value))
@@ -199,7 +242,7 @@ public class KeySheet
                 }
             }
 
-            pairs[alphabet.GetIndex(cable[0])] = alphabet.GetIndex(cable[1]);
+            pairs.Add(Tuple.Create(alphabet.GetIndex(cable[0]), alphabet.GetIndex(cable[1])));
         }
 
         return pairs;

@@ -7,7 +7,7 @@ for what the project is and how to use it.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 213 tests
+dotnet test               # whole suite, currently 264 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
@@ -83,12 +83,13 @@ would silently break any non-paired board.
 `RewirableReflector` is UKW-D: thirteen pairs given on the key sheet rather than a
 part looked up by name. Its pairs are plain alphabet letters; the historical
 contact lettering is deliberately not applied, because there is no verified source
-for it here. The Uhr's forty position dial is not modelled for the same reason —
-see the README, which records the five properties any implementation of it must
-satisfy, including that every fourth position is reciprocal. A candidate table that
-fails those is wrong, and a table that passes them is still only a candidate: the
-authoritative wiring is a Cryptologia paper of July 1999. An earlier attempt here
-was deleted for failing the position 00 test. `UhrSetting` covers only the two letter notation that carried a
+for it here. `EnigmaUhr` carries the forty position dial. Its table was derived from published
+vectors for all forty positions, not reconstructed, and every vector is a test.
+Three properties hold and are asserted rather than assumed: position 00 reproduces
+plain cables, an `a` plug always reaches a `b` plug in every position, and exactly
+every fourth position is reciprocal, which was the flaw in the device. Do not
+regenerate the table from memory — see the Sources section of the README. An
+earlier hand-written attempt was deleted for failing the position 00 test. `UhrSetting` covers only the two letter notation that carried a
 dial setting, which the plates inside the Uhr's lid document in full; the plates
 are stamped letters, so it is Latin by construction and does not follow a machine's
 character map. Do not add either from memory; they need a reference, the way the
