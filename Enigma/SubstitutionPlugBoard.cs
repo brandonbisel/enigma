@@ -13,6 +13,10 @@ namespace Enigma;
 ///
 /// This models the substitution an Uhr produces, not the dial that selects it.
 /// See the note on the Uhr in the README for what is missing.
+///
+/// The reason a non-paired board leaves the machine reciprocal is the same reason
+/// the rotors may be non-paired: the current passes through each of them twice,
+/// once each way, so only the reflector has to be its own inverse.
 /// </summary>
 public class SubstitutionPlugBoard : IPlugBoard
 {

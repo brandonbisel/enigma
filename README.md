@@ -251,6 +251,25 @@ published in a form this implementation could verify. Rather than ship a plausib
 guess, the substitution is taken directly: if you know the machine's setting you can
 express it, but you cannot yet say "cables X, dial 27".
 
+What is known about the real device, and what any implementation of the dial would
+have to satisfy:
+
+- The scrambler was a rotor of **eighty** contacts in two rings of forty, of which
+  only the odd or the even set was in circuit at any position. So the box's own
+  contacts formed two rings of twenty, the outer wired to the `a` plugs and the
+  inner to the `b` plugs.
+- The `a` wires ran to those contacts in order; the `b` wires were scrambled.
+- The input of an `a` plug always reached the output of a `b` plug, and the other
+  way about, **in every position** and not merely at rest.
+- At position 00 the box behaved exactly like ten ordinary patch cords.
+- Because the `b` wires were paired rather than fully scrambled, **every fourth
+  position was reciprocal** — a flaw in the device, and the sharpest test of any
+  reconstruction.
+
+The authoritative wiring is in a paper in *Cryptologia*, July 1999. With that table
+in hand the dial drops into `SubstitutionPlugBoard`, and the five points above are
+its acceptance criteria.
+
 The **setting notation** is modelled, because it is fully documented by the plates
 inside the Uhr's lid. A dial setting travelled as a two letter group: "Alphabet I"
 divides the twenty six letters into four bands giving the tens digit, "Alphabet II"

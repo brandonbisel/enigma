@@ -84,7 +84,11 @@ would silently break any non-paired board.
 part looked up by name. Its pairs are plain alphabet letters; the historical
 contact lettering is deliberately not applied, because there is no verified source
 for it here. The Uhr's forty position dial is not modelled for the same reason —
-see the README. `UhrSetting` covers only the two letter notation that carried a
+see the README, which records the five properties any implementation of it must
+satisfy, including that every fourth position is reciprocal. A candidate table that
+fails those is wrong, and a table that passes them is still only a candidate: the
+authoritative wiring is a Cryptologia paper of July 1999. An earlier attempt here
+was deleted for failing the position 00 test. `UhrSetting` covers only the two letter notation that carried a
 dial setting, which the plates inside the Uhr's lid document in full; the plates
 are stamped letters, so it is Latin by construction and does not follow a machine's
 character map. Do not add either from memory; they need a reference, the way the
