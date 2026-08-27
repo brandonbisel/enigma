@@ -1,20 +1,33 @@
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+
 namespace Enigma;
 
 public class EnigmaMachine : IEnigmaMachine
 {
     private readonly IRotor[] _rotors;
+    private readonly ILogger _logger;
+    private readonly ICharacterMap? _characterMap;
 
     public IPlugBoard PlugBoard { get; }
     public IEnumerable<IRotor> Rotors => _rotors;
     public IReflector Reflector { get; }
 
     // Rotors are given in the order they sit in the machine, left to right,
-    // so the last one is the fast rotor next to the entry wheel.
-    public EnigmaMachine(IPlugBoard plugBoard, IEnumerable<IRotor> rotors, IReflector reflector)
+    // so the last one is the fast rotor next to the entry wheel. The logger and
+    // character map are optional and only shape the diagnostic trace.
+    public EnigmaMachine(
+        IPlugBoard plugBoard,
+        IEnumerable<IRotor> rotors,
+        IReflector reflector,
+        ILogger<EnigmaMachine>? logger = null,
+        ICharacterMap? characterMap = null)
     {
         PlugBoard = plugBoard;
         Reflector = reflector;
         _rotors = rotors.ToArray();
+        _logger = logger ?? NullLogger<EnigmaMachine>.Instance;
+        _characterMap = characterMap;
 
         if (_rotors.Length == 0)
         {
@@ -26,21 +39,39 @@ public class EnigmaMachine : IEnigmaMachine
     {
         StepRotors();
 
+        // The trace is only assembled when someone is listening, so the ordinary
+        // path costs nothing more than a null check per component.
+        var trace = _logger.IsEnabled(LogLevel.Debug) ? new List<string>() : null;
+
         var value = PlugBoard.Translate(input);
+        trace?.Add($"plug {Format(input)}>{Format(value)}");
 
         for (var i = _rotors.Length - 1; i >= 0; i--)
         {
-            value = _rotors[i].Translate(value);
+            value = Step(_rotors[i].Name, value, _rotors[i].Translate, trace);
         }
 
-        value = Reflector.Translate(value);
+        value = Step(Reflector.Name, value, Reflector.Translate, trace);
 
         for (var i = 0; i < _rotors.Length; i++)
         {
-            value = _rotors[i].TranslateReverse(value);
+            value = Step($"{_rotors[i].Name}'", value, _rotors[i].TranslateReverse, trace);
         }
 
-        return PlugBoard.Translate(value);
+        var output = PlugBoard.Translate(value);
+        trace?.Add($"plug {Format(value)}>{Format(output)}");
+
+        if (trace is not null)
+        {
+            _logger.LogDebug(
+                "{Input} -> {Output}   window {Window}   {Path}",
+                Format(input),
+                Format(output),
+                Window(),
+                string.Join(" | ", trace));
+        }
+
+        return output;
     }
 
     public IEnumerable<int> Translate(IEnumerable<int> input)
@@ -48,6 +79,15 @@ public class EnigmaMachine : IEnigmaMachine
         // Materialised deliberately: the rotors advance on every character, so deferring
         // execution would make the result depend on when the caller enumerates it.
         return input.Select(Translate).ToList();
+    }
+
+    private int Step(string name, int value, Func<int, int> translate, List<string>? trace)
+    {
+        var output = translate(value);
+
+        trace?.Add($"{name} {Format(value)}>{Format(output)}");
+
+        return output;
     }
 
     private void StepRotors()
@@ -64,10 +104,14 @@ public class EnigmaMachine : IEnigmaMachine
                 // by the pawl to its right and carries its left neighbour with it.
                 middle.Step();
                 _rotors[^3].Step();
+
+                _logger.LogTrace("Double step: {Rotor} and {Left} advanced", middle.Name, _rotors[^3].Name);
             }
             else if (fast.IsTurnoverPosition())
             {
                 middle.Step();
+
+                _logger.LogTrace("Turnover: {Rotor} advanced {Middle}", fast.Name, middle.Name);
             }
         }
         else if (_rotors.Length == 2 && fast.IsTurnoverPosition())
@@ -77,4 +121,9 @@ public class EnigmaMachine : IEnigmaMachine
 
         fast.Step();
     }
+
+    private string Window() => string.Concat(_rotors.Select(rotor => Format(rotor.Position)));
+
+    private string Format(int contact) =>
+        _characterMap is null ? contact.ToString() : _characterMap.GetCharacter(contact).ToString();
 }
