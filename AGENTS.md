@@ -7,7 +7,7 @@ for what the project is and how to use it.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 170 tests
+dotnet test               # whole suite, currently 184 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
@@ -66,6 +66,19 @@ without a verified message to prove it, and do not adjust one to make a test pas
 resolves the keyed registrations; `PartsCatalogue` lays a `PartsFile` over it and
 reports any built-in name a definition replaces. The factory goes through the
 catalogue and never resolves wheels from the container itself.
+
+`IPlugBoard` has both `Translate` and `TranslateReverse`. A cabled board is its
+own inverse so the two agree, but `SubstitutionPlugBoard` takes any permutation and
+they differ. Do not "simplify" the return leg back to `Translate`: reciprocity
+needs the *reflector* to be paired, never the plugboard, and collapsing the two
+would silently break any non-paired board.
+
+`RewirableReflector` is UKW-D: thirteen pairs given on the key sheet rather than a
+part looked up by name. Its pairs are plain alphabet letters; the historical
+contact lettering is deliberately not applied, because there is no verified source
+for it here. The Uhr's forty position dial is not modelled for the same reason —
+see the README. Do not add either from memory; they need a reference, the way the
+rotor wirings were pinned by real intercepts.
 
 `IEntryWheel` is the stator between the plugboard and the first rotor. It is
 described by its **keyboard order**: the letter at position i is the key wired to

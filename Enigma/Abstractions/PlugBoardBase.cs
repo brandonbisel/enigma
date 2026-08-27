@@ -4,9 +4,15 @@ public abstract class PlugBoardBase : IPlugBoard
 {
     protected abstract IDictionary<int, int> Wiring { get; }
     
-    public int Translate(int input)
+    public virtual int Translate(int input)
     {
         return Wiring[input];
+    }
+
+    /// <summary>A board of cables joins letters in pairs, so it is its own inverse.</summary>
+    public virtual int TranslateReverse(int input)
+    {
+        return Translate(input);
     }
 
     public void Connect(int input, int output)

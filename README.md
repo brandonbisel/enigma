@@ -206,6 +206,51 @@ Operators also wrote *ch* as `Q`, which is why the intercepts read `BEOBAQTET` a
 it was not universal, and it would quietly rewrite any word containing those two
 letters.
 
+## A reflector rewired in the field
+
+UKW-D could be rewired by the unit, which made the reflector part of the daily key
+rather than a fixed property of the machine. Give thirteen wire pairs on the key
+sheet and the reflector is built from them:
+
+```json
+{
+  "Name": "Luftwaffe with UKW-D",
+  "Reflector": "D",
+  "ReflectorPairs": "AQ BG CK DI EL FX HZ MW NV OT PU RS JY",
+  "Rotors": "I II III",
+  "RingSettings": "AAA",
+  "Positions": "AAA"
+}
+```
+
+Thirteen wires have to cover all twenty six contacts — a letter left unwired would
+have nowhere to go — so anything else is refused.
+
+Two things this does not do. The printed UKW-D settings used the wheel's own
+contact lettering rather than the alphabet, and that mapping is **not** applied
+here: it is a data-entry convention for which this implementation has no verified
+source, so the pairs above are plain letters. And the pair that was fixed on the
+real wheel is not forced, for the same reason.
+
+## The Uhr
+
+The Enigma Uhr replaced the plugboard cables with a forty position switch. Its
+cryptographic significance is that the plugboard stopped being a set of pairs: an
+ordinary board joins A to V and V back to A, while under the Uhr A may go to V
+with V going somewhere else entirely.
+
+That part **is** modelled. `SubstitutionPlugBoard` takes any permutation, and the
+machine stays reciprocal because the return leg runs the substitution backwards
+rather than forwards. It is worth knowing why that works: reciprocity requires the
+*reflector* to be paired, and never required it of the plugboard — the ordinary
+board simply happens to be its own inverse.
+
+What is **not** modelled is the dial. Turning it selected one of forty fixed
+scramblings of the ten cables, and this implementation has no verified source for
+that table, nor for which position reproduces a plain board. Rather than ship a
+plausible guess, the substitution is taken directly. If you know the machine's
+setting, you can express it; you cannot yet say "cables X, dial 27".
+
 ## The entry wheel
 
 The entry wheel (*Eintrittswalze*) is the fixed stator between the plugboard and

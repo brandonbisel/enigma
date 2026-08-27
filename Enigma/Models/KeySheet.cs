@@ -36,6 +36,13 @@ public class KeySheet
     public string Plugboard { get; set; } = string.Empty;
 
     /// <summary>
+    /// Thirteen wire pairs for a reflector that is rewired in the field, as UKW-D
+    /// was, e.g. "AQ BG CK DI EL FX HZ MW NV OT PU RS JY". When this is set the
+    /// reflector is built from it and <see cref="Reflector"/> only names it.
+    /// </summary>
+    public string ReflectorPairs { get; set; } = string.Empty;
+
+    /// <summary>
     /// Entry wheel (Eintrittswalze). Every service Enigma used "Standard", which is
     /// wired straight through; the commercial and railway machines used "QWERTZ".
     /// </summary>
@@ -72,7 +79,8 @@ public class KeySheet
         RingSettings = RingSettings,
         Positions = positions,
         Plugboard = Plugboard,
-        EntryWheel = EntryWheel
+        EntryWheel = EntryWheel,
+        ReflectorPairs = ReflectorPairs
     };
 
     /// <summary>The plugboard cables, as pairs of zero-based letter indices.</summary>

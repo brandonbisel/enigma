@@ -65,7 +65,7 @@ public class EnigmaMachine : IEnigmaMachine
 
         value = Step($"{_entryWheel.Name}'", value, _entryWheel.ToLamp, trace);
 
-        var output = PlugBoard.Translate(value);
+        var output = PlugBoard.TranslateReverse(value);
         trace?.Add($"plug {Format(value)}>{Format(output)}");
 
         if (trace is not null)

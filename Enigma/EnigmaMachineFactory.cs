@@ -1,5 +1,6 @@
 using Enigma.Models;
 using Enigma.Parts;
+using Enigma.Reflectors;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -24,7 +25,11 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
         var cables = keySheet.Cables();
 
         var rotors = wheels.Select(CreateRotor).ToList();
-        var reflector = _parts.GetReflector(keySheet.ReflectorName());
+        // A reflector given as wire pairs is rewired in the field and so is part of
+        // the key, not a part to be looked up.
+        var reflector = string.IsNullOrWhiteSpace(keySheet.ReflectorPairs)
+            ? _parts.GetReflector(keySheet.ReflectorName())
+            : new RewirableReflector(keySheet.ReflectorName(), keySheet.ReflectorPairs);
         var entryWheel = _parts.GetEntryWheel(keySheet.EntryWheelName());
         var plugBoard = _services.GetRequiredService<IPlugBoard>();
 

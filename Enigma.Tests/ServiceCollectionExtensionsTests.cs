@@ -85,12 +85,12 @@ public class ServiceCollectionExtensionsTests
 
         var rotors = services
             .Where(service => service.ServiceType == typeof(IRotor))
-            .Select(service => service.ServiceKey!.ToString())
+            .Select(service => service.ServiceKey!.ToString()!)
             .ToHashSet();
 
         var reflectors = services
             .Where(service => service.ServiceType == typeof(IReflector))
-            .Select(service => service.ServiceKey!.ToString())
+            .Select(service => service.ServiceKey!.ToString()!)
             .ToHashSet();
 
         Assert.Equal(MachineParts.RotorNames.ToHashSet(), rotors);
