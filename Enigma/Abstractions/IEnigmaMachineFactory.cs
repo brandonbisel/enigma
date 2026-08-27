@@ -4,5 +4,5 @@ namespace Enigma;
 
 public interface IEnigmaMachineFactory
 {
-    IEnigmaMachine Create(EnigmaSettings settings);
+    IEnigmaMachine Create(KeySheet keySheet);
 }

@@ -26,7 +26,7 @@ public class MachineLoggingTests
 
         machine.Translate(0);
 
-        var entry = Assert.Single(logger.Messages.Where(message => message.Contains("->")));
+        var entry = Assert.Single(logger.Messages, message => message.Contains("->"));
 
         Assert.Contains("plug", entry);
         Assert.Contains("III", entry);

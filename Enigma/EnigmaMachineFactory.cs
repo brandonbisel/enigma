@@ -15,25 +15,33 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
         _logger = services.GetService<ILogger<EnigmaMachineFactory>>();
     }
 
-    public IEnigmaMachine Create(EnigmaSettings settings)
+    public IEnigmaMachine Create(KeySheet keySheet)
     {
-        var rotors = settings.Rotors.Select(CreateRotor).ToList();
-        var reflector = _services.GetRequiredKeyedService<IReflector>(settings.Reflector);
+        var wheels = keySheet.Wheels();
+        var cables = keySheet.Cables();
+
+        var rotors = wheels.Select(CreateRotor).ToList();
+        var reflector = _services.GetKeyedService<IReflector>(keySheet.ReflectorName())
+            ?? throw new ArgumentException(
+                $"Unknown reflector '{keySheet.Reflector}'. " +
+                $"Known reflectors: {string.Join(", ", MachineParts.ReflectorNames)}.");
         var plugBoard = _services.GetRequiredService<IPlugBoard>();
 
-        foreach (var (input, output) in settings.Plugboard)
+        foreach (var (input, output) in cables)
         {
             plugBoard.Connect(input, output);
         }
 
+        Validate(rotors, reflector);
+
         _logger?.LogDebug(
-            "Machine {Name}: rotors {Rotors}, reflector {Reflector}, positions {Positions}, rings {Rings}, plugs {Plugs}",
-            settings.Name,
-            string.Join(' ', settings.Rotors.Select(rotor => rotor.Name)),
-            settings.Reflector,
-            string.Join(' ', settings.Rotors.Select(rotor => rotor.Position)),
-            string.Join(' ', settings.Rotors.Select(rotor => rotor.RingSetting)),
-            plugBoard.GetConnections().Count() / 2);
+            "Key sheet {Name}: rotors {Rotors}, reflector {Reflector}, Ringstellung {Rings}, Grundstellung {Positions}, {Cables} cables",
+            keySheet.Name,
+            keySheet.Rotors,
+            keySheet.ReflectorName(),
+            keySheet.RingSettings,
+            keySheet.Positions,
+            cables.Count);
 
         return new EnigmaMachine(
             plugBoard,
@@ -43,12 +51,60 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
             _services.GetService<ICharacterMap>());
     }
 
-    private IRotor CreateRotor(RotorSettings settings)
+    /// <summary>
+    /// Rejects machines that could not be assembled. The thin rotors are half width
+    /// and only fit in the space a thin reflector frees, so the fourth wheel and the
+    /// thin reflector always come as a pair, and the thin wheel is always leftmost.
+    /// </summary>
+    private static void Validate(IReadOnlyList<IRotor> rotors, IReflector reflector)
     {
-        var rotor = _services.GetRequiredKeyedService<IRotor>(settings.Name);
+        if (rotors.Count is not (3 or 4))
+        {
+            throw new ArgumentException(
+                $"An Enigma carries three rotors, or four on the naval M4, but {rotors.Count} were given.");
+        }
 
-        rotor.SetRingSetting(settings.RingSetting);
-        rotor.SetPosition(settings.Position);
+        var thin = rotors.Where(rotor => rotor.IsThin).ToList();
+
+        if (rotors.Count == 4)
+        {
+            if (!reflector.IsThin)
+            {
+                throw new ArgumentException(
+                    $"A fourth rotor only fits beside a thin reflector, but {reflector.Name} is full width.");
+            }
+
+            if (thin.Count != 1 || !rotors[0].IsThin)
+            {
+                throw new ArgumentException(
+                    "A four rotor machine carries exactly one thin rotor, and it sits leftmost.");
+            }
+
+            return;
+        }
+
+        if (reflector.IsThin)
+        {
+            throw new ArgumentException(
+                $"The thin reflector {reflector.Name} leaves a gap unless a fourth rotor fills it.");
+        }
+
+        if (thin.Count > 0)
+        {
+            throw new ArgumentException(
+                $"The thin rotor {thin[0].Name} only fits in a four rotor machine beside a thin reflector.");
+        }
+    }
+
+    private IRotor CreateRotor(RotorPlacement placement)
+    {
+        var rotor = _services.GetKeyedService<IRotor>(placement.Name)
+            ?? throw new ArgumentException(
+                $"Unknown rotor '{placement.Name}'. " +
+                $"Known rotors: {string.Join(", ", MachineParts.RotorNames)}.");
+
+        rotor.SetRingSetting(placement.RingSetting);
+        rotor.SetPosition(placement.Position);
 
         return rotor;
     }

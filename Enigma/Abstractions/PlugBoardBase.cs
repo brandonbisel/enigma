@@ -17,6 +17,14 @@ public abstract class PlugBoardBase : IPlugBoard
 
     public void Disconnect(int input, int output)
     {
+        // Resetting a pair that was never cabled would strand the letters they are
+        // actually joined to, leaving two contacts pointing at the same letter.
+        if (!IsConnected(input, output))
+        {
+            throw new ArgumentException(
+                $"Contacts {input} and {output} are not connected to each other.", nameof(input));
+        }
+
         Wiring[input] = input;
         Wiring[output] = output;
     }
@@ -26,8 +34,15 @@ public abstract class PlugBoardBase : IPlugBoard
         return Wiring[input] == output;
     }
 
+    /// <summary>
+    /// The cables on the board. A cable is one physical thing joining two letters,
+    /// so it is reported once, from the lower contact to the higher.
+    /// </summary>
     public IEnumerable<Tuple<int, int>> GetConnections()
     {
-        return Wiring.Where(x => x.Key != x.Value).Select(x => Tuple.Create(x.Key, x.Value));
+        return Wiring
+            .Where(cable => cable.Key < cable.Value)
+            .OrderBy(cable => cable.Key)
+            .Select(cable => Tuple.Create(cable.Key, cable.Value));
     }
 }

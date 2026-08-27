@@ -1,10 +1,10 @@
 namespace Enigma.Reflectors;
 
-public class ReflectorC : ReflectorBase
+public class ReflectorA : ReflectorBase
 {
     private static readonly IDictionary<int, int> ReflectorWiring =
-        WiringTable.FromReflectorString("FVPJIAOYEDRZXWGCTKUQSBNMHL");
+        WiringTable.FromReflectorString("EJMZALYXVBWFCRQUONTSPIKHGD");
 
-    public override string Name => "C";
+    public override string Name => "A";
     protected override IDictionary<int, int> Wiring => ReflectorWiring;
 }

@@ -76,6 +76,38 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
+    public void TheAdvertisedPartsAreExactlyThePartsRegistered()
+    {
+        // MachineParts drives the error messages, so a part listed there but never
+        // registered would name a rotor nobody can actually use, and the reverse
+        // would hide one that works.
+        var services = new ServiceCollection().AddEnigmaServices();
+
+        var rotors = services
+            .Where(service => service.ServiceType == typeof(IRotor))
+            .Select(service => service.ServiceKey!.ToString())
+            .ToHashSet();
+
+        var reflectors = services
+            .Where(service => service.ServiceType == typeof(IReflector))
+            .Select(service => service.ServiceKey!.ToString())
+            .ToHashSet();
+
+        Assert.Equal(MachineParts.RotorNames.ToHashSet(), rotors);
+        Assert.Equal(MachineParts.ReflectorNames.ToHashSet(), reflectors);
+    }
+
+    [Fact]
+    public void EveryAdvertisedRotorResolves()
+    {
+        using var provider = BuildProvider();
+
+        Assert.All(
+            MachineParts.RotorNames,
+            name => Assert.NotNull(provider.GetKeyedService<IRotor>(name)));
+    }
+
+    [Fact]
     public void CharacterMapResolves()
     {
         using var provider = BuildProvider();

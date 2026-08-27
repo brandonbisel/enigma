@@ -5,6 +5,7 @@ public abstract class RotorBase : IRotor
     private IDictionary<int, int>? _inverseWiring;
 
     public abstract string Name { get; }
+    public virtual bool IsThin => false;
     public int Position { get; protected set; }
     public int RingSetting { get; protected set; }
     protected abstract IEnumerable<int> TurnoverPositions { get; }
@@ -20,7 +21,7 @@ public abstract class RotorBase : IRotor
     {
     }
 
-    public int Step()
+    public virtual int Step()
     {
         Position = Mod(Position + 1);
         return Position;

@@ -116,7 +116,7 @@ public class ReferenceComparisonTests
             Enumerable.Range(0, length).Select(_ => (char)('A' + random.Next(26))));
     }
 
-    private static EnigmaSettings Settings(
+    private static KeySheet Settings(
         IReadOnlyList<string> rotors,
         string reflector,
         IReadOnlyList<int> positions,
@@ -125,15 +125,11 @@ public class ReferenceComparisonTests
     {
         Name = "Differential",
         Reflector = reflector,
-        Rotors = rotors
-            .Select((name, i) => new RotorSettings
-            {
-                Name = name,
-                Position = positions[i],
-                RingSetting = rings[i]
-            })
-            .ToList(),
-        Plugboard = (plugs ?? []).ToDictionary(pair => pair.Item1, pair => pair.Item2)
+        Rotors = string.Join(' ', rotors),
+        Positions = string.Concat(positions.Select(position => (char)('A' + position))),
+        RingSettings = string.Concat(rings.Select(ring => (char)('A' + ring))),
+        Plugboard = string.Join(' ', (plugs ?? [])
+            .Select(pair => $"{(char)('A' + pair.Item1)}{(char)('A' + pair.Item2)}"))
     };
 
     private static string Encrypt(IEnigmaMachine machine, string text)

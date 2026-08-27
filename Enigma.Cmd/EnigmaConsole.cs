@@ -12,7 +12,7 @@ public class EnigmaConsole : BackgroundService
     private readonly IHostApplicationLifetime _lifetime;
     private readonly ILogger<EnigmaConsole> _logger;
     private readonly ConsoleOptions _options;
-    private readonly EnigmaSettings _settings;
+    private readonly KeySheet _keySheet;
 
     public EnigmaConsole(
         IEnigmaMachineFactory factory,
@@ -20,14 +20,14 @@ public class EnigmaConsole : BackgroundService
         IHostApplicationLifetime lifetime,
         ILogger<EnigmaConsole> logger,
         ConsoleOptions options,
-        IOptions<EnigmaSettings> settings)
+        IOptions<KeySheet> keySheet)
     {
         _factory = factory;
         _characterMap = characterMap;
         _lifetime = lifetime;
         _logger = logger;
         _options = options;
-        _settings = settings.Value;
+        _keySheet = keySheet.Value;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,6 +41,16 @@ public class EnigmaConsole : BackgroundService
             // Ctrl+C while waiting for input.
         }
         catch (Exception exception)
+            when (exception is ArgumentException or FormatException or InvalidOperationException)
+        {
+            // A key sheet the machine cannot be built from is a mistake in the
+            // settings, not a fault in the program, so say what is wrong and stop.
+            // The detail is still there under --verbose.
+            await Console.Error.WriteLineAsync(exception.Message);
+            _logger.LogDebug(exception, "Key sheet rejected");
+            Environment.ExitCode = 1;
+        }
+        catch (Exception exception)
         {
             _logger.LogError(exception, "Enigma failed");
             await Console.Error.WriteLineAsync(exception.Message);
@@ -52,7 +62,7 @@ public class EnigmaConsole : BackgroundService
 
     private async Task RunAsync(CancellationToken stoppingToken)
     {
-        var machine = _factory.Create(_settings);
+        var machine = _factory.Create(_keySheet);
 
         // Only the streams we opened get disposed: closing Console.In or Console.Out
         // would take standard input and output down with them.
@@ -103,7 +113,7 @@ public class EnigmaConsole : BackgroundService
     {
         var rotors = machine.Rotors.Select(rotor => rotor.Name);
 
-        Console.WriteLine(_settings.Name);
+        Console.WriteLine(_keySheet.Name);
         Console.WriteLine($"Rotors {string.Join(' ', rotors)}, reflector {machine.Reflector.Name}");
         Console.WriteLine("Enter a message, or Ctrl+D to quit.");
         Console.WriteLine();
