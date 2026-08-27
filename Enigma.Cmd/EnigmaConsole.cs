@@ -135,17 +135,28 @@ public class EnigmaConsole : BackgroundService
 
     private string Translate(IEnigmaMachine machine, string line)
     {
+        var alphabet = machine.CharacterMap;
+
         // Preparing first means the substitutions are enciphered, which is what
         // happened: the signaller fitted the text to the keyboard, then typed it.
-        var text = _options.Prepare ? MessageText.Prepare(line) : line.ToUpperInvariant();
+        var text = _options.Prepare ? MessageText.Prepare(line) : line;
 
         var input = text
-            .Select(_characterMap.GetIndex)
+            .Select(character => IndexOf(alphabet, character))
             .Where(index => index >= 0);
 
-        var output = string.Concat(machine.Translate(input).Select(_characterMap.GetCharacter));
+        var output = string.Concat(machine.Translate(input).Select(alphabet.GetCharacter));
 
         return _options.Groups is { } size ? MessageText.InGroups(output, size) : output;
+    }
+
+    // Typing in lower case is a convenience the machine never had. It is applied
+    // only as a fallback, so an alphabet that distinguishes case keeps both.
+    private static int IndexOf(ICharacterMap alphabet, char character)
+    {
+        var index = alphabet.GetIndex(character);
+
+        return index >= 0 ? index : alphabet.GetIndex(char.ToUpperInvariant(character));
     }
 
     private void WriteBanner(IEnigmaMachine machine)

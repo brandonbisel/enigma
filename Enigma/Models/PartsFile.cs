@@ -9,6 +9,19 @@ public class PartsFile
     public IList<RotorDefinition> Rotors { get; set; } = [];
     public IList<ReflectorDefinition> Reflectors { get; set; } = [];
     public IList<EntryWheelDefinition> EntryWheels { get; set; } = [];
+    public IList<CharacterMapDefinition> CharacterMaps { get; set; } = [];
+}
+
+public class CharacterMapDefinition
+{
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Every character the machine works in, in contact order. The count decides
+    /// how many contacts each wheel has, so a wiring of any other length is
+    /// refused. A reflector needs an even count, since it wires contacts in pairs.
+    /// </summary>
+    public string Characters { get; set; } = string.Empty;
 }
 
 public class EntryWheelDefinition
@@ -21,6 +34,12 @@ public class EntryWheelDefinition
     /// "ABCDEFGHIJKLMNOPQRSTUVWXYZ" is a wheel wired straight through.
     /// </summary>
     public string Keyboard { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The alphabet this wheel is wired for. Left empty it is the one alphabet the
+    /// file defines, or the Latin one if the file defines none.
+    /// </summary>
+    public string CharacterMap { get; set; } = string.Empty;
 }
 
 public class RotorDefinition
@@ -39,6 +58,12 @@ public class RotorDefinition
 
     /// <summary>True for a half-width wheel, which cannot be driven and never steps.</summary>
     public bool Thin { get; set; }
+
+    /// <summary>
+    /// The alphabet this part is wired for. Left empty it is the one alphabet the
+    /// file defines, or the Latin one if the file defines none.
+    /// </summary>
+    public string CharacterMap { get; set; } = string.Empty;
 }
 
 public class ReflectorDefinition
@@ -48,4 +73,10 @@ public class ReflectorDefinition
 
     /// <summary>True for a narrow reflector, which leaves room for a fourth rotor.</summary>
     public bool Thin { get; set; }
+
+    /// <summary>
+    /// The alphabet this part is wired for. Left empty it is the one alphabet the
+    /// file defines, or the Latin one if the file defines none.
+    /// </summary>
+    public string CharacterMap { get; set; } = string.Empty;
 }

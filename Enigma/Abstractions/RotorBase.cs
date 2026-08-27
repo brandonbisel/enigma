@@ -6,6 +6,7 @@ public abstract class RotorBase : IRotor
 
     public abstract string Name { get; }
     public virtual bool IsThin => false;
+    public int Contacts => Wiring.Count;
     public int Position { get; protected set; }
     public int RingSetting { get; protected set; }
     protected abstract IEnumerable<int> TurnoverPositions { get; }

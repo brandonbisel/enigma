@@ -36,6 +36,13 @@ public class KeySheet
     public string Plugboard { get; set; } = string.Empty;
 
     /// <summary>
+    /// The alphabet the machine works in. Every service Enigma used the twenty six
+    /// capital letters, which is what "Latin" names; other machines can name a map
+    /// defined in a parts file.
+    /// </summary>
+    public string CharacterMap { get; set; } = "Latin";
+
+    /// <summary>
     /// Thirteen wire pairs for a reflector that is rewired in the field, as UKW-D
     /// was, e.g. "AQ BG CK DI EL FX HZ MW NV OT PU RS JY". When this is set the
     /// reflector is built from it and <see cref="Reflector"/> only names it.
@@ -52,6 +59,10 @@ public class KeySheet
     public string ReflectorName() => (Reflector ?? string.Empty).Trim().ToUpperInvariant();
 
     /// <summary>The entry wheel name, normalised, defaulting to the straight-through one.</summary>
+    /// <summary>The character map name, normalised, defaulting to the Latin alphabet.</summary>
+    public string CharacterMapName() =>
+        string.IsNullOrWhiteSpace(CharacterMap) ? "LATIN" : CharacterMap.Trim().ToUpperInvariant();
+
     public string EntryWheelName() =>
         string.IsNullOrWhiteSpace(EntryWheel) ? "STANDARD" : EntryWheel.Trim().ToUpperInvariant();
 
@@ -59,11 +70,12 @@ public class KeySheet
     /// The rotors in the order they sit in the machine, left to right, with the
     /// ring settings and starting positions resolved to zero-based indices.
     /// </summary>
-    public IReadOnlyList<RotorPlacement> Wheels()
+    public IReadOnlyList<RotorPlacement> Wheels(ICharacterMap? characterMap = null)
     {
+        var alphabet = characterMap ?? Enigma.CharacterMap.Latin;
         var rotors = ParseRotors(Rotors);
-        var rings = ParseWheelSettings(RingSettings, rotors.Count, nameof(RingSettings));
-        var positions = ParseWheelSettings(Positions, rotors.Count, nameof(Positions));
+        var rings = ParseWheelSettings(RingSettings, rotors.Count, nameof(RingSettings), alphabet);
+        var positions = ParseWheelSettings(Positions, rotors.Count, nameof(Positions), alphabet);
 
         return rotors
             .Select((name, i) => new RotorPlacement(name, positions[i], rings[i]))
@@ -80,11 +92,13 @@ public class KeySheet
         Positions = positions,
         Plugboard = Plugboard,
         EntryWheel = EntryWheel,
-        ReflectorPairs = ReflectorPairs
+        ReflectorPairs = ReflectorPairs,
+        CharacterMap = CharacterMap
     };
 
     /// <summary>The plugboard cables, as pairs of zero-based letter indices.</summary>
-    public IReadOnlyDictionary<int, int> Cables() => ParsePlugboard(Plugboard);
+    public IReadOnlyDictionary<int, int> Cables(ICharacterMap? characterMap = null) =>
+        ParsePlugboard(Plugboard, characterMap ?? Enigma.CharacterMap.Latin);
 
     private static List<string> ParseRotors(string value)
     {
@@ -102,7 +116,8 @@ public class KeySheet
     /// Accepts "AAA", "A A A" or the one-based numbers printed on a key sheet,
     /// "01 01 01". An empty value means every wheel sits at A.
     /// </summary>
-    private static List<int> ParseWheelSettings(string value, int expected, string field)
+    private static List<int> ParseWheelSettings(
+        string value, int expected, string field, ICharacterMap alphabet)
     {
         var tokens = SplitNames(value);
 
@@ -112,7 +127,8 @@ public class KeySheet
         }
 
         // "AAA" written as one word is the commonest form, so split it per letter.
-        if (tokens.Count == 1 && tokens[0].Length == expected && tokens[0].All(char.IsLetter))
+        if (tokens.Count == 1 && tokens[0].Length == expected &&
+            tokens[0].All(character => alphabet.GetIndex(character) >= 0))
         {
             tokens = tokens[0].Select(letter => letter.ToString()).ToList();
         }
@@ -123,36 +139,37 @@ public class KeySheet
                 $"{field} has {tokens.Count} values but there are {expected} rotors.");
         }
 
-        return tokens.Select(token => ParseWheelSetting(token, field)).ToList();
+        return tokens.Select(token => ParseWheelSetting(token, field, alphabet)).ToList();
     }
 
-    private static int ParseWheelSetting(string token, string field)
+    private static int ParseWheelSetting(string token, string field, ICharacterMap alphabet)
     {
-        if (token.Length == 1 && char.IsLetter(token[0]))
+        if (token.Length == 1 && alphabet.GetIndex(token[0]) >= 0)
         {
-            return char.ToUpperInvariant(token[0]) - 'A';
+            return alphabet.GetIndex(token[0]);
         }
 
         if (int.TryParse(token, out var number))
         {
-            if (number is < 1 or > 26)
+            if (number < 1 || number > alphabet.Count)
             {
                 throw new FormatException(
-                    $"{field} value '{token}' is out of range. Key sheets number the wheels 01 to 26.");
+                    $"{field} value '{token}' is out of range. Key sheets number the wheels 01 to {alphabet.Count:00}.");
             }
 
             return number - 1;
         }
 
         throw new FormatException(
-            $"{field} value '{token}' is neither a letter nor a number between 01 and 26.");
+            $"{field} value '{token}' is neither a character of the {alphabet.Name} alphabet " +
+            $"nor a number between 01 and {alphabet.Count:00}.");
     }
 
     /// <summary>
     /// Accepts pairs as "AV BS CG", "AV-BS-CG" or "av bs cg". Each pair is one
     /// cable, so a letter may appear only once across the whole board.
     /// </summary>
-    private static Dictionary<int, int> ParsePlugboard(string value)
+    private static Dictionary<int, int> ParsePlugboard(string value, ICharacterMap alphabet)
     {
         var pairs = new Dictionary<int, int>();
         var used = new HashSet<char>();
@@ -161,10 +178,11 @@ public class KeySheet
         {
             var cable = pair.ToUpperInvariant();
 
-            if (cable.Length != 2 || !cable.All(char.IsAsciiLetter))
+            if (cable.Length != 2 || cable.Any(character => alphabet.GetIndex(character) < 0))
             {
                 throw new FormatException(
-                    $"Plugboard entry '{pair}' is not a pair of letters, such as \"AV\".");
+                    $"Plugboard entry '{pair}' is not a pair of characters from the {alphabet.Name} alphabet, " +
+                    "such as \"AV\".");
             }
 
             if (cable[0] == cable[1])
@@ -181,7 +199,7 @@ public class KeySheet
                 }
             }
 
-            pairs[cable[0] - 'A'] = cable[1] - 'A';
+            pairs[alphabet.GetIndex(cable[0])] = alphabet.GetIndex(cable[1]);
         }
 
         return pairs;

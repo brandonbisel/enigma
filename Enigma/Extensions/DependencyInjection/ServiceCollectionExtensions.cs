@@ -10,6 +10,11 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddEnigmaServices(this IServiceCollection services)
     {
         services.AddSingleton<ICharacterMap, DefaultCharacterMap>();
+        services.AddKeyedSingleton<ICharacterMap>("LATIN", (_, _) => CharacterMap.Latin);
+
+        // The plugboard has one contact per character, so it is built for whichever
+        // alphabet the machine works in rather than resolved ready-made.
+        services.AddSingleton<Func<ICharacterMap, IPlugBoard>>(_ => map => new PlugBoard(map));
 
         // Rotors are keyed by the name they are known by on a key sheet, and are transient
         // because each one carries its own position: two machines must never share an instance.

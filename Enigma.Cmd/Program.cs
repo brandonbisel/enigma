@@ -212,12 +212,24 @@ async Task<int> RunAsync(
             .Build()
             .Get<PartsFile>() ?? new PartsFile();
 
-        // Layered over the built-in catalogue rather than replacing it, so a file
-        // need only define the parts the machine actually needs.
-        builder.Services.AddSingleton<IPartsCatalogue>(provider => new PartsCatalogue(
-            ActivatorUtilities.CreateInstance<BuiltInPartsCatalogue>(provider),
-            definitions,
-            provider.GetService<ILogger<PartsCatalogue>>()));
+        // Built here rather than on first use: a fault in the file is the reader's
+        // mistake and deserves one line, not a failure to start the host.
+        try
+        {
+            var catalogue = new PartsCatalogue(
+                new BuiltInPartsCatalogue(builder.Services.BuildServiceProvider()),
+                definitions,
+                LoggerFactory.Create(logging => logging.AddSerilog()).CreateLogger<PartsCatalogue>());
+
+            // Layered over the built-in catalogue rather than replacing it, so a file
+            // need only define the parts the machine actually needs.
+            builder.Services.AddSingleton<IPartsCatalogue>(catalogue);
+        }
+        catch (Exception exception) when (exception is ArgumentException or FormatException)
+        {
+            await Console.Error.WriteLineAsync(exception.Message);
+            return 1;
+        }
     }
     builder.Services.AddSingleton(
         new ConsoleOptions(input, output, messageKey, indicator, doubled, prepare, groups));

@@ -10,13 +10,16 @@ public interface IPartsCatalogue
     IReadOnlyList<string> RotorNames { get; }
     IReadOnlyList<string> ReflectorNames { get; }
     IReadOnlyList<string> EntryWheelNames { get; }
+    IReadOnlyList<string> CharacterMapNames { get; }
 
     /// <summary>
     /// A fresh rotor: rotors carry a position, so every machine needs its own.
     /// </summary>
-    IRotor CreateRotor(string name);
+    IRotor CreateRotor(string name, ICharacterMap? characterMap = null);
 
-    IReflector GetReflector(string name);
+    IReflector GetReflector(string name, ICharacterMap? characterMap = null);
 
-    IEntryWheel GetEntryWheel(string name);
+    IEntryWheel GetEntryWheel(string name, ICharacterMap? characterMap = null);
+
+    ICharacterMap GetCharacterMap(string name);
 }

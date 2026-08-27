@@ -1,20 +1,10 @@
 namespace Enigma;
 
-public class DefaultCharacterMap : ICharacterMap
+/// <summary>The alphabet of every service Enigma: A to Z.</summary>
+public class DefaultCharacterMap : CharacterMap
 {
-    private static readonly char[] Characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-
-    public string Name { get; } = "Default";
-
-    public int Count => Characters.Length;
-
-    public char GetCharacter(int index)
+    public DefaultCharacterMap()
+        : base("Default", "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     {
-        return Characters[index];
-    }
-
-    public int GetIndex(char character)
-    {
-        return Array.IndexOf(Characters, character);
     }
 }

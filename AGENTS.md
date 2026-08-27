@@ -7,7 +7,7 @@ for what the project is and how to use it.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 184 tests
+dotnet test               # whole suite, currently 196 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
@@ -66,6 +66,13 @@ without a verified message to prove it, and do not adjust one to make a test pas
 resolves the keyed registrations; `PartsCatalogue` lays a `PartsFile` over it and
 reports any built-in name a definition replaces. The factory goes through the
 catalogue and never resolves wheels from the container itself.
+
+`ICharacterMap` is the single authority for how many contacts a machine has. Rotors
+report `Contacts`, and `EnigmaMachineFactory` refuses a part whose count differs
+from the alphabet, so a mismatch is named rather than surfacing as an index error.
+Anything that parses a key sheet or a wiring takes the alphabet: do not reintroduce
+`- 'A'` or a literal 26. `MessageText` and the QWERTZ entry wheel are deliberate
+exceptions, being German and a fixed keyboard respectively.
 
 `IPlugBoard` has both `Translate` and `TranslateReverse`. A cabled board is its
 own inverse so the two agree, but `SubstitutionPlugBoard` takes any permutation and

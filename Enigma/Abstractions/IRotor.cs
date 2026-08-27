@@ -10,6 +10,9 @@ public interface IRotor
     /// </summary>
     bool IsThin { get; }
 
+    /// <summary>How many contacts the wheel has, which must match its machine's alphabet.</summary>
+    int Contacts { get; }
+
     int Position { get; }
     int RingSetting { get; }
 

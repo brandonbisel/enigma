@@ -14,17 +14,18 @@ public class RewirableReflector : ReflectorBase
 {
     private readonly IDictionary<int, int> _wiring;
 
-    public RewirableReflector(string name, string pairs, int contacts = 26)
+    public RewirableReflector(string name, string pairs, ICharacterMap? characterMap = null)
     {
         Name = name;
-        _wiring = Wire(pairs, contacts);
+        _wiring = Wire(pairs, characterMap ?? CharacterMap.Latin);
     }
 
     public override string Name { get; }
     protected override IDictionary<int, int> Wiring => _wiring;
 
-    private static IDictionary<int, int> Wire(string pairs, int contacts)
+    private static IDictionary<int, int> Wire(string pairs, ICharacterMap alphabet)
     {
+        var contacts = alphabet.Count;
         var wiring = new Dictionary<int, int>();
 
         foreach (var pair in (pairs ?? string.Empty)
@@ -32,14 +33,16 @@ public class RewirableReflector : ReflectorBase
         {
             var cable = pair.ToUpperInvariant();
 
-            if (cable.Length != 2 || !cable.All(char.IsAsciiLetterUpper))
+            if (cable.Length != 2 || cable.Any(character => alphabet.GetIndex(character) < 0))
             {
                 throw new ArgumentException(
-                    $"Reflector wiring '{pair}' is not a pair of letters, such as \"AQ\".", nameof(pairs));
+                    $"Reflector wiring '{pair}' is not a pair of characters from the {alphabet.Name} " +
+                    "alphabet, such as \"AQ\".",
+                    nameof(pairs));
             }
 
-            var left = cable[0] - 'A';
-            var right = cable[1] - 'A';
+            var left = alphabet.GetIndex(cable[0]);
+            var right = alphabet.GetIndex(cable[1]);
 
             if (left == right)
             {

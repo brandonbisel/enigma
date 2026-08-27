@@ -8,11 +8,11 @@ public class EnigmaMachine : IEnigmaMachine
     private readonly IRotor[] _rotors;
     private readonly IEntryWheel _entryWheel;
     private readonly ILogger _logger;
-    private readonly ICharacterMap? _characterMap;
 
     public IPlugBoard PlugBoard { get; }
     public IEnumerable<IRotor> Rotors => _rotors;
     public IReflector Reflector { get; }
+    public ICharacterMap CharacterMap { get; }
 
     // Rotors are given in the order they sit in the machine, left to right,
     // so the last one is the fast rotor next to the entry wheel. The logger and
@@ -30,7 +30,7 @@ public class EnigmaMachine : IEnigmaMachine
         Reflector = reflector;
         _rotors = rotors.ToArray();
         _logger = logger ?? NullLogger<EnigmaMachine>.Instance;
-        _characterMap = characterMap;
+        CharacterMap = characterMap ?? Enigma.CharacterMap.Latin;
 
         if (_rotors.Length == 0)
         {
@@ -131,6 +131,5 @@ public class EnigmaMachine : IEnigmaMachine
 
     private string Window() => string.Concat(_rotors.Select(rotor => Format(rotor.Position)));
 
-    private string Format(int contact) =>
-        _characterMap is null ? contact.ToString() : _characterMap.GetCharacter(contact).ToString();
+    private string Format(int contact) => CharacterMap.GetCharacter(contact).ToString();
 }

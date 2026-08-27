@@ -7,24 +7,26 @@ internal sealed class DefinedRotor : RotorBase
     private readonly IDictionary<int, int> _wiring;
     private readonly int[] _notches;
 
-    public DefinedRotor(RotorDefinition definition)
+    public DefinedRotor(RotorDefinition definition, ICharacterMap? characterMap = null)
     {
+        var alphabet = characterMap ?? CharacterMap.Latin;
+
         Name = definition.Name;
-        _wiring = WiringTable.FromString(definition.Wiring);
-        _notches = ParseNotches(definition.Notches, definition.Name);
+        _wiring = WiringTable.FromString(definition.Wiring, alphabet);
+        _notches = ParseNotches(definition.Notches, definition.Name, alphabet);
     }
 
     public override string Name { get; }
     protected override IEnumerable<int> TurnoverPositions => _notches;
     protected override IDictionary<int, int> Wiring => _wiring;
 
-    internal static int[] ParseNotches(string notches, string name) =>
+    internal static int[] ParseNotches(string notches, string name, ICharacterMap alphabet) =>
         (notches ?? string.Empty)
-            .Where(letter => !char.IsWhiteSpace(letter))
-            .Select(letter => char.ToUpperInvariant(letter) is >= 'A' and <= 'Z'
-                ? char.ToUpperInvariant(letter) - 'A'
+            .Where(character => !char.IsWhiteSpace(character))
+            .Select(character => alphabet.GetIndex(character) is var index && index >= 0
+                ? index
                 : throw new ArgumentException(
-                    $"Rotor '{name}' has a notch '{letter}' that is not a letter."))
+                    $"Rotor '{name}' has a notch '{character}' that is not in the {alphabet.Name} alphabet."))
             .ToArray();
 }
 
@@ -32,10 +34,10 @@ internal sealed class DefinedThinRotor : ThinRotorBase
 {
     private readonly IDictionary<int, int> _wiring;
 
-    public DefinedThinRotor(RotorDefinition definition)
+    public DefinedThinRotor(RotorDefinition definition, ICharacterMap? characterMap = null)
     {
         Name = definition.Name;
-        _wiring = WiringTable.FromString(definition.Wiring);
+        _wiring = WiringTable.FromString(definition.Wiring, characterMap);
 
         if (!string.IsNullOrWhiteSpace(definition.Notches))
         {
@@ -52,11 +54,11 @@ internal sealed class DefinedReflector : ReflectorBase
 {
     private readonly IDictionary<int, int> _wiring;
 
-    public DefinedReflector(ReflectorDefinition definition)
+    public DefinedReflector(ReflectorDefinition definition, ICharacterMap? characterMap = null)
     {
         Name = definition.Name;
         IsThin = definition.Thin;
-        _wiring = WiringTable.FromReflectorString(definition.Wiring);
+        _wiring = WiringTable.FromReflectorString(definition.Wiring, characterMap);
     }
 
     public override string Name { get; }

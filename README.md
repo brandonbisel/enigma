@@ -271,6 +271,46 @@ contacts, which is the form the wiring is published in:
 So `Q` is wired to the first contact, `W` to the second, and a wheel reading
 `ABCDEFGHIJKLMNOPQRSTUVWXYZ` is wired straight through.
 
+## Custom alphabets
+
+Every service Enigma worked in the twenty six capital letters, but nothing in the
+mechanism requires that. A parts file can define an alphabet, and the machine is
+then built entirely in it — the wiring, the notches, the ring settings, the
+plugboard pairs and the message itself:
+
+```json
+{
+  "CharacterMaps": [ { "Name": "Digits", "Characters": "0123456789" } ],
+  "Rotors": [
+    { "Name": "D-I",   "Wiring": "1357902468", "Notches": "4" },
+    { "Name": "D-II",  "Wiring": "2468013579", "Notches": "2" },
+    { "Name": "D-III", "Wiring": "3052749618", "Notches": "7" }
+  ],
+  "Reflectors": [ { "Name": "D-UKW", "Wiring": "5678901234" } ]
+}
+```
+
+Name it from the key sheet with `"CharacterMap": "Digits"`. Parts in the file take
+that alphabet automatically when the file defines exactly one; otherwise each names
+its own.
+
+The alphabet is the **single authority** for how many contacts a machine has. A
+wheel wired for a different one is refused by name rather than failing later with
+an index error:
+
+```
+'I' has 26 contacts, but the Digits alphabet has 10 characters.
+```
+
+Ring settings and positions are numbered within the alphabet, so a ten character
+machine numbers its wheels 01 to 10. A reflector needs an even number of
+characters, since it wires them in pairs.
+
+Two things stay Latin. `--prepare` expands German umlauts and spells out German
+numerals, which only means anything in that alphabet. And the `QWERTZ` entry wheel
+is a fixed twenty six key layout; the straight-through one exists for any alphabet,
+being the identity.
+
 ## Custom rotors and reflectors
 
 A parts file defines wheels and reflectors the library does not ship with, which

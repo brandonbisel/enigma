@@ -15,4 +15,6 @@ public static class MachineParts
 
     public static IReadOnlyList<string> EntryWheelNames { get; } =
         ["STANDARD", "QWERTZ"];
+
+    public static IReadOnlyList<string> CharacterMapNames { get; } = ["LATIN"];
 }

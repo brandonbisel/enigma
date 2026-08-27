@@ -13,6 +13,9 @@ public interface IEntryWheel
 {
     string Name { get; }
 
+    /// <summary>How many contacts the wheel has.</summary>
+    int Contacts { get; }
+
     /// <summary>The rotor contact a key is wired to, on the way in.</summary>
     int ToContact(int key);
 
