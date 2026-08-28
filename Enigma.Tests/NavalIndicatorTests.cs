@@ -83,14 +83,57 @@ public class NavalIndicatorTests
     public void TheU534MessageIsReadRightThrough()
     {
         // Message P1030690 from U-534, 1 May 1945, as worked through by Michael
-        // Hörenberg. The indicator as transmitted, the four entries of "Quelle"
-        // Tafel A it needs, and the day's key — the whole procedure end to end on
+        // Hörenberg. The indicator as transmitted, the day's key, and the whole of
+        // "Quelle" Tafel A — the table that boat was actually using — end to end on
         // traffic that was actually sent.
-        var received = Procedure().Receive(U534(), QuelleTafelA, "FNHC GVET");
+        var received = Procedure().Receive(U534(), BigramTables.QuelleA, "FNHC GVET");
 
         Assert.Equal("DUZ", received.KeyGroup);        // says the key is Potsdam's
         Assert.Equal("YMU", received.MessageGroup);
         Assert.Equal("ODFF", received.MessageKey);     // where the message begins
+    }
+
+    [Fact]
+    public void TheShippedTableIsWholeAndReciprocal()
+    {
+        // Transcribed from the Crypto Museum's scan of booklet 2499. Six hundred and
+        // seventy-six entries, every one paired with its mirror: a single mistyped
+        // cell would break a pair and show up here.
+        var table = BigramTables.QuelleA;
+        var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        Assert.True(table.IsComplete);
+        Assert.Equal(676, table.Count);
+
+        Assert.All(
+            from first in alphabet from second in alphabet select $"{first}{second}",
+            bigram =>
+            {
+                Assert.Equal(bigram, table.Substitute(table.Substitute(bigram)));
+                Assert.NotEqual(bigram, table.Substitute(bigram));
+            });
+    }
+
+    [Fact]
+    public void TheShippedTableAgreesWithTheMessageItCameFrom()
+    {
+        // The four entries published with the U-534 working, checked against the
+        // table read off the booklet. They were transcribed independently of each
+        // other, so agreeing is worth something.
+        Assert.Equal("KY", BigramTables.QuelleA.Substitute("FN"));
+        Assert.Equal("DM", BigramTables.QuelleA.Substitute("HC"));
+        Assert.Equal("UU", BigramTables.QuelleA.Substitute("GV"));
+        Assert.Equal("ZZ", BigramTables.QuelleA.Substitute("ET"));
+    }
+
+    [Fact]
+    public void AMessageSentWithTheRealTableComesBack()
+    {
+        var procedure = Procedure();
+        var sent = procedure.Send(U534(), BigramTables.QuelleA, "DUZ", "YMU", 'K', 'Z');
+
+        Assert.Equal("FNHCGVET", sent.Indicator);
+        Assert.Equal("ODFF", sent.MessageKey);
     }
 
     [Fact]

@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-550 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+555 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -94,15 +94,16 @@ was using. All four of the entries that message needed read off the scan exactly
 | `GV` | `UU` | `UU` |
 | `ET` | `ZZ` | `ZZ` |
 
-What is left is the transcription itself: 676 entries for one table. OCR manages
-perhaps three quarters of it and misreads `G` for `C`, `U` for `L`, and the dotted
-`İ` the typeface uses, so it cannot be trusted unaided. Read by eye it is
-self-checking twice over — every entry has a mirror that must agree, and four cells
-are known from real traffic.
+**Tafel A is transcribed and shipped.** All 676 entries, every mirror agreeing, no
+bigram enciphering to itself, and the four cells known from real traffic correct. One
+cell needed adjudicating — a speck under an O in `DS` reads as a Q's tail — and three
+other entries settled it. U-534's message now runs end to end through the real table.
 
-Two things remain. **No complete bigram table ships.** Only the four entries above are
-here as data. And the procedure is **library only**: neither front end offers it
-yet, where the army one is in both.
+Two things remain. **The other eight tables of the set** are still only scans; OCR
+manages perhaps three quarters and confuses `G` with `C`, `U` with `L`, and the dotted
+`İ` the typeface uses, so they have to be read by eye as Tafel A was. And the
+procedure is **library only**: neither front end offers it yet, where the army one is
+in both.
 
 ## Future
 
