@@ -1,0 +1,96 @@
+@* Which double-letter conversion table is in force.
+
+   An operator did not pick one. He took his Kennziffer column from the
+   Zuteilungsliste, according to the cipher net he was on, read down the
+   Tauschtafelplan to the day of the month, and used the table it named. Both ways
+   are offered here: by the calendar, as it was done, or straight to a table for
+   anyone who wants to look one up. *@
+
+<fieldset class="tafel" data-testid="tafel-picker">
+    <legend>
+        Doppelbuchstabentauschtafel
+        <span class="gloss">the double-letter conversion table</span>
+    </legend>
+
+    <div class="fields">
+        <label>Kennziffer <span class="gloss">the column for your cipher net</span>
+            <select data-testid="kennziffer" value="@Kennziffer" @onchange="ChoseColumn">
+                <option value="0">— none, choose a Tafel below</option>
+                @for (var column = 1; column <= Tauschtafelplan.BrunoQuelle.Columns; column++)
+                {
+                    <option value="@column">@column</option>
+                }
+            </select>
+        </label>
+
+        @if (Kennziffer > 0)
+        {
+            <label>Monatstag <span class="gloss">day of the month</span>
+                <input type="number" min="1" max="31" data-testid="monatstag"
+                       value="@Monatstag" @onchange="ChoseDay" />
+            </label>
+        }
+
+        <label>Tafel
+            <select data-testid="tafel" value="@Letter" @onchange="ChoseTafel"
+                    disabled="@(Kennziffer > 0)">
+                @foreach (var letter in BigramTables.Quelle.Keys)
+                {
+                    <option value="@letter">Quelle @letter</option>
+                }
+                @if (Kennziffer > 0 && !BigramTables.Quelle.ContainsKey(Letter))
+                {
+                    @* So the disabled control still shows what the plan called for. *@
+                    <option value="@Letter">Quelle @Letter</option>
+                }
+            </select>
+        </label>
+    </div>
+
+    @if (Kennziffer > 0)
+    {
+        <p class="worked" data-testid="plan-says">
+            Tauschtafelplan Bruno, Kennziffer @Kennziffer, Monatstag @Monatstag:
+            <span>Tafel @Letter</span>
+        </p>
+    }
+
+    @if (!BigramTables.Quelle.ContainsKey(Letter))
+    {
+        <p class="error" data-testid="tafel-missing">
+            Tafel @Letter is not published. The set ran to nine tables, A to J without
+            I, and the scan that survives holds eight of them.
+        </p>
+    }
+</fieldset>
+
+@code {
+    /// <summary>The Tauschtafelplan column, or zero to choose a table directly.</summary>
+    [Parameter] public int Kennziffer { get; set; }
+
+    [Parameter] public int Monatstag { get; set; } = 1;
+
+    /// <summary>
+    /// The table in force: read off the plan when a Kennziffer is set, and whatever
+    /// was chosen when one is not.
+    /// </summary>
+    [Parameter] public char Letter { get; set; } = 'A';
+
+    [Parameter] public EventCallback<int> OnKennziffer { get; set; }
+
+    [Parameter] public EventCallback<int> OnMonatstag { get; set; }
+
+    [Parameter] public EventCallback<char> OnTafel { get; set; }
+
+    private Task ChoseColumn(ChangeEventArgs args) => OnKennziffer.InvokeAsync(Number(args, 0));
+
+    private Task ChoseDay(ChangeEventArgs args) => OnMonatstag.InvokeAsync(Number(args, 1));
+
+    private Task ChoseTafel(ChangeEventArgs args) =>
+        args.Value?.ToString() is { Length: > 0 } letter
+            ? OnTafel.InvokeAsync(letter[0])
+            : Task.CompletedTask;
+
+    private static int Number(ChangeEventArgs args, int fallback) =>
+        int.TryParse(args.Value?.ToString(), out var value) ? value : fallback;
+}

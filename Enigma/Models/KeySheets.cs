@@ -45,6 +45,22 @@ public static class KeySheets
                 Positions = "VJNA",
                 Plugboard = "AT BL DF GJ HM NW OP QY RZ VX"
             },
+            ["u534"] = new()
+            {
+                // U-534's P1030690 of 1 May 1945, the message the naval indicator
+                // procedure is pinned by. The key sheet itself does not survive --
+                // they were printed on water-soluble paper -- so this is recovered
+                // rather than transcribed: the Grundstellung is the one the operator
+                // wrote at the top of the message sheet, and the Ringstellung was
+                // recovered by Dan Girard and holds for the other messages of that
+                // day. Published by Michael Hoerenberg at enigma.hoerenberg.com.
+                Name = "U-534, 1 May 1945",
+                Reflector = "B-Thin",
+                Rotors = "Gamma IV III VIII",
+                RingSettings = "VCCH",
+                Positions = "IBFK",
+                Plugboard = "CH EJ NV OU TY LG SZ PK DI QB"
+            },
             ["enigma-d"] = new()
             {
                 Name = "Enigma D, commercial",

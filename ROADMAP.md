@@ -31,7 +31,7 @@ it runs; it is done when something published says it runs correctly.
 | Entry wheel | Complete, straight-through and QWERTZ |
 | Custom alphabets | Complete — the alphabet is a first-class part of the machine |
 | Custom parts files | Complete — rotors, reflectors and alphabets from user files |
-| Indicator procedure | Army version in both front ends; the naval one in the library |
+| Indicator procedure | Army in both front ends; naval in the browser panel, not yet the CLI |
 | Message formatting | Complete — preparation and five-letter groups |
 | Key sheets | Complete, in the notation a real key sheet used |
 | Enigma D and K | Complete — the commercial pattern, shared wheels, notches apart |
@@ -39,9 +39,9 @@ it runs; it is done when something published says it runs correctly.
 | Norenigma and KD | Complete — an Enigma I rewired, and a K with a UKW-D |
 | Enigma Z30 | Complete — ten contacts, figures, a pawl-driven reflector, a rotor-body notch |
 | Front ends | A command line tool and a browser panel, over a shared session layer |
-| The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
+| The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard, both indicator procedures |
 
-571 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+582 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -179,8 +179,19 @@ those six were derived rather than seen.
 Note what the check does and does not do: it catches transcription error, not
 fabrication, so a table still only ships against a scan.
 
-One thing remains on the code side: the procedure is **library only**, offered by
-neither front end, where the army one is in both.
+**The panel now offers it.** Choosing *Kriegsmarine* gives the two Kenngruppen and
+their fillers when sending, eight letters when receiving, and a table picker that
+works the way an operator did: give it a Kennziffer column and a day of the month and
+the Tauschtafelplan names the table, rather than the table being chosen by hand. A day
+that falls on Tafel J says so instead of failing quietly.
+
+It is checked at the panel by the message it is pinned by in the library. U-534's
+`FNHC GVET`, on the day the calendar puts on Tafel A, has to leave the rotors reading
+`ODFF`; if the panel wires anything up wrongly, it does not.
+
+**The CLI still offers only the army procedure.** The naval one needs a table and a
+day as well as an indicator, which is more command line than the existing three
+options, and it has not been designed yet.
 
 ## Future
 

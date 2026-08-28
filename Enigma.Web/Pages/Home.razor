@@ -2,6 +2,7 @@
 @inject IKeySheetCatalogue KeySheets
 @inject IEnigmaMachineFactory Factory
 @inject IIndicatorProcedure Procedure
+@inject INavalIndicatorProcedure NavalProcedure
 
 <PageTitle>Enigma</PageTitle>
 
@@ -50,7 +51,21 @@
                     OnMode="Procedure_Mode"
                     OnMessageKey="Procedure_MessageKey"
                     OnIndicator="Procedure_Indicator"
-                    OnDoubled="Procedure_Doubled" />
+                    OnDoubled="Procedure_Doubled"
+                    KeyGroup="@_keyGroup"
+                    MessageGroup="@_messageGroup"
+                    FirstFiller="_firstFiller"
+                    LastFiller="_lastFiller"
+                    Kennziffer="_kennziffer"
+                    Monatstag="_monatstag"
+                    Letter="Tafel"
+                    OnKeyGroup="Procedure_KeyGroup"
+                    OnMessageGroup="Procedure_MessageGroup"
+                    OnFirstFiller="Procedure_FirstFiller"
+                    OnLastFiller="Procedure_LastFiller"
+                    OnKennziffer="Procedure_Kennziffer"
+                    OnMonatstag="Procedure_Monatstag"
+                    OnTafel="Procedure_Tafel" />
 
     <KeySheetEditor Sheet="_sheet"
                     ShowsReflectorSetting="_session.ReflectorPosition is not null"
@@ -93,6 +108,24 @@
     private string _indicator = string.Empty;
     private bool _doubled;
     private IndicatorResult? _keying;
+
+    // The naval procedure. Two trigrams out of the Kenngruppenbuch, the fillers that
+    // pad them, and which conversion table hides the result.
+    private string _keyGroup = string.Empty;
+    private string _messageGroup = string.Empty;
+    private char _firstFiller = 'X';
+    private char _lastFiller = 'X';
+    private int _kennziffer;
+    private int _monatstag = 1;
+    private char _tafel = 'A';
+
+    /// <summary>
+    /// Which table is in force. With a Kennziffer chosen the Tauschtafelplan decides
+    /// it and the operator does not, which is how it worked.
+    /// </summary>
+    private char Tafel => _kennziffer > 0
+        ? Tauschtafelplan.BrunoQuelle.Tafel(_kennziffer, _monatstag)
+        : _tafel;
 
     private string Ciphertext => _groups is { } size ? MessageText.InGroups(_cipher, size) : _cipher;
 
@@ -174,10 +207,73 @@
         {
             IndicatorMode.Sending => MessageKeying.Send(Procedure, daily, _messageKey, _doubled),
             IndicatorMode.Receiving => MessageKeying.Receive(Procedure, daily, _indicator),
+            IndicatorMode.NavalSending => Naval(daily, table => MessageKeying.SendNaval(
+                NavalProcedure, daily, table, _keyGroup, _messageGroup, _firstFiller, _lastFiller)),
+            IndicatorMode.NavalReceiving => Naval(daily, table => MessageKeying.ReceiveNaval(
+                NavalProcedure, daily, table, _indicator)),
             _ => null
         };
 
         return _keying?.Sheet ?? daily;
+    }
+
+    /// <summary>
+    /// The naval procedure cannot run without a table, and one of the nine the set
+    /// ran to has never been recovered. A day that calls for it is a real answer,
+    /// not a fault, so it is reported as one rather than throwing.
+    /// </summary>
+    private IndicatorResult Naval(KeySheet daily, Func<BigramTable, IndicatorResult> keying) =>
+        BigramTables.Quelle.TryGetValue(Tafel, out var table)
+            ? keying(table)
+            : new IndicatorResult(null, null, null, null, $"Tafel {Tafel} is not published.");
+
+    private void Procedure_KeyGroup(string keyGroup)
+    {
+        _keyGroup = keyGroup;
+
+        Rekey(_sheet);
+    }
+
+    private void Procedure_MessageGroup(string messageGroup)
+    {
+        _messageGroup = messageGroup;
+
+        Rekey(_sheet);
+    }
+
+    private void Procedure_FirstFiller(char filler)
+    {
+        _firstFiller = filler;
+
+        Rekey(_sheet);
+    }
+
+    private void Procedure_LastFiller(char filler)
+    {
+        _lastFiller = filler;
+
+        Rekey(_sheet);
+    }
+
+    private void Procedure_Kennziffer(int kennziffer)
+    {
+        _kennziffer = kennziffer;
+
+        Rekey(_sheet);
+    }
+
+    private void Procedure_Monatstag(int monatstag)
+    {
+        _monatstag = Math.Clamp(monatstag, 1, 31);
+
+        Rekey(_sheet);
+    }
+
+    private void Procedure_Tafel(char tafel)
+    {
+        _tafel = tafel;
+
+        Rekey(_sheet);
     }
 
     private void Procedure_Mode(IndicatorMode mode)

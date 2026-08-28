@@ -1,7 +1,11 @@
 @* The indicator procedure. The key sheet fixed everything for the day except
-   where the rotors began: the sender chose that himself, enciphered his choice at
-   the ground setting the sheet gave, and sent the result in clear alongside the
-   message. The receiver worked it back. *@
+   where the rotors began: the sender chose that himself and told the receiver, and
+   the two services told him in quite different ways.
+
+   The Army enciphered its message key at the ground setting and sent the result in
+   clear. The Navy sent nothing in clear: two trigrams out of the Kenngruppenbuch,
+   one naming the key and one giving the message key, both padded and then hidden
+   under a double-letter conversion table. *@
 
 <section class="indicator" data-testid="indicator">
     <h2>Spruchschlüssel <span class="gloss">the message key</span></h2>
@@ -10,8 +14,10 @@
         <label>Procedure
             <select data-testid="procedure" value="@Mode" @onchange="Choose">
                 <option value="@IndicatorMode.None">none — start at the Grundstellung (ground setting)</option>
-                <option value="@IndicatorMode.Sending">sending — choose a message key</option>
-                <option value="@IndicatorMode.Receiving">receiving — work back from an indicator</option>
+                <option value="@IndicatorMode.Sending">Heer / Luftwaffe, sending — choose a message key</option>
+                <option value="@IndicatorMode.Receiving">Heer / Luftwaffe, receiving — work back from an indicator</option>
+                <option value="@IndicatorMode.NavalSending">Kriegsmarine, sending — choose two Kenngruppen</option>
+                <option value="@IndicatorMode.NavalReceiving">Kriegsmarine, receiving — work back from eight letters</option>
             </select>
         </label>
 
@@ -28,6 +34,31 @@
                 <input data-testid="indicator-sent" value="@Indicator" @onchange="Sent" />
             </label>
         }
+
+        @if (Mode == IndicatorMode.NavalSending)
+        {
+            <label>Schlüsselkenngruppe <span class="gloss">names the key in force</span>
+                <input data-testid="key-group" maxlength="3" value="@KeyGroup" @onchange="KeyGrouped" />
+            </label>
+
+            <label>Verfahrenkenngruppe <span class="gloss">becomes the message key</span>
+                <input data-testid="message-group" maxlength="3" value="@MessageGroup" @onchange="MessageGrouped" />
+            </label>
+
+            <label>Füllbuchstaben <span class="gloss">padding, first and last</span>
+                <span class="fillers">
+                    <input data-testid="first-filler" maxlength="1" value="@FirstFiller" @onchange="FirstFilled" />
+                    <input data-testid="last-filler" maxlength="1" value="@LastFiller" @onchange="LastFilled" />
+                </span>
+            </label>
+        }
+
+        @if (Mode == IndicatorMode.NavalReceiving)
+        {
+            <label>Indicator <span class="gloss">the eight letters sent</span>
+                <input data-testid="indicator-sent" maxlength="9" value="@Indicator" @onchange="Sent" />
+            </label>
+        }
     </div>
 
     @if (Mode == IndicatorMode.Sending)
@@ -38,11 +69,31 @@
         </label>
     }
 
+    @if (Mode.IsNaval())
+    {
+        <BigramTablePicker Kennziffer="Kennziffer"
+                           Monatstag="Monatstag"
+                           Letter="Letter"
+                           OnKennziffer="OnKennziffer"
+                           OnMonatstag="OnMonatstag"
+                           OnTafel="OnTafel" />
+    }
+
     @if (Mode != IndicatorMode.None)
     {
         @if (Error is not null)
         {
             <p class="error" data-testid="indicator-error">@Error</p>
+        }
+        else if (Result is { IsNaval: true })
+        {
+            <p class="worked" data-testid="worked">
+                Ground setting <span>@Result.GroundSetting</span>,
+                Schlüsselkenngruppe <span>@Result.KeyGroup</span>,
+                Verfahrenkenngruppe <span>@Result.MessageGroup</span>,
+                sent as <span>@Result.Indicator</span>,
+                rotors set to <span>@Result.MessageKey</span>
+            </p>
         }
         else if (Result is not null)
         {
@@ -64,6 +115,20 @@
 
     [Parameter] public bool Doubled { get; set; }
 
+    [Parameter] public string KeyGroup { get; set; } = string.Empty;
+
+    [Parameter] public string MessageGroup { get; set; } = string.Empty;
+
+    [Parameter] public char FirstFiller { get; set; } = 'X';
+
+    [Parameter] public char LastFiller { get; set; } = 'X';
+
+    [Parameter] public int Kennziffer { get; set; }
+
+    [Parameter] public int Monatstag { get; set; } = 1;
+
+    [Parameter] public char Letter { get; set; } = 'A';
+
     /// <summary>What the procedure worked out, when it worked.</summary>
     [Parameter] public IndicatorResult? Result { get; set; }
 
@@ -77,6 +142,20 @@
 
     [Parameter] public EventCallback<bool> OnDoubled { get; set; }
 
+    [Parameter] public EventCallback<string> OnKeyGroup { get; set; }
+
+    [Parameter] public EventCallback<string> OnMessageGroup { get; set; }
+
+    [Parameter] public EventCallback<char> OnFirstFiller { get; set; }
+
+    [Parameter] public EventCallback<char> OnLastFiller { get; set; }
+
+    [Parameter] public EventCallback<int> OnKennziffer { get; set; }
+
+    [Parameter] public EventCallback<int> OnMonatstag { get; set; }
+
+    [Parameter] public EventCallback<char> OnTafel { get; set; }
+
     private Task Choose(ChangeEventArgs args) =>
         Enum.TryParse<IndicatorMode>(args.Value?.ToString(), out var mode)
             ? OnMode.InvokeAsync(mode)
@@ -87,6 +166,21 @@
     private Task Sent(ChangeEventArgs args) => OnIndicator.InvokeAsync(Text(args));
 
     private Task Doubling(ChangeEventArgs args) => OnDoubled.InvokeAsync(args.Value is true);
+
+    private Task KeyGrouped(ChangeEventArgs args) => OnKeyGroup.InvokeAsync(Text(args));
+
+    private Task MessageGrouped(ChangeEventArgs args) => OnMessageGroup.InvokeAsync(Text(args));
+
+    private Task FirstFilled(ChangeEventArgs args) => Filled(OnFirstFiller, args);
+
+    private Task LastFilled(ChangeEventArgs args) => Filled(OnLastFiller, args);
+
+    // An empty box would pad with nothing at all, which is not a thing the
+    // procedure can do, so the letter stands until it is replaced.
+    private static Task Filled(EventCallback<char> callback, ChangeEventArgs args) =>
+        Text(args) is { Length: > 0 } filler
+            ? callback.InvokeAsync(char.ToUpperInvariant(filler[0]))
+            : Task.CompletedTask;
 
     private static string Text(ChangeEventArgs args) => args.Value?.ToString() ?? string.Empty;
 }

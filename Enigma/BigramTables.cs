@@ -54,6 +54,27 @@ public static class BigramTables
     /// </summary>
     public static BigramTable QuelleH { get; } = BigramTable.Parse(QuelleHEntries);
 
+    /// <summary>
+    /// The tables of "Quelle" by the letter the Tauschtafelplan names them by, so a
+    /// day on the calendar leads straight to a table.
+    ///
+    /// Eight of the edition's nine are here. Tafel J is absent from the Crypto
+    /// Museum scan and from every other source found, so a plan that calls for it
+    /// finds nothing — which is the honest answer rather than a substitute.
+    /// </summary>
+    public static IReadOnlyDictionary<char, BigramTable> Quelle { get; } =
+        new Dictionary<char, BigramTable>
+        {
+            ['A'] = QuelleA,
+            ['B'] = QuelleB,
+            ['C'] = QuelleC,
+            ['D'] = QuelleD,
+            ['E'] = QuelleE,
+            ['F'] = QuelleF,
+            ['G'] = QuelleG,
+            ['H'] = QuelleH,
+        };
+
     // Written once through: each entry implies its reverse, and BigramTable builds
     // the other direction itself.
 

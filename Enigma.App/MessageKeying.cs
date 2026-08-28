@@ -56,6 +56,52 @@ public static class MessageKeying
         });
     }
 
+    /// <summary>
+    /// Sending the naval way. Nothing goes out in clear: the Verfahrenkenngruppe is
+    /// typed at the ground setting to give the message key, and both trigrams are
+    /// padded and hidden under the bigram table before transmission.
+    /// </summary>
+    public static IndicatorResult SendNaval(
+        INavalIndicatorProcedure procedure,
+        KeySheet daily,
+        BigramTable table,
+        string keyGroup,
+        string messageGroup,
+        char firstFiller,
+        char lastFiller)
+    {
+        ArgumentNullException.ThrowIfNull(procedure);
+        ArgumentNullException.ThrowIfNull(daily);
+        ArgumentNullException.ThrowIfNull(table);
+
+        return Attempt(() => Keyed(
+            daily,
+            procedure.Send(daily, table, keyGroup, messageGroup, firstFiller, lastFiller)));
+    }
+
+    /// <summary>
+    /// Receiving the naval way: the eight transmitted letters back into their
+    /// trigrams, and the message key that follows from them.
+    /// </summary>
+    public static IndicatorResult ReceiveNaval(
+        INavalIndicatorProcedure procedure, KeySheet daily, BigramTable table, string indicator)
+    {
+        ArgumentNullException.ThrowIfNull(procedure);
+        ArgumentNullException.ThrowIfNull(daily);
+        ArgumentNullException.ThrowIfNull(table);
+
+        return Attempt(() => Keyed(daily, procedure.Receive(daily, table, indicator)));
+    }
+
+    private static IndicatorResult Keyed(KeySheet daily, NavalIndicator naval) =>
+        new(daily.WithPositions(naval.MessageKey),
+            daily.Positions,
+            naval.MessageKey,
+            naval.Indicator,
+            null,
+            naval.KeyGroup,
+            naval.MessageGroup);
+
     private static IndicatorResult Attempt(Func<IndicatorResult> keying)
     {
         try
@@ -79,12 +125,25 @@ public static class MessageKeying
 /// <param name="MessageKey">Where the rotors start for the message itself.</param>
 /// <param name="Indicator">What travels with the message, in clear.</param>
 /// <param name="Error">Why it failed, in words fit to show an operator.</param>
+/// <param name="KeyGroup">
+/// Naval only: the Schlüsselkenngruppe, saying which key was in force. It names the
+/// key sheet rather than the rotor positions, so nothing is enciphered with it.
+/// </param>
+/// <param name="MessageGroup">
+/// Naval only: the Verfahrenkenngruppe, which becomes the message key when typed at
+/// the ground setting.
+/// </param>
 public sealed record IndicatorResult(
     KeySheet? Sheet,
     string? GroundSetting,
     string? MessageKey,
     string? Indicator,
-    string? Error)
+    string? Error,
+    string? KeyGroup = null,
+    string? MessageGroup = null)
 {
     public bool Succeeded => Sheet is not null;
+
+    /// <summary>Whether this came from the naval procedure rather than the army one.</summary>
+    public bool IsNaval => KeyGroup is not null;
 }

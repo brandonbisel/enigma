@@ -348,6 +348,40 @@ h1:focus { outline: none; }
 }
 .indicator .error { margin: 0.8rem 0 0; }
 
+/* Which conversion table is in force. Nested inside the indicator panel, so it is
+   set back rather than boxed again. */
+.tafel {
+    margin: 0.9rem 0 0;
+    padding: 0.7rem 0.9rem 0.2rem;
+    border: 1px solid var(--edge);
+    border-radius: 0.4rem;
+}
+.tafel legend {
+    padding: 0 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.tafel .fields { margin-bottom: 0.4rem; }
+.tafel select, .tafel input {
+    padding: 0.35rem 0.4rem;
+    background: var(--ground);
+    color: var(--ink);
+    border: 1px solid var(--edge);
+    border-radius: 0.25rem;
+    font: inherit;
+    font-size: 0.85rem;
+}
+.tafel select:disabled { opacity: 0.6; }
+.tafel input[type=number] { width: 4.5rem; }
+.tafel .worked, .tafel .error { margin: 0 0 0.7rem; }
+
+/* Two single-letter boxes side by side rather than one wide one. */
+.fillers { display: flex; gap: 0.35rem; }
+.indicator .fillers input:not([type]) { width: 2.5rem; text-align: center; }
+
 /* The panel is labelled as the machine was, in German; the English follows so the
    words can be learnt rather than looked up. */
 .gloss {
