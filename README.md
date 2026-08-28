@@ -307,11 +307,16 @@ The table is reciprocal: if `AK` is written as `BD` then `BD` is written as `AK`
 one table serves both stations without being reversed. It is an involution on pairs
 of letters, exactly as a reflector is on single ones.
 
-**Eight real tables ship**: `BigramTables.QuelleA` through `.QuelleH`, Tafels A to H
-of the set "Quelle", transcribed from the Crypto Museum's scan of booklet
-Prüf-Nr. 2499. It is the set U-534 was using on 1 May 1945, and it is every table the
-scan contains — the booklet's cover says the edition held nine, "A bis J ohne I",
-but Tafel J and the two Tauschtafelplan sheets are not reproduced in it.
+**Two whole sets ship, seventeen tables in all.**
+
+`BigramTables.Quelle` holds Tafels A to H of the set "Quelle", booklet Prüf-Nr. 2499 —
+the set U-534 was using on 1 May 1945, and every table its scan contains. The cover
+says the edition held nine, "A bis J ohne I", but Tafel J is not reproduced.
+
+`BigramTables.Meer` holds all nine of the set "Meer", booklet Prüf-Nr. 3733, A to J
+without I. It is the complete edition: nine tables and both sides of its
+Tauschtafelplan, so every day of its calendar leads to a table that is actually
+here.
 
 A transcription of a table is worth more than a transcription of a wiring, because it
 can be checked. All 676 entries are present, every one pairs with its mirror, and no

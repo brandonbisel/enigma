@@ -150,6 +150,7 @@ public class NavalIndicatorTests
     [InlineData('F')]
     [InlineData('G')]
     [InlineData('H')]
+    [InlineData('J')]
     public void EveryShippedTableOfMeerIsWholeAndReciprocal(char tafel)
     {
         // The same check the "Quelle" tables get. A second set is a second chance
@@ -167,6 +168,43 @@ public class NavalIndicatorTests
                 Assert.Equal(bigram, table.Substitute(table.Substitute(bigram)));
                 Assert.NotEqual(bigram, table.Substitute(bigram));
             });
+    }
+
+    [Fact]
+    public void TheMeerSetIsComplete()
+    {
+        // Nine tables, A to J without I, exactly as the booklet's cover says the
+        // edition holds. "Quelle" cannot pass this: its scan stops at H.
+        Assert.Equal(9, BigramTables.Meer.Count);
+        Assert.Equal("ABCDEFGHJ", string.Concat(BigramTables.Meer.Keys.Order()));
+        Assert.DoesNotContain('I', BigramTables.Meer.Keys);
+
+        Assert.Equal(8, BigramTables.Quelle.Count);
+        Assert.DoesNotContain('J', BigramTables.Quelle.Keys);
+    }
+
+    [Fact]
+    public void EveryDayOfTheMeerCalendarLeadsToATableThatIsActuallyHere()
+    {
+        // The property that makes a set usable rather than merely present: pick any
+        // cipher net and any day of the month, and the table the plan names can be
+        // supplied. This is the first set in this library where that holds.
+        Assert.All(
+            from kennziffer in Enumerable.Range(1, Tauschtafelplan.BrunoMeer.Columns)
+            from day in Enumerable.Range(1, 31)
+            select Tauschtafelplan.BrunoMeer.Tafel(kennziffer, day),
+            letter => Assert.True(
+                BigramTables.Meer.ContainsKey(letter),
+                $"The calendar names Tafel {letter}, which is not shipped."));
+    }
+
+    [Fact]
+    public void TheNineMeerTablesAreNineDifferentTables()
+    {
+        // If two agreed everywhere, one of them was transcribed twice.
+        Assert.Equal(
+            9,
+            BigramTables.Meer.Values.Select(table => table.Substitute("AA")).Distinct().Count());
     }
 
     [Fact]

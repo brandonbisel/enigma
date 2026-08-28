@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard, both indicator procedures |
 
-647 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+651 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -216,20 +216,31 @@ Its scan is markedly better than Quelle's: four passes a table rather than six, 
 almost every cell agrees with its own mirror on a first reading, where Quelle's poorer
 pages needed the involution to arbitrate.
 
-**Tafels A to H are transcribed and shipped.** Three cells have needed adjudicating,
+**All nine tables are transcribed and shipped — the set is complete.** Three cells have needed adjudicating,
 each settled by a pair the table already agreed on: `A/SF` read `ZK` where `ZK` pairs
 with `CR` and column Z reads `ZX=SF`; `B/HR` read `BB` where `BB` pairs with `KM` and
 `BE=HR`; `B/YZ` read `ME` where `ME` pairs with `LP` and `HE=YZ`. `B`/`E` again, and a
-first `M`/`H`. **Tafels C to G each came through clean on the first
-pass.** Tafel H needed one: `AS` read `VJ`, where `VJ` pairs with `QX` both ways and
-column V reads `VT=AS` — an ink flaw at the foot of the T's stem mimics a J's hook,
-and the crossbar settles it. One table to go: the Tafel J that no set here has ever
-had.
+first `M`/`H`. Five of the nine came through clean on the first pass, needing no adjudication at
+all; five cells across the other four were settled the usual way, by a pair the table
+already agreed on. Tafel H's was a new confusion — `AS` read `VJ`, where an ink flaw
+at the foot of a T's stem mimics a J's hook, and `VT=AS` in column V settles it.
+
+**This is the first complete set in the library, and the first Tafel J of any set.**
+It changes what the naval data is good for. "Quelle" is eight tables and half a
+calendar: pick a day at random and there is a real chance the plan names a table that
+does not survive. "Meer" is nine tables and both sides of its plan, so **every one of
+the 372 cells of its calendar leads to a table that is actually here** — which is a
+test, not a claim, and dropping any single table from the set fails it.
 
 **The Meer Tauschtafelplan ships too, and it settles a question.** Both sides are
 reproduced, and the reverse carries Kennziffer *sieben* to *zwölf*: a full plan has
 **twelve columns, not six**. That is what the Quelle photograph's "Fortsetzung
 Rückseite!" was pointing at, and why `BrunoQuelle` holds only half a plan.
+
+What remains is to let the front ends choose between the two sets. That was
+deliberately deferred while Meer was incomplete — offering half a set is worse than
+offering none — and it is now unblocked: `BigramTableChoice` hardcodes Quelle, and
+both panels follow it.
 
 **A calendar cannot be checked the way a table can, and that is worth stating
 plainly.** A bigram table is an involution, so a mistyped cell breaks a pair and is
