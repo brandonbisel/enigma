@@ -239,138 +239,20 @@ async Task<int> RunAsync(
         return 1;
     }
 
-    // The naval procedure. A table is what marks it: the Navy's indicator cannot be
-    // worked without one and the Army's never wants one, so nothing else has to say
-    // which procedure is meant.
-    var wantsNaval = tafel is not null || kennziffer is not null;
+    // The naval procedure. Read and checked in one place so it can be tested
+    // without a host, a console or a machine.
+    var naval = NavalArguments.Read(
+        tafel, kennziffer, monatstag, kenngruppen, fillers, messageKey, indicator, doubled);
 
-    if (tafel is not null && kennziffer is not null)
+    if (naval.Error is { } refusal)
     {
-        await Console.Error.WriteLineAsync(
-            "Give either --tafel to name a table or --kennziffer to look one up, not both.");
-
+        await Console.Error.WriteLineAsync(refusal);
         return 1;
     }
 
-    if (kennziffer is { } column)
+    if (naval.Note is { } note)
     {
-        if (column < 1 || column > Tauschtafelplan.BrunoQuelle.Columns)
-        {
-            await Console.Error.WriteLineAsync(
-                $"--kennziffer is a column of the Tauschtafelplan, 1 to {Tauschtafelplan.BrunoQuelle.Columns}.");
-
-            return 1;
-        }
-
-        if (monatstag is null)
-        {
-            await Console.Error.WriteLineAsync(
-                "--kennziffer names a column; --monatstag is needed to say which day to read it at.");
-
-            return 1;
-        }
-
-        if (monatstag is < 1 or > 31)
-        {
-            await Console.Error.WriteLineAsync("--monatstag is a day of the month, 1 to 31.");
-            return 1;
-        }
-    }
-
-    if (kenngruppen is not null && !wantsNaval)
-    {
-        await Console.Error.WriteLineAsync(
-            "--kenngruppen is the naval procedure, which needs a table: give --tafel or --kennziffer.");
-
-        return 1;
-    }
-
-    if (kenngruppen is not null && (messageKey is not null || indicator is not null))
-    {
-        await Console.Error.WriteLineAsync(
-            "Give --kenngruppen to send the naval way or --indicator to read one, not both.");
-
-        return 1;
-    }
-
-    if (wantsNaval && kenngruppen is null && indicator is null)
-    {
-        await Console.Error.WriteLineAsync(
-            "A table was given but nothing to work with it: add --kenngruppen to send or --indicator to receive.");
-
-        return 1;
-    }
-
-    if (wantsNaval && doubled)
-    {
-        await Console.Error.WriteLineAsync(
-            "--doubled is the Army procedure before 1938; the naval one never sent a key twice.");
-
-        return 1;
-    }
-
-    if (fillers is not null && !wantsNaval)
-    {
-        await Console.Error.WriteLineAsync("--fillers only means anything with the naval procedure.");
-        return 1;
-    }
-
-    BigramTable? table = null;
-    string? keyGroup = null;
-    string? messageGroup = null;
-    var padding = "XX";
-
-    if (wantsNaval)
-    {
-        var letter = tafel is { Length: > 0 } named ? named[0] : 'A';
-
-        if (tafel is not null && Letters(tafel).Length != 1)
-        {
-            await Console.Error.WriteLineAsync($"--tafel is one letter, but '{tafel}' is not.");
-            return 1;
-        }
-
-        var chosen = BigramTableChoice.From(kennziffer ?? 0, monatstag ?? 1, letter);
-
-        if (!chosen.Found)
-        {
-            await Console.Error.WriteLineAsync(chosen.Missing);
-            return 1;
-        }
-
-        table = chosen.Table;
-
-        if (kennziffer is not null)
-        {
-            await Console.Error.WriteLineAsync(
-                $"Tauschtafelplan Bruno, Kennziffer {kennziffer}, Monatstag {monatstag}: Tafel {chosen.Letter}");
-        }
-
-        if (fillers is not null)
-        {
-            if (Letters(fillers) is not { Length: 2 } pair)
-            {
-                await Console.Error.WriteLineAsync(
-                    $"--fillers is two padding letters, but '{fillers}' is not.");
-
-                return 1;
-            }
-
-            padding = pair;
-        }
-
-        if (kenngruppen is not null)
-        {
-            if (Letters(kenngruppen) is not { Length: 6 } trigrams)
-            {
-                await Console.Error.WriteLineAsync(
-                    "--kenngruppen is two trigrams, six letters: the Schlüsselkenngruppe then the Verfahrenkenngruppe.");
-
-                return 1;
-            }
-
-            (keyGroup, messageGroup) = (trigrams[..3], trigrams[3..]);
-        }
+        await Console.Error.WriteLineAsync(note);
     }
 
     var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
@@ -411,7 +293,7 @@ async Task<int> RunAsync(
     }
     builder.Services.AddSingleton(new ConsoleOptions(
         input, output, messageKey, indicator, doubled, prepare, groups,
-        table, keyGroup, messageGroup, padding[0], padding[1]));
+        naval.Table, naval.KeyGroup, naval.MessageGroup, naval.FirstFiller, naval.LastFiller));
     builder.Services.AddHostedService<EnigmaConsole>();
     if (preset is not null && keySheets.TryGet(preset, out var packaged))
     {
@@ -445,10 +327,6 @@ IConfiguration KeySheetConfiguration(HostApplicationBuilder builder, FileInfo? k
 
     return section.Exists() ? section : configuration;
 }
-
-// Operators wrote indicators in groups; the machine only cares about the letters.
-static string Letters(string value) =>
-    new(value.Where(char.IsLetter).Select(char.ToUpperInvariant).ToArray());
 
 int ListPresets()
 {

@@ -8,7 +8,7 @@ what is a future goal, and what is deliberately not scheduled.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 589 tests
+dotnet test               # whole suite, currently 635 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Web    # the panel, on http://localhost:5298
@@ -34,6 +34,7 @@ Enigma.Web/             Blazor WebAssembly front end
 Enigma.Tests/           xUnit tests
   Reference/            An independent implementation used as a test oracle
 Enigma.Web.Tests/       Component tests, on bUnit
+Enigma.Cmd.Tests/       Console app tests: argument handling and the whole path
 ```
 
 Folders do not always map to namespaces: `Abstractions/` is `namespace Enigma`,
@@ -231,8 +232,10 @@ rather than attributes; assert those in bUnit instead.
 - The host's content root is pinned to `AppContext.BaseDirectory`. Without that,
   `appsettings.json` is only found when the working directory happens to be the
   project directory.
-- `dotnet test` builds the library and test project but **not** `Enigma.Cmd`, so
-  `dotnet run --no-build` after a test run can execute against a stale library.
+- `Enigma.Cmd.Tests` runs its collections in order, not in parallel. The console app
+  reports failure through `Environment.ExitCode` and writes its indicator to
+  `Console.Error`, both process-wide; tests that read them cannot share a process
+  with tests that write them.
 - Diagnostics go to standard error and enciphered text to standard output. Keep it
   that way; anything written to standard output corrupts piped ciphertext.
 - `--init-key-sheet` reads the defaults back out of `appsettings.json` rather than

@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard, both indicator procedures |
 
-589 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+635 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -198,11 +198,11 @@ The rule for *which* table — the calendar outranks a named letter, and a lette
 was never recovered is an answer rather than an exception — is `BigramTableChoice` in
 `Enigma.App`, so both front ends decide it once rather than twice.
 
-One caveat on the evidence. `BigramTableChoice` is covered and the panel is checked
-against U-534's message end to end, but **the CLI's own argument handling has no
-automated tests**: this repository has never had a test project for the console app.
-The naval options were exercised by hand, every path including each refusal, and that
-is weaker than the rest of the suite.
+The console app has a test project of its own now, which it had never had. It covers
+the two halves that matter: `NavalArguments`, where every refusal is a combination
+that would otherwise be half-obeyed, and `EnigmaConsole` driven over real files, where
+U-534's indicator has to key the machine at the same place a machine started at `ODFF`
+outright would be. That closes the gap the previous commit had to record as open.
 
 ## Future
 
