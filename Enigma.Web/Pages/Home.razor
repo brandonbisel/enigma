@@ -58,7 +58,7 @@
                     LastFiller="_lastFiller"
                     Kennziffer="_kennziffer"
                     Monatstag="_monatstag"
-                    Letter="Tafel"
+                    Choice="Chosen"
                     OnKeyGroup="Procedure_KeyGroup"
                     OnMessageGroup="Procedure_MessageGroup"
                     OnFirstFiller="Procedure_FirstFiller"
@@ -121,11 +121,10 @@
 
     /// <summary>
     /// Which table is in force. With a Kennziffer chosen the Tauschtafelplan decides
-    /// it and the operator does not, which is how it worked.
+    /// it and the operator does not, which is how it worked. The rule is shared with
+    /// the command line rather than written out twice.
     /// </summary>
-    private char Tafel => _kennziffer > 0
-        ? Tauschtafelplan.BrunoQuelle.Tafel(_kennziffer, _monatstag)
-        : _tafel;
+    private TableChoice Chosen => BigramTableChoice.From(_kennziffer, _monatstag, _tafel);
 
     private string Ciphertext => _groups is { } size ? MessageText.InGroups(_cipher, size) : _cipher;
 
@@ -223,9 +222,9 @@
     /// not a fault, so it is reported as one rather than throwing.
     /// </summary>
     private IndicatorResult Naval(KeySheet daily, Func<BigramTable, IndicatorResult> keying) =>
-        BigramTables.Quelle.TryGetValue(Tafel, out var table)
+        Chosen is { Table: { } table }
             ? keying(table)
-            : new IndicatorResult(null, null, null, null, $"Tafel {Tafel} is not published.");
+            : new IndicatorResult(null, null, null, null, Chosen.Missing);
 
     private void Procedure_KeyGroup(string keyGroup)
     {

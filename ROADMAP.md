@@ -31,7 +31,7 @@ it runs; it is done when something published says it runs correctly.
 | Entry wheel | Complete, straight-through and QWERTZ |
 | Custom alphabets | Complete — the alphabet is a first-class part of the machine |
 | Custom parts files | Complete — rotors, reflectors and alphabets from user files |
-| Indicator procedure | Army in both front ends; naval in the browser panel, not yet the CLI |
+| Indicator procedure | Army and naval, both in both front ends |
 | Message formatting | Complete — preparation and five-letter groups |
 | Key sheets | Complete, in the notation a real key sheet used |
 | Enigma D and K | Complete — the commercial pattern, shared wheels, notches apart |
@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard, both indicator procedures |
 
-582 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+589 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -189,9 +189,20 @@ It is checked at the panel by the message it is pinned by in the library. U-534'
 `FNHC GVET`, on the day the calendar puts on Tafel A, has to leave the rotors reading
 `ODFF`; if the panel wires anything up wrongly, it does not.
 
-**The CLI still offers only the army procedure.** The naval one needs a table and a
-day as well as an indicator, which is more command line than the existing three
-options, and it has not been designed yet.
+**The command line offers it as well.** `--tafel`, or `--kennziffer` with
+`--monatstag`, picks the table; `--kenngruppen` sends and `--indicator` receives. The
+presence of a table is what selects the procedure, so nothing has to be told which
+service is meant.
+
+The rule for *which* table — the calendar outranks a named letter, and a letter that
+was never recovered is an answer rather than an exception — is `BigramTableChoice` in
+`Enigma.App`, so both front ends decide it once rather than twice.
+
+One caveat on the evidence. `BigramTableChoice` is covered and the panel is checked
+against U-534's message end to end, but **the CLI's own argument handling has no
+automated tests**: this repository has never had a test project for the console app.
+The naval options were exercised by hand, every path including each refusal, and that
+is weaker than the rest of the suite.
 
 ## Future
 

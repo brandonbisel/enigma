@@ -339,6 +339,31 @@ on 1 May 1945, and the column pencilled "Mai 45" reads `A` on the first.
 var tafel = Tauschtafelplan.BrunoQuelle.Tafel(kennziffer: 6, dayOfMonth: 1);  // 'A'
 ```
 
+**The command line offers the procedure too.** A table is what makes it naval — the
+Navy's indicator cannot be worked without one, and the Army's never wants one — so
+`--tafel` or `--kennziffer` is the whole switch. Reading a message:
+
+```bash
+$ echo "..." | dotnet run --project Enigma.Cmd -- \
+      --preset u534 --kennziffer 6 --monatstag 1 --indicator "FNHC GVET"
+Tauschtafelplan Bruno, Kennziffer 6, Monatstag 1: Tafel A
+Ground setting IBFK, Schlüsselkenngruppe DUZ, Verfahrenkenngruppe YMU, indicator FNHCGVET, rotors ODFF
+```
+
+`--kennziffer` with `--monatstag` reads the table off the Tauschtafelplan, as an
+operator did; `--tafel A` names one outright for anyone working without a calendar.
+Sending takes the two trigrams and the two padding letters, and produces the eight
+letters that went out:
+
+```bash
+$ echo "..." | dotnet run --project Enigma.Cmd -- \
+      --preset u534 --tafel A --kenngruppen "DUZ YMU" --fillers KZ
+Ground setting IBFK, Schlüsselkenngruppe DUZ, Verfahrenkenngruppe YMU, indicator FNHCGVET, rotors ODFF
+```
+
+A day that falls on Tafel J stops and says so rather than substituting a table that
+would decipher to plausible nonsense.
+
 Tafel J is in neither source and is not shipped. Supply a table and it will be used:
 
 ```csharp

@@ -73,7 +73,7 @@
     {
         <BigramTablePicker Kennziffer="Kennziffer"
                            Monatstag="Monatstag"
-                           Letter="Letter"
+                           Choice="Choice"
                            OnKennziffer="OnKennziffer"
                            OnMonatstag="OnMonatstag"
                            OnTafel="OnTafel" />
@@ -127,7 +127,7 @@
 
     [Parameter] public int Monatstag { get; set; } = 1;
 
-    [Parameter] public char Letter { get; set; } = 'A';
+    [Parameter] public TableChoice Choice { get; set; } = BigramTableChoice.From(0, 1, 'A');
 
     /// <summary>What the procedure worked out, when it worked.</summary>
     [Parameter] public IndicatorResult? Result { get; set; }

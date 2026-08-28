@@ -32,16 +32,16 @@
         }
 
         <label>Tafel
-            <select data-testid="tafel" value="@Letter" @onchange="ChoseTafel"
+            <select data-testid="tafel" value="@Choice.Letter" @onchange="ChoseTafel"
                     disabled="@(Kennziffer > 0)">
                 @foreach (var letter in BigramTables.Quelle.Keys)
                 {
                     <option value="@letter">Quelle @letter</option>
                 }
-                @if (Kennziffer > 0 && !BigramTables.Quelle.ContainsKey(Letter))
+                @if (Kennziffer > 0 && !Choice.Found)
                 {
                     @* So the disabled control still shows what the plan called for. *@
-                    <option value="@Letter">Quelle @Letter</option>
+                    <option value="@Choice.Letter">Quelle @Choice.Letter</option>
                 }
             </select>
         </label>
@@ -51,16 +51,13 @@
     {
         <p class="worked" data-testid="plan-says">
             Tauschtafelplan Bruno, Kennziffer @Kennziffer, Monatstag @Monatstag:
-            <span>Tafel @Letter</span>
+            <span>Tafel @Choice.Letter</span>
         </p>
     }
 
-    @if (!BigramTables.Quelle.ContainsKey(Letter))
+    @if (!Choice.Found)
     {
-        <p class="error" data-testid="tafel-missing">
-            Tafel @Letter is not published. The set ran to nine tables, A to J without
-            I, and the scan that survives holds eight of them.
-        </p>
+        <p class="error" data-testid="tafel-missing">@Choice.Missing</p>
     }
 </fieldset>
 
@@ -74,7 +71,7 @@
     /// The table in force: read off the plan when a Kennziffer is set, and whatever
     /// was chosen when one is not.
     /// </summary>
-    [Parameter] public char Letter { get; set; } = 'A';
+    [Parameter] public TableChoice Choice { get; set; } = BigramTableChoice.From(0, 1, 'A');
 
     [Parameter] public EventCallback<int> OnKennziffer { get; set; }
 

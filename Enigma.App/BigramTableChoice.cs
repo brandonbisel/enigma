@@ -1,0 +1,44 @@
+namespace Enigma.App;
+
+/// <summary>
+/// Which Doppelbuchstabentauschtafel is in force, and whether it is one that
+/// survives.
+///
+/// An operator did not choose. He took the Kennziffer column his cipher net was
+/// allotted, read down the Tauschtafelplan to the day of the month, and used the
+/// table it named. Naming a table outright is the concession to anyone working
+/// without a calendar, and the calendar wins whenever it is given.
+///
+/// The set ran to nine tables and eight of them survive, so a day can legitimately
+/// call for one that cannot be supplied. That is an answer rather than a fault, and
+/// both front ends have to be able to say it, which is why it is decided here and
+/// not in either of them.
+/// </summary>
+public static class BigramTableChoice
+{
+    /// <param name="kennziffer">The Tauschtafelplan column, or zero to take the letter as given.</param>
+    /// <param name="monatstag">The day of the month, when a Kennziffer is given.</param>
+    /// <param name="tafel">The table to use when no Kennziffer is.</param>
+    public static TableChoice From(int kennziffer, int monatstag, char tafel)
+    {
+        var letter = char.ToUpperInvariant(
+            kennziffer > 0 ? Tauschtafelplan.BrunoQuelle.Tafel(kennziffer, monatstag) : tafel);
+
+        return new TableChoice(
+            letter,
+            BigramTables.Quelle.TryGetValue(letter, out var table) ? table : null);
+    }
+}
+
+/// <summary>The table a day or a choice comes to, and whether it is published.</summary>
+/// <param name="Letter">The table named, whether or not it survives.</param>
+/// <param name="Table">The table itself, or null if that letter is not published.</param>
+public sealed record TableChoice(char Letter, BigramTable? Table)
+{
+    public bool Found => Table is not null;
+
+    /// <summary>Why there is no table, in words fit to show an operator.</summary>
+    public string Missing =>
+        $"Tafel {Letter} is not published. The set ran to nine tables, A to J without I, " +
+        "and the scan that survives holds eight of them.";
+}

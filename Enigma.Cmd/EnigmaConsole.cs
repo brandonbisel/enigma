@@ -10,6 +10,7 @@ public class EnigmaConsole : BackgroundService
 {
     private readonly IEnigmaMachineFactory _factory;
     private readonly IIndicatorProcedure _procedure;
+    private readonly INavalIndicatorProcedure _naval;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly ILogger<EnigmaConsole> _logger;
     private readonly ConsoleOptions _options;
@@ -18,6 +19,7 @@ public class EnigmaConsole : BackgroundService
     public EnigmaConsole(
         IEnigmaMachineFactory factory,
         IIndicatorProcedure procedure,
+        INavalIndicatorProcedure naval,
         IHostApplicationLifetime lifetime,
         ILogger<EnigmaConsole> logger,
         ConsoleOptions options,
@@ -25,6 +27,7 @@ public class EnigmaConsole : BackgroundService
     {
         _factory = factory;
         _procedure = procedure;
+        _naval = naval;
         _lifetime = lifetime;
         _logger = logger;
         _options = options;
@@ -120,6 +123,31 @@ public class EnigmaConsole : BackgroundService
     /// </summary>
     private KeySheet KeyTheMachine()
     {
+        // A table means the naval procedure, which hides its indicator rather than
+        // sending it in clear, so there is more to report than a ground setting.
+        if (_options.Table is { } table)
+        {
+            var worked = _options.KeyGroup is { } keyGroup
+                ? MessageKeying.SendNaval(
+                    _naval,
+                    _keySheet,
+                    table,
+                    keyGroup,
+                    _options.MessageGroup ?? string.Empty,
+                    _options.FirstFiller,
+                    _options.LastFiller)
+                : MessageKeying.ReceiveNaval(_naval, _keySheet, table, _options.Indicator ?? string.Empty);
+
+            Console.Error.WriteLine(worked.Succeeded
+                ? $"Ground setting {worked.GroundSetting}, " +
+                  $"Schlüsselkenngruppe {worked.KeyGroup}, " +
+                  $"Verfahrenkenngruppe {worked.MessageGroup}, " +
+                  $"indicator {worked.Indicator}, rotors {worked.MessageKey}"
+                : worked.Error);
+
+            return Keyed(worked);
+        }
+
         if (_options.MessageKey is { } messageKey)
         {
             var keyed = MessageKeying.Send(_procedure, _keySheet, messageKey, _options.Doubled);
