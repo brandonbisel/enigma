@@ -78,6 +78,13 @@ to change them: the same text, keyed a different way. Clearing the message is wh
 puts the wheels back; there is no separate reset, because a machine with nothing
 typed on it is a machine at its start.
 
+Under the message is the indicator procedure, if one is in use. Sending, you choose
+a message key and the page works out the indicator to transmit with it; the wheels
+move to your key rather than to the sheet's Grundstellung, which becomes the ground
+setting. Receiving, you enter the indicator and the message key is worked back.
+Either way an indicator that will not work is reported and the wheels are left
+where they were, because mistyping one is an ordinary thing to do.
+
 Below that is its key sheet, set by hand. The wheels, reflector, entry
 wheel and alphabet are chosen from the parts catalogue, so a wheel defined in a
 parts file appears in the list without the page knowing it exists. Adding a

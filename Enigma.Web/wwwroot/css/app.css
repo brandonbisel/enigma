@@ -311,3 +311,39 @@ h1:focus { outline: none; }
 /* The turning point, and the way back out. */
 .step-reflector { border-left-color: var(--lamp-lit); }
 .step-back { border-left-style: dashed; }
+
+.indicator { margin-top: 1.2rem; padding: 1rem; background: var(--panel); border: 1px solid var(--edge); border-radius: 0.6rem; }
+.indicator h2 {
+    margin: 0 0 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+.indicator select, .indicator input[type=text], .indicator input:not([type]) {
+    padding: 0.35rem 0.4rem;
+    background: var(--ground);
+    color: var(--ink);
+    border: 1px solid var(--edge);
+    border-radius: 0.25rem;
+    font: inherit;
+    font-size: 0.85rem;
+}
+.indicator input:not([type]) { width: 7rem; letter-spacing: 0.12em; }
+
+.doubled { display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--muted); }
+
+.worked {
+    margin: 0.8rem 0 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+}
+.worked span {
+    font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.12em;
+}
+.indicator .error { margin: 0.8rem 0 0; }

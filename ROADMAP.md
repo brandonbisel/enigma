@@ -31,26 +31,19 @@ it runs; it is done when something published says it runs correctly.
 | Entry wheel | Complete, straight-through and QWERTZ |
 | Custom alphabets | Complete — the alphabet is a first-class part of the machine |
 | Custom parts files | Complete — rotors, reflectors and alphabets from user files |
-| Indicator procedure | Army version complete, doubled and single |
+| Indicator procedure | Army version complete, doubled and single, in both front ends |
 | Message formatting | Complete — preparation and five-letter groups |
 | Key sheets | Complete, in the notation a real key sheet used |
 | Front ends | A command line tool and a browser panel, over a shared session layer |
+| The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-418 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+440 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
-## Now
-
-**A web front end.** A Blazor WebAssembly operator's panel, with the verified
-library running unchanged in the browser. There is no server, so nothing typed into
-it is transmitted anywhere.
-
-The panel works, and so does setting it up, sending on it and watching it work:
-windows, lamps and keyboard, the signal path step by step, the message written out
-with its preparation and its five-letter groups, the key sheet edited by hand, and
-the plugboard patched by clicking. What remains is the indicator procedure, which
-the CLI has and the page does not.
+The web front end is complete. It is a Blazor WebAssembly page with the verified
+library running unchanged in the browser: no server, so nothing typed into it is
+transmitted anywhere.
 
 ## Next
 

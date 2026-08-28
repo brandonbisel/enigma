@@ -378,6 +378,186 @@ public class HomeTests : BunitContext
     private static void Follow(IRenderedComponent<Home> page) =>
         page.Find("[data-testid=watching]").Change(true);
 
+    // -- the indicator procedure ------------------------------------------------
+
+    [Fact]
+    public void WithNoProcedureTheRotorsStartWhereTheKeySheetSays()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=sheet]").Change("barbarossa");
+
+        Assert.Equal("BLA", Windows(page));
+        Assert.Empty(page.FindAll("[data-testid=worked]"));
+    }
+
+    [Fact]
+    public void SendingStartsTheRotorsAtTheMessageKey()
+    {
+        // The key sheet's positions become the ground setting, and the message is
+        // enciphered somewhere else entirely.
+        var page = Page();
+
+        page.Find("[data-testid=sheet]").Change("barbarossa");
+        Send(page, "QWE");
+
+        Assert.Equal("QWE", Windows(page));
+    }
+
+    [Fact]
+    public void SendingReportsTheIndicatorToTransmit()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=sheet]").Change("barbarossa");
+        Send(page, "QWE");
+
+        var worked = page.Find("[data-testid=worked]").TextContent;
+
+        Assert.Contains("BLA", worked);
+        Assert.Contains("QWE", worked);
+        Assert.Contains(Indicator("QWE"), worked);
+    }
+
+    [Fact]
+    public void ReceivingWorksTheMessageKeyBack()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=sheet]").Change("barbarossa");
+        page.Find("[data-testid=procedure]").Change(nameof(IndicatorMode.Receiving));
+        page.Find("[data-testid=indicator-sent]").Change(Indicator("QWE"));
+
+        Assert.Equal("QWE", Windows(page));
+        Assert.Contains("QWE", page.Find("[data-testid=worked]").TextContent);
+    }
+
+    [Fact]
+    public void WhatOneStationSendsAnotherCanRead()
+    {
+        // The procedure end to end, which is the only thing that really matters.
+        var sender = Page();
+        var receiver = Page();
+
+        sender.Find("[data-testid=sheet]").Change("barbarossa");
+        Send(sender, "QWE");
+        sender.Find("[data-testid=plaintext]").Change("ATTACKATDAWN");
+
+        var indicator = Indicator("QWE");
+        var cipher = Ciphertext(sender);
+
+        receiver.Find("[data-testid=sheet]").Change("barbarossa");
+        receiver.Find("[data-testid=procedure]").Change(nameof(IndicatorMode.Receiving));
+        receiver.Find("[data-testid=indicator-sent]").Change(indicator);
+        receiver.Find("[data-testid=plaintext]").Change(cipher);
+
+        Assert.Equal("ATTACKATDAWN", Ciphertext(receiver));
+    }
+
+    [Fact]
+    public void AnIndicatorSentTwiceIsTwiceAsLong()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=sheet]").Change("barbarossa");
+        Send(page, "QWE");
+        page.Find("[data-testid=doubled]").Change(true);
+
+        Assert.Contains(Indicator("QWE", doubled: true), page.Find("[data-testid=worked]").TextContent);
+    }
+
+    [Fact]
+    public void AMessageKeyThatWillNotWorkIsReportedAndLeavesTheRotorsAlone()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=sheet]").Change("barbarossa");
+        Send(page, "QW");
+
+        Assert.NotEmpty(page.FindAll("[data-testid=indicator-error]"));
+        Assert.Empty(page.FindAll("[data-testid=worked]"));
+        Assert.Equal("BLA", Windows(page));
+    }
+
+    [Fact]
+    public void AGarbledDoubledIndicatorIsReported()
+    {
+        // What the doubling was for: the halves disagree, so it shows itself.
+        var page = Page();
+
+        page.Find("[data-testid=sheet]").Change("barbarossa");
+        page.Find("[data-testid=procedure]").Change(nameof(IndicatorMode.Receiving));
+        page.Find("[data-testid=indicator-sent]").Change("ABCDEF");
+
+        Assert.Contains("intact", page.Find("[data-testid=indicator-error]").TextContent);
+    }
+
+    [Fact]
+    public void GivingUpTheProcedurePutsTheRotorsBackToTheGroundSetting()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=sheet]").Change("barbarossa");
+        Send(page, "QWE");
+        page.Find("[data-testid=procedure]").Change(nameof(IndicatorMode.None));
+
+        Assert.Equal("BLA", Windows(page));
+        Assert.Empty(page.FindAll("[data-testid=worked]"));
+    }
+
+    [Fact]
+    public void TheMessageKeyIsOfferedOnlyWhenSending()
+    {
+        var page = Page();
+
+        Assert.Empty(page.FindAll("[data-testid=message-key]"));
+        Assert.Empty(page.FindAll("[data-testid=indicator-sent]"));
+
+        page.Find("[data-testid=procedure]").Change(nameof(IndicatorMode.Sending));
+
+        Assert.NotEmpty(page.FindAll("[data-testid=message-key]"));
+        Assert.Empty(page.FindAll("[data-testid=indicator-sent]"));
+
+        page.Find("[data-testid=procedure]").Change(nameof(IndicatorMode.Receiving));
+
+        Assert.Empty(page.FindAll("[data-testid=message-key]"));
+        Assert.NotEmpty(page.FindAll("[data-testid=indicator-sent]"));
+    }
+
+    [Fact]
+    public void ChangingTheGroundSettingChangesTheIndicator()
+    {
+        // The indicator is the message key enciphered at the ground setting, so it
+        // is a property of both.
+        var page = Page();
+
+        page.Find("[data-testid=sheet]").Change("barbarossa");
+        Send(page, "QWE");
+
+        var before = page.Find("[data-testid=worked]").TextContent;
+
+        page.Find("[data-testid=positions]").Change("XYZ");
+
+        Assert.NotEqual(before, page.Find("[data-testid=worked]").TextContent);
+        Assert.Equal("QWE", Windows(page));
+    }
+
+    private static void Send(IRenderedComponent<Home> page, string messageKey)
+    {
+        page.Find("[data-testid=procedure]").Change(nameof(IndicatorMode.Sending));
+        page.Find("[data-testid=message-key]").Change(messageKey);
+    }
+
+    private static string Indicator(string messageKey, bool doubled = false)
+    {
+        Assert.True(new KeySheetCatalogue().TryGet("barbarossa", out var sheet));
+
+        var procedure = new ServiceCollection().AddEnigmaServices().BuildServiceProvider()
+            .GetRequiredService<IIndicatorProcedure>();
+
+        return procedure.EncipherMessageKey(sheet, sheet.Positions, messageKey, doubled);
+    }
+
     // -- settings ---------------------------------------------------------------
 
     [Fact]

@@ -1,6 +1,7 @@
 @page "/"
 @inject IKeySheetCatalogue KeySheets
 @inject IEnigmaMachineFactory Factory
+@inject IIndicatorProcedure Procedure
 
 <PageTitle>Enigma</PageTitle>
 
@@ -40,6 +41,17 @@
                   OnPrepare="Preparing"
                   OnGroups="Grouping" />
 
+    <IndicatorPanel Mode="_mode"
+                    MessageKey="@_messageKey"
+                    Indicator="@_indicator"
+                    Doubled="_doubled"
+                    Result="_keying"
+                    Error="@_keying?.Error"
+                    OnMode="Procedure_Mode"
+                    OnMessageKey="Procedure_MessageKey"
+                    OnIndicator="Procedure_Indicator"
+                    OnDoubled="Procedure_Doubled" />
+
     <KeySheetEditor Sheet="_sheet"
                     ShowsReflectorSetting="_session.ReflectorPosition is not null"
                     OnChanged="Rekey" />
@@ -74,6 +86,14 @@
     private bool _watching;
     private TranslationTrace? _trace;
 
+    // The indicator procedure decides where the rotors start. Without one that is
+    // simply what the key sheet says.
+    private IndicatorMode _mode;
+    private string _messageKey = string.Empty;
+    private string _indicator = string.Empty;
+    private bool _doubled;
+    private IndicatorResult? _keying;
+
     private string Ciphertext => _groups is { } size ? MessageText.InGroups(_cipher, size) : _cipher;
 
     protected override void OnInitialized() => Choose(_name);
@@ -98,7 +118,7 @@
     {
         _sheet = sheet;
 
-        var keyed = EnigmaSession.Open(Factory, sheet);
+        var keyed = EnigmaSession.Open(Factory, Keyed(sheet));
 
         _error = keyed.Error;
 
@@ -141,6 +161,52 @@
     }
 
     private void Released() => _lit = null;
+
+    /// <summary>
+    /// Where the rotors start. With a procedure in use the sheet's positions are
+    /// the ground setting and the machine is keyed at the message key instead; a
+    /// procedure that will not work leaves the machine at the ground setting, so
+    /// the operator is not left without one while they correct it.
+    /// </summary>
+    private KeySheet Keyed(KeySheet daily)
+    {
+        _keying = _mode switch
+        {
+            IndicatorMode.Sending => MessageKeying.Send(Procedure, daily, _messageKey, _doubled),
+            IndicatorMode.Receiving => MessageKeying.Receive(Procedure, daily, _indicator),
+            _ => null
+        };
+
+        return _keying?.Sheet ?? daily;
+    }
+
+    private void Procedure_Mode(IndicatorMode mode)
+    {
+        _mode = mode;
+
+        Rekey(_sheet);
+    }
+
+    private void Procedure_MessageKey(string messageKey)
+    {
+        _messageKey = messageKey;
+
+        Rekey(_sheet);
+    }
+
+    private void Procedure_Indicator(string indicator)
+    {
+        _indicator = indicator;
+
+        Rekey(_sheet);
+    }
+
+    private void Procedure_Doubled(bool doubled)
+    {
+        _doubled = doubled;
+
+        Rekey(_sheet);
+    }
 
     private void Watching(bool watching)
     {

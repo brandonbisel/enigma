@@ -122,27 +122,33 @@ public class EnigmaConsole : BackgroundService
     {
         if (_options.MessageKey is { } messageKey)
         {
-            var indicator = _procedure.EncipherMessageKey(
-                _keySheet, _keySheet.Positions, messageKey, _options.Doubled);
+            var keyed = MessageKeying.Send(_procedure, _keySheet, messageKey, _options.Doubled);
 
             // This travels with the message, so it goes to the operator rather than
             // into the ciphertext on standard output.
-            Console.Error.WriteLine($"Ground setting {_keySheet.Positions}, indicator {indicator}");
+            Console.Error.WriteLine(keyed.Succeeded
+                ? $"Ground setting {keyed.GroundSetting}, indicator {keyed.Indicator}"
+                : keyed.Error);
 
-            return _keySheet.WithPositions(messageKey);
+            return Keyed(keyed);
         }
 
         if (_options.Indicator is { } sent)
         {
-            var recovered = _procedure.RecoverMessageKey(_keySheet, _keySheet.Positions, sent);
+            var keyed = MessageKeying.Receive(_procedure, _keySheet, sent);
 
-            _logger.LogDebug("Recovered message key {MessageKey}", recovered);
+            _logger.LogDebug("Recovered message key {MessageKey}", keyed.MessageKey);
 
-            return _keySheet.WithPositions(recovered);
+            return Keyed(keyed);
         }
 
         return _keySheet;
     }
+
+    // A bad indicator is a mistake in the settings like any other, so it is
+    // reported the same way rather than starting a machine at the wrong place.
+    private static KeySheet Keyed(IndicatorResult keyed) =>
+        keyed.Sheet ?? throw new ArgumentException(keyed.Error);
 
     private string Translate(EnigmaSession session, string line)
     {

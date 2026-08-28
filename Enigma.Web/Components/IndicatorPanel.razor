@@ -1,0 +1,92 @@
+@* The indicator procedure. The key sheet fixed everything for the day except
+   where the rotors began: the sender chose that himself, enciphered his choice at
+   the ground setting the sheet gave, and sent the result in clear alongside the
+   message. The receiver worked it back. *@
+
+<section class="indicator" data-testid="indicator">
+    <h2>Spruchschlüssel</h2>
+
+    <div class="fields">
+        <label>Procedure
+            <select data-testid="procedure" value="@Mode" @onchange="Choose">
+                <option value="@IndicatorMode.None">none — start at the Grundstellung</option>
+                <option value="@IndicatorMode.Sending">sending — choose a message key</option>
+                <option value="@IndicatorMode.Receiving">receiving — work back from an indicator</option>
+            </select>
+        </label>
+
+        @if (Mode == IndicatorMode.Sending)
+        {
+            <label>Message key
+                <input data-testid="message-key" value="@MessageKey" @onchange="Keyed" />
+            </label>
+        }
+
+        @if (Mode == IndicatorMode.Receiving)
+        {
+            <label>Indicator
+                <input data-testid="indicator-sent" value="@Indicator" @onchange="Sent" />
+            </label>
+        }
+    </div>
+
+    @if (Mode == IndicatorMode.Sending)
+    {
+        <label class="doubled">
+            <input type="checkbox" data-testid="doubled" checked="@Doubled" @onchange="Doubling" />
+            Sent twice, as it was until 1938
+        </label>
+    }
+
+    @if (Mode != IndicatorMode.None)
+    {
+        @if (Error is not null)
+        {
+            <p class="error" data-testid="indicator-error">@Error</p>
+        }
+        else if (Result is not null)
+        {
+            <p class="worked" data-testid="worked">
+                Ground setting <span>@Result.GroundSetting</span>,
+                indicator <span>@Result.Indicator</span>,
+                rotors set to <span>@Result.MessageKey</span>
+            </p>
+        }
+    }
+</section>
+
+@code {
+    [Parameter] public IndicatorMode Mode { get; set; }
+
+    [Parameter] public string MessageKey { get; set; } = string.Empty;
+
+    [Parameter] public string Indicator { get; set; } = string.Empty;
+
+    [Parameter] public bool Doubled { get; set; }
+
+    /// <summary>What the procedure worked out, when it worked.</summary>
+    [Parameter] public IndicatorResult? Result { get; set; }
+
+    [Parameter] public string? Error { get; set; }
+
+    [Parameter] public EventCallback<IndicatorMode> OnMode { get; set; }
+
+    [Parameter] public EventCallback<string> OnMessageKey { get; set; }
+
+    [Parameter] public EventCallback<string> OnIndicator { get; set; }
+
+    [Parameter] public EventCallback<bool> OnDoubled { get; set; }
+
+    private Task Choose(ChangeEventArgs args) =>
+        Enum.TryParse<IndicatorMode>(args.Value?.ToString(), out var mode)
+            ? OnMode.InvokeAsync(mode)
+            : Task.CompletedTask;
+
+    private Task Keyed(ChangeEventArgs args) => OnMessageKey.InvokeAsync(Text(args));
+
+    private Task Sent(ChangeEventArgs args) => OnIndicator.InvokeAsync(Text(args));
+
+    private Task Doubling(ChangeEventArgs args) => OnDoubled.InvokeAsync(args.Value is true);
+
+    private static string Text(ChangeEventArgs args) => args.Value?.ToString() ?? string.Empty;
+}
