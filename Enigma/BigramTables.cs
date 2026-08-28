@@ -46,6 +46,14 @@ public static class BigramTables
     /// </summary>
     public static BigramTable QuelleG { get; } = BigramTable.Parse(QuelleGEntries);
 
+    /// <summary>
+    /// Tafel H of "Quelle", the last table the Crypto Museum scan contains. The
+    /// booklet's own cover says the edition holds nine tables, "A bis J ohne I";
+    /// the scan reproduces eight, A to H, and neither Tafel J nor the two
+    /// Tauschtafelplan sheets it also lists.
+    /// </summary>
+    public static BigramTable QuelleH { get; } = BigramTable.Parse(QuelleHEntries);
+
     // Written once through: each entry implies its reverse, and BigramTable builds
     // the other direction itself.
 
@@ -237,4 +245,31 @@ public static class BigramTables
         "SA=TZ SB=ZQ SH=YK SL=XZ SM=WQ SQ=VA SS=UT SU=TX SZ=YA TA=UR TJ=VH TN=WZ TQ=XU UA=WG " +
         "UB=VC UC=XH UE=YH UG=ZL UK=VO VB=ZS VD=WA VF=YC WD=XE WN=YS WV=ZJ WX=YZ XL=ZH XQ=YF " +
         "XV=ZE YB=ZC";
+
+    private const string QuelleHEntries =
+        "AA=NU AB=HO AC=SJ AD=KE AE=QR AF=IT AG=OB AH=MV AI=GC AJ=RW AK=YM AL=DQ AM=ZF AN=BX " +
+        "AO=PY AP=LS AQ=TZ AR=FN AS=UP AT=JL AU=VK AV=CG AW=XH AX=WI AY=ED AZ=OS BA=TH BB=LP " +
+        "BC=NY BD=JM BE=OD BF=MI BG=RN BH=FT BI=KQ BJ=PG BK=ES BL=QO BM=GU BN=SX BO=IZ BP=UC " +
+        "BQ=HA BR=ZV BS=CW BT=VR BU=DE BV=YJ BW=XL BY=WF BZ=UT CA=WJ CB=MP CC=QT CD=VU CE=JH " +
+        "CF=IG CH=RX CI=DZ CJ=ZB CK=YD CL=EO CM=XR CN=LI CO=FM CP=OE CQ=PK CR=KV CS=NF CT=GL " +
+        "CU=HN CV=SQ CX=UW CY=TA CZ=VF DA=RI DB=GS DC=UL DD=MT DF=EV DG=NN DH=FB DI=ZJ DJ=OY " +
+        "DK=PU DL=QP DM=LG DN=HW DO=IR DP=SZ DR=KA DS=YC DT=XE DU=JO DV=TX DW=VH DX=KY DY=WQ " +
+        "EA=JF EB=RK EC=MX EE=VI EF=HU EG=NJ EH=PP EI=LN EJ=UD EK=FO EL=OH EM=QL EN=KS EP=ZC " +
+        "EQ=YY ER=XZ ET=GA EU=SG EW=TO EX=II EY=MB EZ=WA FA=XK FC=NK FD=IV FE=QG FF=GW FG=SD " +
+        "FH=KZ FI=VT FJ=ZP FK=HH FL=OU FP=JB FQ=LC FR=YO FS=MY FU=PN FV=RR FW=SY FX=TM FY=US " +
+        "FZ=WL GB=VC GD=WH GE=JS GF=LX GG=ZM GH=RY GI=HQ GJ=ND GK=IA GM=UN GN=XY GO=YZ GP=ML " +
+        "GQ=OJ GR=KI GT=PB GV=QE GX=RF GY=SO GZ=TK HB=NQ HC=KW HD=UE HE=ZT HF=PM HG=IP HI=RC " +
+        "HJ=YU HK=JV HL=OA HM=QI HP=LF HR=XS HS=WG HT=VZ HV=TB HX=SL HY=OV HZ=MO IB=YS IC=UB " +
+        "ID=ZW IE=NR IF=JT IH=OC IJ=PQ IK=ME IL=QX IM=XD IN=KF IO=LK IQ=WX IS=RZ IU=SA IW=TV " +
+        "IX=VN IY=WM JA=QB JC=KU JD=RS JE=LO JG=TW JI=YF JJ=NZ JK=ZH JN=OQ JP=MC JQ=PD JR=ST " +
+        "JU=QZ JW=UY JX=WV JY=VP JZ=XG KB=ZI KC=LT KD=RO KG=MZ KH=VJ KJ=WR KK=NC KL=YV KM=OR " +
+        "KN=UJ KO=TE KP=SB KR=WS KT=XA KX=MD LA=ZE LB=UH LD=QY LE=SI LH=YR LJ=MN LL=NB LM=WK " +
+        "LQ=XO LR=OZ LU=PT LV=RA LW=YQ LY=TQ LZ=VW MA=VL MF=PR MG=NX MH=OO MJ=UI MK=ZY MM=SF " +
+        "MQ=YH MR=PX MS=XP MU=TJ MW=QD NA=WO NE=QV NG=YT NH=ZD NI=OM NL=PC NM=RD NO=TL NP=XX " +
+        "NS=VX NT=SK NV=UG NW=VB OF=YP OG=SU OI=QC OK=XM OL=ZR ON=PE OP=RG OT=WD OW=UA OX=TF " +
+        "PA=SM PF=WW PH=YB PI=QN PJ=ZG PL=RE PO=SW PS=TI PV=UK PW=VY PZ=XC QA=VG QF=XT QH=ZN " +
+        "QJ=RB QK=SV QM=TS QQ=UO QS=WZ QU=YK QW=TY RH=SS RJ=YE RL=ZX RM=TD RP=UZ RQ=VO RT=XV " +
+        "RU=WC RV=UX SC=XJ SE=ZL SH=YW SN=TU SP=UR SR=VD TC=UU TG=ZQ TN=YX TP=XF TR=VS TT=WP " +
+        "UF=VM UM=XQ UQ=YL UV=ZA VA=ZK VE=WT VQ=XB VV=YG WB=YN WE=XU WN=ZO WU=XW WY=ZZ XI=ZS " +
+        "XN=YA YI=ZU";
 }

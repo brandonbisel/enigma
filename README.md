@@ -289,28 +289,30 @@ The table is reciprocal: if `AK` is written as `BD` then `BD` is written as `AK`
 one table serves both stations without being reversed. It is an involution on pairs
 of letters, exactly as a reflector is on single ones.
 
-**Seven real tables ship**: `BigramTables.QuelleA` through `.QuelleG`, Tafels A to G
+**Eight real tables ship**: `BigramTables.QuelleA` through `.QuelleH`, Tafels A to H
 of the set "Quelle", transcribed from the Crypto Museum's scan of booklet
-Prüf-Nr. 2499. It is the set U-534 was using on 1 May 1945.
+Prüf-Nr. 2499. It is the set U-534 was using on 1 May 1945, and it is every table the
+scan contains — the booklet's cover says the edition held nine, "A bis J ohne I",
+but Tafel J and the two Tauschtafelplan sheets are not reproduced in it.
 
 A transcription of a table is worth more than a transcription of a wiring, because it
 can be checked. All 676 entries are present, every one pairs with its mirror, and no
 bigram enciphers to itself — a single mistyped cell would break a pair and show up.
-Fifteen cells did, across the seven tables, and each time the rest of the table said
+Eighteen cells did, across the eight tables, and each time the rest of the table said
 what the cell had to be — then the glyph at magnification agreed. `B`/`E` is the
-commonest slip and `F`/`P` the next. Eight of the fifteen are in Tafel G alone, whose
+commonest slip and `F`/`P` the next. Eight of the eighteen are in Tafel G alone, whose
 two pages are the poorest scan in the booklet. Six further cells of Tafel E are
-covered by later hand-written ink and could not be read at all; they were rebuilt
-from their mirrors, which on an involution is the same fact written twice. On top of that, the four cells the
-U-534 message needed were published separately with the working of that message, and
-they agree.
+covered by later hand-written ink and could not be read at all; they were rebuilt from
+their mirrors, which on an involution is the same fact written twice. On top of all
+that, the four cells the U-534 message needed were published separately with the
+working of that message, and they agree.
 
 The whole message now runs end to end in the test suite: the transmitted indicator
 `FNHC GVET`, through the real table, to the message key `ODFF` the operator wrote on
 his sheet — and back again.
 
-The other two tables of the set — H and J — are not transcribed yet.
-Supply a table and it will be used:
+Tafel J is not reproduced in the scan, so it is not shipped. Supply a table and it
+will be used:
 
 ```csharp
 var table = BigramTable.Parse("AK=BD HQ=BJ LK=EM GZ=EJ");

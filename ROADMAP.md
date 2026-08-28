@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-560 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+561 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -81,11 +81,10 @@ Doppelbuchstabentauschtafel, pinned by the published worked example.
 It is pinned by a real message: U-534's P1030690 of 1 May 1945, read from its
 transmitted indicator through to the message key its operator wrote down.
 
-**The source has been found and checked.** The Crypto Museum publishes the whole
-"Quelle" booklet — *Doppelbuchstabentauschtafeln für Kenngruppen*, serial 2499 — as
-a scan: a cover, the Tauschtafelplan, and nine tables lettered A to H and J, each
-across two pages of thirteen columns by twenty-six rows. It is the same set U-534
-was using. All four of the entries that message needed read off the scan exactly:
+**The source has been found and checked.** The Crypto Museum publishes a scan of the
+"Quelle" booklet — *Doppelbuchstabentauschtafeln für Kenngruppen*, serial 2499 — the
+same set U-534 was using. All four of the entries that message needed read off the
+scan exactly:
 
 | | from the message | from the booklet |
 |---|---|---|
@@ -94,12 +93,29 @@ was using. All four of the entries that message needed read off the scan exactly
 | `GV` | `UU` | `UU` |
 | `ET` | `ZZ` | `ZZ` |
 
-**Tafels A to G are transcribed and shipped.** 676 entries each, every mirror
-agreeing, no bigram enciphering to itself, and — for Tafel A — the four cells known
-from real traffic correct. U-534's message runs end to end through the real table.
+**The scan is not the whole booklet, and that took until Tafel H to notice.** Its
+printed cover states the edition's contents plainly: *"Zu dieser Ausgabe gehören 9
+Einzeltafeln, bezeichnet mit Tafeln A bis J ohne I"*, and *"2 Abdrucke
+»Tauschtafelplan«"*. But the PDF is 18 pages — a cover, its blank verso, and eight
+tables at two pages each. **Tafel J is not in it, and neither is the Tauschtafelplan.**
+An earlier version of this document claimed the scan held all nine tables plus the
+plan; that was wrong, and the arithmetic alone (2 + 9×2 = 20 pages, not 18) would have
+caught it sooner.
+
+So the set is now complete *as far as the source goes*:
+
+**Tafels A to H are transcribed and shipped** — all eight the scan contains. 676
+entries each, every mirror agreeing, no bigram enciphering to itself, and — for Tafel
+A — the four cells known from real traffic correct. U-534's message runs end to end
+through the real table.
+
+**Tafel J and the Tauschtafelplan would need a different source.** Without the plan
+there is no calendar saying which table applied on which day, so the eight that ship
+are the substitution tables themselves and not a usable day-by-day key. That is a gap
+in the published material rather than in the transcription.
 
 That self-checking property is what makes this worth doing by hand. The tables are
-involutions, so a mistyped cell breaks its pair and is caught; fifteen cells have needed
+involutions, so a mistyped cell breaks its pair and is caught; eighteen cells have needed
 adjudicating so far and each time the table itself said what the answer was:
 
 | Tafel | cell | misread as | what settled it |
@@ -112,6 +128,9 @@ adjudicating so far and each time the table itself said what the answer was:
 | D | `JN` | `PI` | `PI` pairs with `ZY` both ways; `FI=JN` in column F |
 | F | `JA` | `QP` | `QP` pairs with `MS` both ways; `QF=JA` in column Q |
 | G | eight cells | — | see below |
+| H | `SI` | `LB` | `LB` pairs with `UH` both ways; `LE=SI` in column L |
+| H | `ZD` | `NM` | `NM` and `NN` are both taken; `NH=ZD` in column N |
+| H | `RF` | `CX` | `CX` pairs with `UW` both ways; `GX=RF` in column G |
 
 Two kinds of evidence settle them: an exclusion argument from the rest of the table,
 and then the glyph itself at magnification, which has agreed every time. `B`/`E` is
@@ -143,11 +162,8 @@ those six were derived rather than seen.
 Note what the check does and does not do: it catches transcription error, not
 fabrication, so a table still only ships against a scan.
 
-Two things remain. **The other two tables of the set** — H and J — are
-still only scans; OCR manages perhaps three quarters and confuses `G` with `C`, `U`
-with `L`, and the dotted `İ` the typeface uses, so they have to be read by eye as the
-first seven were. And the procedure is **library only**: neither front end offers it
-yet, where the army one is in both.
+One thing remains on the code side: the procedure is **library only**, offered by
+neither front end, where the army one is in both.
 
 ## Future
 
