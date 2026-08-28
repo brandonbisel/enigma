@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-558 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+556 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -94,16 +94,30 @@ was using. All four of the entries that message needed read off the scan exactly
 | `GV` | `UU` | `UU` |
 | `ET` | `ZZ` | `ZZ` |
 
-**Tafels A and B are transcribed and shipped.** All 676 entries, every mirror agreeing, no
-bigram enciphering to itself, and the four cells known from real traffic correct. One
-cell needed adjudicating — a speck under an O in `DS` reads as a Q's tail — and three
-other entries settled it. U-534's message now runs end to end through the real table.
+**Tafels A, B and C are transcribed and shipped.** 676 entries each, every mirror
+agreeing, no bigram enciphering to itself, and — for Tafel A — the four cells known
+from real traffic correct. U-534's message runs end to end through the real table.
 
-Two things remain. **The other seven tables of the set** are still only scans; OCR
-manages perhaps three quarters and confuses `G` with `C`, `U` with `L`, and the dotted
-`İ` the typeface uses, so they have to be read by eye as Tafel A was. And the
-procedure is **library only**: neither front end offers it yet, where the army one is
-in both.
+That self-checking property is what makes this worth doing by hand. The tables are
+involutions, so a mistyped cell breaks its pair and is caught; four cells have needed
+adjudicating so far and each time the table itself said what the answer was:
+
+| Tafel | cell | misread as | what settled it |
+|---|---|---|---|
+| A | `DS` | `QN` | a speck under an O reads as a Q's tail; `ON=DS`, `QN=HA`, `HA=QN` |
+| B | `KD` | `BP` | `BP` is taken by `JL`; `EP=KD` in column E |
+| C | `MA` | `HB` | `HB` is taken by `QO`; `HE=MA` in column H |
+| C | `DM` | `YB` | `YB` is taken by `ST`; `YE=DM` in column Y |
+
+Three of the four are the same `B`/`E` confusion in this typeface. Note what the check
+does and does not do: it catches transcription error, not fabrication, so a table still
+only ships against a scan.
+
+Two things remain. **The other six tables of the set** — D, E, F, G, H and J — are
+still only scans; OCR manages perhaps three quarters and confuses `G` with `C`, `U`
+with `L`, and the dotted `İ` the typeface uses, so they have to be read by eye as the
+first three were. And the procedure is **library only**: neither front end offers it
+yet, where the army one is in both.
 
 ## Future
 

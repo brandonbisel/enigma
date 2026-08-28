@@ -289,23 +289,25 @@ The table is reciprocal: if `AK` is written as `BD` then `BD` is written as `AK`
 one table serves both stations without being reversed. It is an involution on pairs
 of letters, exactly as a reflector is on single ones.
 
-**Two real tables ship**: `BigramTables.QuelleA` and `.QuelleB`, Tafels A and B of
-the set "Quelle", transcribed from the Crypto Museum's scan of booklet Prüf-Nr. 2499.
-It is the set U-534 was using on 1 May 1945.
+**Three real tables ship**: `BigramTables.QuelleA`, `.QuelleB` and `.QuelleC`, Tafels
+A, B and C of the set "Quelle", transcribed from the Crypto Museum's scan of booklet
+Prüf-Nr. 2499. It is the set U-534 was using on 1 May 1945.
 
 A transcription of a table is worth more than a transcription of a wiring, because it
 can be checked. All 676 entries are present, every one pairs with its mirror, and no
 bigram enciphers to itself — a single mistyped cell would break a pair and show up.
-One cell did: a speck under an O in `DS` reads as a Q's tail, and three other entries
-said what it had to be. On top of that, the four cells the U-534 message needed were
-published separately with the working of that message, and they agree.
+Four cells did, across the three tables, and each time the rest of the table said what
+the cell had to be: a speck under an O in `DS` reading as a Q's tail, and three cases
+of the same `B`/`E` confusion in this typeface. On top of that, the four cells the
+U-534 message needed were published separately with the working of that message, and
+they agree.
 
 The whole message now runs end to end in the test suite: the transmitted indicator
 `FNHC GVET`, through the real table, to the message key `ODFF` the operator wrote on
 his sheet — and back again.
 
-The other seven tables of the set are not transcribed yet. Supply a table and it will
-be used:
+The other six tables of the set — D, E, F, G, H and J — are not transcribed yet.
+Supply a table and it will be used:
 
 ```csharp
 var table = BigramTable.Parse("AK=BD HQ=BJ LK=EM GZ=EJ");

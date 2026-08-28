@@ -23,6 +23,9 @@ public static class BigramTables
     /// <summary>Tafel B of "Quelle".</summary>
     public static BigramTable QuelleB { get; } = BigramTable.Parse(QuelleBEntries);
 
+    /// <summary>Tafel C of "Quelle".</summary>
+    public static BigramTable QuelleC { get; } = BigramTable.Parse(QuelleCEntries);
+
     // Written once through: each entry implies its reverse, and BigramTable builds
     // the other direction itself.
 
@@ -79,4 +82,31 @@ public static class BigramTables
         "SJ=VC SN=ZC SU=TC SV=XY SW=YY SY=UF SZ=WP TJ=XL TL=UC TR=ZE TU=VE TW=YX TX=UP UM=VI " +
         "UR=ZB UU=VK UW=XZ UY=YD VO=XC VR=XX VY=ZH WC=YV WE=XT WG=YR WK=YJ WS=XN WV=YF WW=ZJ " +
         "WY=XP YT=ZM";
+
+    private const string QuelleCEntries =
+        "AA=UM AB=KH AC=OP AD=NE AE=TJ AF=IN AG=ZL AH=RV AI=FS AJ=CH AK=JZ AL=MS AM=YK AN=GB " +
+        "AO=QZ AP=XI AQ=LW AR=PC AS=WX AT=JN AU=VE AV=DO AW=BF AX=SQ AY=HM AZ=EB BA=WO BB=PN " +
+        "BC=LF BD=FA BE=RI BG=ME BH=SZ BI=OG BJ=KT BK=ID BL=ZX BM=CT BN=EQ BO=DZ BP=YT BQ=JA " +
+        "BR=VO BS=NW BT=GF BU=DB BV=XX BW=QI BX=TA BY=UT BZ=HC CA=LM CB=WD CC=NM CD=IV CE=PV " +
+        "CF=QA CG=OZ CI=VV CJ=HT CK=GQ CL=ZR CM=RO CN=JF CO=SB CP=ZG CQ=YA CR=FI CS=MK CU=XN " +
+        "CV=EL CW=TS CX=UD CY=DE CZ=KN DA=LQ DC=WT DD=PG DF=OA DG=VI DH=ZO DI=QS DJ=KC DK=NA " +
+        "DL=SI DM=YE DN=RC DP=XB DQ=JV DR=MX DS=FE DT=UB DU=TY DV=IH DW=EG DX=GK DY=HJ EA=XL " +
+        "EC=NR ED=TN EE=ZC EF=HA EH=YO EI=PQ EJ=OV EK=IR EM=KK EN=LV EO=XS EP=WI ER=GW ES=RZ " +
+        "ET=QM EU=SL EV=FY EW=JR EX=VA EY=UH EZ=LI FB=PJ FC=UQ FD=VU FF=GI FG=NI FH=QD FJ=WL " +
+        "FK=ZH FL=SU FM=YQ FN=RA FO=XE FP=OK FQ=HZ FR=MB FT=IB FU=TD FV=LA FW=VC FX=KZ FZ=JK " +
+        "GA=UO GC=MO GD=RR GE=LT GG=ZZ GH=SE GJ=RY GL=YZ GM=QW GN=OD GO=HP GP=NC GR=PS GS=KA " +
+        "GT=IY GU=XV GV=TQ GX=WB GY=XP GZ=JD HB=QO HD=NK HE=MA HF=KQ HG=OX HH=SV HI=ZU HK=PA " +
+        "HL=TV HN=YW HO=RL HQ=WF HR=UX HS=VR HU=SA HV=LL HW=XK HX=JY HY=IK IA=NP IC=YU IE=RF " +
+        "IF=UK IG=ZN II=QU IJ=OM IL=MH IM=XG IO=YH IP=SN IQ=PX IS=LC IT=JH IU=VZ IW=TG IX=WQ " +
+        "IZ=KW JB=RK JC=NU JE=UZ JG=OB JI=SW JJ=QF JL=PE JM=ZA JO=XY JP=MV JQ=KF JS=TL JT=WV " +
+        "JU=YC JW=VL JX=LO KB=ZY KD=LB KE=VX KG=OS KI=NY KJ=SS KL=YI KM=RX KO=QK KP=UA KR=PP " +
+        "KS=LZ KU=WM KV=TC KX=MQ KY=TT LD=NT LE=RT LG=ZJ LH=QB LJ=YX LK=SG LN=OI LP=WZ LR=UV " +
+        "LS=MM LU=XC LX=VG LY=QQ MC=PB MD=VT MF=OR MG=ZE MI=UR MJ=QY ML=TZ MN=WA MP=RE MR=YV " +
+        "MT=SX MU=NG MW=ZP MY=XA MZ=QC NB=QG ND=SY NF=WK NH=ZW NJ=UF NL=XU NN=PZ NO=TP NQ=VM " +
+        "NS=YM NV=OO NX=RB NZ=QV OC=UY OE=WR OF=ZS OH=RG OJ=TB OL=QX ON=UJ OQ=XZ OT=PY OU=SD " +
+        "OW=YD OY=VB PD=SO PF=XM PH=ZT PI=UN PK=WG PL=YR PM=QN PO=TW PR=VQ PT=US PU=RM PW=SC " +
+        "QE=TU QH=UP QJ=WP QL=ZM QP=SR QR=VK QT=RD RH=WW RJ=YG RN=ZB RP=VF RQ=TX RS=UE RU=SJ " +
+        "RW=XQ SF=WN SH=UI SK=XW SM=ZQ SP=TF ST=YB TE=VY TH=ZV TI=WE TK=UW TM=XR TO=YJ TR=VD " +
+        "UC=VW UG=WH UL=XJ UU=YS VH=XT VJ=ZD VN=YL VP=WY VS=XD WC=YN WJ=XO WS=ZF WU=YY XF=YP " +
+        "XH=ZK YF=ZI";
 }

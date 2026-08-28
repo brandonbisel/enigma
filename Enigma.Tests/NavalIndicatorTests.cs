@@ -96,12 +96,13 @@ public class NavalIndicatorTests
     [Theory]
     [InlineData("A")]
     [InlineData("B")]
+    [InlineData("C")]
     public void EveryShippedTableIsWholeAndReciprocal(string tafel)
     {
         // The check that makes a transcription trustworthy: 676 entries, every one
         // paired with its mirror, none enciphering to itself. A single mistyped cell
         // breaks a pair and fails here.
-        var table = tafel == "A" ? BigramTables.QuelleA : BigramTables.QuelleB;
+        var table = Tafel(tafel);
         var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         Assert.True(table.IsComplete);
@@ -121,29 +122,21 @@ public class NavalIndicatorTests
     {
         // Nine tables to a set, and a calendar to say which applied. If two agreed
         // everywhere one of them would have been transcribed twice.
-        Assert.NotEqual(BigramTables.QuelleA.Substitute("AA"), BigramTables.QuelleB.Substitute("AA"));
+        Assert.Equal(
+            3,
+            new[] { BigramTables.QuelleA, BigramTables.QuelleB, BigramTables.QuelleC }
+                .Select(table => table.Substitute("AA"))
+                .Distinct()
+                .Count());
     }
 
-    [Fact]
-    public void TheOldTableCheckStillHolds()
+    private static BigramTable Tafel(string letter) => letter switch
     {
-        // Transcribed from the Crypto Museum's scan of booklet 2499. Six hundred and
-        // seventy-six entries, every one paired with its mirror: a single mistyped
-        // cell would break a pair and show up here.
-        var table = BigramTables.QuelleA;
-        var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-        Assert.True(table.IsComplete);
-        Assert.Equal(676, table.Count);
-
-        Assert.All(
-            from first in alphabet from second in alphabet select $"{first}{second}",
-            bigram =>
-            {
-                Assert.Equal(bigram, table.Substitute(table.Substitute(bigram)));
-                Assert.NotEqual(bigram, table.Substitute(bigram));
-            });
-    }
+        "A" => BigramTables.QuelleA,
+        "B" => BigramTables.QuelleB,
+        "C" => BigramTables.QuelleC,
+        _ => throw new ArgumentOutOfRangeException(nameof(letter), letter, "No such tafel is shipped."),
+    };
 
     [Fact]
     public void TheShippedTableAgreesWithTheMessageItCameFrom()
