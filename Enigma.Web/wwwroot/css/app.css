@@ -347,3 +347,16 @@ h1:focus { outline: none; }
     letter-spacing: 0.12em;
 }
 .indicator .error { margin: 0.8rem 0 0; }
+
+/* The panel is labelled as the machine was, in German; the English follows so the
+   words can be learnt rather than looked up. */
+.gloss {
+    font-weight: 400;
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    opacity: 0.75;
+}
+h2 .gloss { font-size: 0.95em; }
+.fields label .gloss, .field-name .gloss { display: block; }

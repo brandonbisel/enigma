@@ -50,6 +50,10 @@ shows four as well, but the extra one is its reflector, which turns and so is pa
 of the setting. The keyboard is laid out from the machine's own alphabet rather
 than from a constant, so a machine that does not work in letters gets its own keys.
 
+The panel is labelled as the machine was — Walzenlage, Ringstellung, Steckerbrett —
+with the English alongside each term, so the words can be picked up rather than
+looked up.
+
 Under the machine, the current can be followed. Tick **Follow the current** and
 each keypress is set out step by step: in through the board and the stator, right
 to left across the wheels, back off the reflector — marked, because it is the

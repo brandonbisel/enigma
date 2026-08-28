@@ -4,12 +4,12 @@
    message. The receiver worked it back. *@
 
 <section class="indicator" data-testid="indicator">
-    <h2>Spruchschlüssel</h2>
+    <h2>Spruchschlüssel <span class="gloss">the message key</span></h2>
 
     <div class="fields">
         <label>Procedure
             <select data-testid="procedure" value="@Mode" @onchange="Choose">
-                <option value="@IndicatorMode.None">none — start at the Grundstellung</option>
+                <option value="@IndicatorMode.None">none — start at the Grundstellung (ground setting)</option>
                 <option value="@IndicatorMode.Sending">sending — choose a message key</option>
                 <option value="@IndicatorMode.Receiving">receiving — work back from an indicator</option>
             </select>

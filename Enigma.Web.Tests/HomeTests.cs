@@ -378,6 +378,29 @@ public class HomeTests : BunitContext
     private static void Follow(IRenderedComponent<Home> page) =>
         page.Find("[data-testid=watching]").Change(true);
 
+    [Theory]
+    // The panel is labelled as the machine was; the English is there to be read
+    // alongside, not instead.
+    [InlineData("Stromweg", "the path of the current")]
+    [InlineData("Spruch", "the message")]
+    [InlineData("Klartext", "plain text")]
+    [InlineData("Geheimtext", "cipher text")]
+    [InlineData("Schlüsseltafel", "the key sheet")]
+    [InlineData("Walzenlage", "wheel order")]
+    [InlineData("Ringstellung", "ring settings")]
+    [InlineData("Grundstellung", "starting positions")]
+    [InlineData("Umkehrwalze", "reflector")]
+    [InlineData("Eintrittswalze", "entry wheel")]
+    [InlineData("Steckerbrett", "the plugboard")]
+    [InlineData("Spruchschlüssel", "the message key")]
+    public void EveryGermanTermIsGlossedInEnglish(string german, string english)
+    {
+        var text = Page().Markup;
+
+        Assert.Contains(german, text);
+        Assert.Contains(english, text);
+    }
+
     // -- the indicator procedure ------------------------------------------------
 
     [Fact]

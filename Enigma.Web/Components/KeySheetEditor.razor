@@ -3,7 +3,7 @@
 @inject IPartsCatalogue Parts
 
 <section class="settings" data-testid="settings">
-    <h2>Schlüsseltafel</h2>
+    <h2>Schlüsseltafel <span class="gloss">the key sheet</span></h2>
 
     <div class="fields">
         <label>Model
@@ -15,7 +15,7 @@
             </select>
         </label>
 
-        <label>Umkehrwalze
+        <label title="Umkehrwalze — the reflector">Umkehrwalze <span class="gloss">reflector</span>
             <select data-testid="reflector" value="@_draft.ReflectorName()" @onchange="Reflector">
                 @foreach (var name in Parts.ReflectorNames)
                 {
@@ -24,7 +24,7 @@
             </select>
         </label>
 
-        <label>Eintrittswalze
+        <label title="Eintrittswalze — the entry wheel, the fixed stator before the first rotor">Eintrittswalze <span class="gloss">entry wheel</span>
             <select data-testid="entry" value="@EntryWheelName" @onchange="Entry">
                 <option value="">model default</option>
                 @foreach (var name in Parts.EntryWheelNames)
@@ -45,7 +45,7 @@
     </div>
 
     <div class="wheels" data-testid="wheels">
-        <span class="field-name">Walzenlage</span>
+        <span class="field-name" title="Walzenlage — the wheel order, left to right">Walzenlage <span class="gloss">wheel order</span></span>
 
         @for (var slot = 0; slot < _wheels.Count; slot++)
         {
@@ -66,15 +66,15 @@
     </div>
 
     <div class="fields">
-        <label>Ringstellung
+        <label title="Ringstellung — the ring settings, which move the wiring under the letters">Ringstellung <span class="gloss">ring settings</span>
             <input data-testid="rings" value="@_draft.RingSettings" @onchange="Rings" />
         </label>
 
-        <label>Grundstellung
+        <label title="Grundstellung — the starting positions of the wheels">Grundstellung <span class="gloss">starting positions</span>
             <input data-testid="positions" value="@_draft.Positions" @onchange="Positions" />
         </label>
 
-        <label>Uhr
+        <label title="The Enigma Uhr, a switch box that replaced the cables">Uhr <span class="gloss">plug box</span>
             <input data-testid="uhr" value="@_draft.Uhr" placeholder="none" @onchange="Uhr" />
         </label>
     </div>
@@ -82,11 +82,11 @@
     @if (ShowsReflectorSetting)
     {
         <div class="fields">
-            <label>UKW Stellung
+            <label title="The position of a reflector that turns">UKW Stellung <span class="gloss">reflector position</span>
                 <input data-testid="ukw-position" value="@_draft.ReflectorPosition" @onchange="UkwPosition" />
             </label>
 
-            <label>UKW Ring
+            <label title="The ring setting of a reflector that turns">UKW Ring <span class="gloss">reflector ring</span>
                 <input data-testid="ukw-ring" value="@_draft.ReflectorRingSetting" @onchange="UkwRing" />
             </label>
         </div>

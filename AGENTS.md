@@ -8,7 +8,7 @@ what is a future goal, and what is deliberately not scheduled.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 455 tests
+dotnet test               # whole suite, currently 467 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Web    # the panel, on http://localhost:5298
@@ -54,6 +54,8 @@ whichever the neighbouring files use.
 - A machine knows its own layout (`IEnigmaMachine.Layout`), which is how a caller
   asks whether it has a plugboard at all. The drive comes from the layout rather
   than being passed beside it, so the two cannot disagree.
+- The panel is labelled as the machine was, in German, with the English alongside
+  in a `.gloss` span. A term added without one is a term the reader has to look up.
 - The panel is a view of a machine and holds no cipher logic of its own. What it
   shows must come from the session; anything it works out for itself can disagree
   with the machine, which is the one thing a simulator's UI must never do. The

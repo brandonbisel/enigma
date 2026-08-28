@@ -3,10 +3,10 @@
    groups of five so a miscount would show at the far end. *@
 
 <section class="message" data-testid="message">
-    <h2>Spruch</h2>
+    <h2>Spruch <span class="gloss">the message</span></h2>
 
     <label class="pane">
-        <span>Klartext</span>
+        <span>Klartext <span class="gloss">plain text</span></span>
         <textarea data-testid="plaintext" rows="3" spellcheck="false"
                   value="@Plaintext" @onchange="Plain"></textarea>
     </label>
@@ -32,7 +32,7 @@
     </div>
 
     <label class="pane">
-        <span>Geheimtext</span>
+        <span>Geheimtext <span class="gloss">cipher text</span></span>
         <output data-testid="ciphertext">@Ciphertext</output>
     </label>
 </section>
