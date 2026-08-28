@@ -9,6 +9,9 @@ four-rotor naval M4 are supported. Because the reflector never maps a letter to 
 reciprocal — the same settings both encipher and decipher, which is exactly the
 property that made it breakable.
 
+What is planned next, and what is deliberately out of scope, is in
+[ROADMAP.md](ROADMAP.md).
+
 ## Layout
 
 | Project | What it is |

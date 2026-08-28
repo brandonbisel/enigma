@@ -1,7 +1,8 @@
 # AGENTS.md
 
 Guidance for automated coding agents working in this repository. See `README.md`
-for what the project is and how to use it.
+for what the project is and how to use it, and `ROADMAP.md` for what is planned,
+what is a future goal, and what is deliberately not scheduled.
 
 ## Commands
 
