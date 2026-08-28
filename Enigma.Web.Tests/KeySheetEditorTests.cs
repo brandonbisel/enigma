@@ -151,6 +151,45 @@ public class KeySheetEditorTests : BunitContext
     }
 
     [Fact]
+    public void EveryControlShowsAValueItActuallyOffers()
+    {
+        // A key sheet names its parts however the writer wrote them -- "Service",
+        // "Latin", "B-Thin" -- and the lists hold the normalised names. Matched any
+        // other way the control shows nothing at all, which reads as "unset" when
+        // the machine is in fact set.
+        var editor = Render(new KeySheet
+        {
+            Reflector = "B-Thin",
+            Rotors = "Beta II IV I",
+            RingSettings = "AAAV",
+            Positions = "VJNA",
+            Model = "Service",
+            CharacterMap = "Latin",
+            EntryWheel = "Standard"
+        });
+
+        Assert.All(
+            new[] { "model", "reflector", "entry", "alphabet" },
+            control => Assert.Contains(
+                editor.Find($"[data-testid={control}]").GetAttribute("value"),
+                editor.FindAll($"[data-testid={control}] option").Select(o => o.GetAttribute("value"))));
+
+        Assert.All(
+            editor.FindAll("[data-testid=wheel]"),
+            wheel => Assert.Contains(
+                wheel.GetAttribute("value"),
+                wheel.Children.Select(option => option.GetAttribute("value"))));
+    }
+
+    [Fact]
+    public void LeavingTheEntryWheelToTheModelShowsAsSuch()
+    {
+        var editor = Render(Sheet());
+
+        Assert.Equal(string.Empty, editor.Find("[data-testid=entry]").GetAttribute("value"));
+    }
+
+    [Fact]
     public void EditingDoesNotDisturbTheSheetInUse()
     {
         // The machine was keyed from this sheet; an editor writing into it would

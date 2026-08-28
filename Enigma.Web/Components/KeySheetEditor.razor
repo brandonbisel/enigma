@@ -7,7 +7,7 @@
 
     <div class="fields">
         <label>Model
-            <select data-testid="model" value="@_draft.Model" @onchange="Model">
+            <select data-testid="model" value="@_draft.ModelName()" @onchange="Model">
                 @foreach (var name in Parts.LayoutNames)
                 {
                     <option value="@name">@name</option>
@@ -16,7 +16,7 @@
         </label>
 
         <label>Umkehrwalze
-            <select data-testid="reflector" value="@_draft.Reflector" @onchange="Reflector">
+            <select data-testid="reflector" value="@_draft.ReflectorName()" @onchange="Reflector">
                 @foreach (var name in Parts.ReflectorNames)
                 {
                     <option value="@name">@name</option>
@@ -25,7 +25,7 @@
         </label>
 
         <label>Eintrittswalze
-            <select data-testid="entry" value="@_draft.EntryWheel" @onchange="Entry">
+            <select data-testid="entry" value="@EntryWheelName" @onchange="Entry">
                 <option value="">model default</option>
                 @foreach (var name in Parts.EntryWheelNames)
                 {
@@ -35,7 +35,7 @@
         </label>
 
         <label>Alphabet
-            <select data-testid="alphabet" value="@_draft.CharacterMap" @onchange="Alphabet">
+            <select data-testid="alphabet" value="@_draft.CharacterMapName()" @onchange="Alphabet">
                 @foreach (var name in Parts.CharacterMapNames)
                 {
                     <option value="@name">@name</option>
@@ -103,6 +103,15 @@
 
     private KeySheet _draft = new();
     private List<string> _wheels = [];
+
+    /// <summary>
+    /// Parts are named on a key sheet however the writer chose to write them, and
+    /// looked up by a normalised name. These lists are the normalised ones, so a
+    /// sheet saying "Latin" or "B-Thin" has to be matched the same way the factory
+    /// matches it, or the control shows nothing at all.
+    /// </summary>
+    private string EntryWheelName =>
+        string.IsNullOrWhiteSpace(_draft.EntryWheel) ? string.Empty : _draft.EntryWheelName();
 
     protected override void OnParametersSet()
     {
@@ -211,5 +220,6 @@
     private static List<string> Split(string rotors) =>
         (rotors ?? string.Empty)
             .Split([' ', '\t', ','], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(name => name.ToUpperInvariant())
             .ToList();
 }

@@ -38,6 +38,23 @@ main { max-width: 44rem; margin: 0 auto; }
 
 h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.08em; margin: 0 0 1rem; }
 
+/* The router focuses the heading on arrival so a screen reader announces the page.
+   That focus is never the reader's own doing -- a heading takes no tab stop -- so
+   it is not drawn. The panel below keeps its ring, because reaching that one is. */
+h1:focus { outline: none; }
+
+/* Shown until the runtime has downloaded and started. Blazor sets the percentage
+   as a custom property while it loads; the fallback covers it not being there. */
+.loading {
+    display: grid;
+    place-items: center;
+    min-height: 60vh;
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+}
+.loading::after { content: var(--blazor-load-percentage-text, "Loading"); }
+
 .sheet-picker { display: block; margin-bottom: 1rem; font-size: 0.85rem; color: var(--muted); }
 .sheet-picker select {
     display: block;
