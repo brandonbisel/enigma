@@ -71,7 +71,8 @@
 
     @if (Mode.IsNaval())
     {
-        <BigramTablePicker Kennziffer="Kennziffer"
+        <BigramTablePicker OnSet="OnSet"
+                           Kennziffer="Kennziffer"
                            Monatstag="Monatstag"
                            Choice="Choice"
                            OnKennziffer="OnKennziffer"
@@ -127,7 +128,8 @@
 
     [Parameter] public int Monatstag { get; set; } = 1;
 
-    [Parameter] public TableChoice Choice { get; set; } = BigramTableChoice.From(0, 1, 'A');
+    [Parameter] public TableChoice Choice { get; set; } =
+        BigramTableChoice.From(BigramTableSet.Quelle, 0, 1, 'A');
 
     /// <summary>What the procedure worked out, when it worked.</summary>
     [Parameter] public IndicatorResult? Result { get; set; }
@@ -149,6 +151,8 @@
     [Parameter] public EventCallback<char> OnFirstFiller { get; set; }
 
     [Parameter] public EventCallback<char> OnLastFiller { get; set; }
+
+    [Parameter] public EventCallback<string> OnSet { get; set; }
 
     [Parameter] public EventCallback<int> OnKennziffer { get; set; }
 

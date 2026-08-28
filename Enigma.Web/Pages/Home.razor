@@ -63,6 +63,7 @@
                     OnMessageGroup="Procedure_MessageGroup"
                     OnFirstFiller="Procedure_FirstFiller"
                     OnLastFiller="Procedure_LastFiller"
+                    OnSet="Procedure_Set"
                     OnKennziffer="Procedure_Kennziffer"
                     OnMonatstag="Procedure_Monatstag"
                     OnTafel="Procedure_Tafel" />
@@ -115,6 +116,7 @@
     private string _messageGroup = string.Empty;
     private char _firstFiller = 'X';
     private char _lastFiller = 'X';
+    private BigramTableSet _set = BigramTableSet.Quelle;
     private int _kennziffer;
     private int _monatstag = 1;
     private char _tafel = 'A';
@@ -124,7 +126,7 @@
     /// it and the operator does not, which is how it worked. The rule is shared with
     /// the command line rather than written out twice.
     /// </summary>
-    private TableChoice Chosen => BigramTableChoice.From(_kennziffer, _monatstag, _tafel);
+    private TableChoice Chosen => BigramTableChoice.From(_set, _kennziffer, _monatstag, _tafel);
 
     private string Ciphertext => _groups is { } size ? MessageText.InGroups(_cipher, size) : _cipher;
 
@@ -250,6 +252,33 @@
     private void Procedure_LastFiller(char filler)
     {
         _lastFiller = filler;
+
+        Rekey(_sheet);
+    }
+
+    /// <summary>
+    /// Changing booklet changes what the other two controls can mean: the plans are
+    /// not the same length, and the sets do not hold the same letters. Anything the
+    /// new set cannot honour falls back rather than pointing at nothing.
+    /// </summary>
+    private void Procedure_Set(string name)
+    {
+        if (!BigramTableSet.All.TryGetValue(name, out var set))
+        {
+            return;
+        }
+
+        _set = set;
+
+        if (_kennziffer > _set.Plan.Columns)
+        {
+            _kennziffer = 0;
+        }
+
+        if (!_set.Tables.ContainsKey(_tafel))
+        {
+            _tafel = _set.Tables.Keys.First();
+        }
 
         Rekey(_sheet);
     }

@@ -57,6 +57,16 @@ var indicatorOption = new Option<string?>("--indicator")
     Description = "Recover the message key from this indicator, then decipher with it."
 };
 
+var setOption = new Option<string?>("--set")
+{
+    Description = "Naval: which set of tables to use. See --list-sets. Defaults to Quelle."
+};
+
+var listSetsOption = new Option<bool>("--list-sets")
+{
+    Description = "List the bigram table sets that ship and exit."
+};
+
 var tafelOption = new Option<string?>("--tafel")
 {
     Description = "Naval: the Doppelbuchstabentauschtafel to use, A to H of the set \"Quelle\"."
@@ -125,6 +135,8 @@ var root = new RootCommand(
     messageKeyOption,
     indicatorOption,
     doubledOption,
+    setOption,
+    listSetsOption,
     tafelOption,
     kennzifferOption,
     monatstagOption,
@@ -151,6 +163,8 @@ root.SetAction((parseResult, cancellationToken) => RunAsync(
     parseResult.GetValue(messageKeyOption),
     parseResult.GetValue(indicatorOption),
     parseResult.GetValue(doubledOption),
+    parseResult.GetValue(setOption),
+    parseResult.GetValue(listSetsOption),
     parseResult.GetValue(tafelOption),
     parseResult.GetValue(kennzifferOption),
     parseResult.GetValue(monatstagOption),
@@ -176,6 +190,8 @@ async Task<int> RunAsync(
     string? messageKey,
     string? indicator,
     bool doubled,
+    string? setName,
+    bool listSets,
     string? tafel,
     int? kennziffer,
     int? monatstag,
@@ -192,6 +208,11 @@ async Task<int> RunAsync(
     if (listPresets)
     {
         return ListPresets();
+    }
+
+    if (listSets)
+    {
+        return ListSets();
     }
 
     if (initKeySheet is not null)
@@ -242,7 +263,7 @@ async Task<int> RunAsync(
     // The naval procedure. Read and checked in one place so it can be tested
     // without a host, a console or a machine.
     var naval = NavalArguments.Read(
-        tafel, kennziffer, monatstag, kenngruppen, fillers, messageKey, indicator, doubled);
+        setName, tafel, kennziffer, monatstag, kenngruppen, fillers, messageKey, indicator, doubled);
 
     if (naval.Error is { } refusal)
     {
@@ -326,6 +347,21 @@ IConfiguration KeySheetConfiguration(HostApplicationBuilder builder, FileInfo? k
     var section = configuration.GetSection("KeySheet");
 
     return section.Exists() ? section : configuration;
+}
+
+int ListSets()
+{
+    foreach (var set in BigramTableSet.All.Values)
+    {
+        var letters = string.Concat(set.Tables.Keys.Order());
+
+        Console.WriteLine($"{set.Name,-10} {set.Serial}");
+        Console.WriteLine(
+            $"{string.Empty,-10} Tafeln {letters}, {set.Plan.Columns} Kennziffer columns" +
+            (set.IsComplete ? string.Empty : ", incomplete: some days name a table that is not published"));
+    }
+
+    return 0;
 }
 
 int ListPresets()

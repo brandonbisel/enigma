@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard, both indicator procedures |
 
-651 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+666 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -80,6 +80,13 @@ Doppelbuchstabentauschtafel, pinned by the published worked example.
 
 It is pinned by a real message: U-534's P1030690 of 1 May 1945, read from its
 transmitted indicator through to the message key its operator wrote down.
+
+**Why so few of these survive at all.** The Kriegsmarine printed its cipher documents
+in water-soluble ink on paper that dissolved: a table aboard a sinking boat wiped
+itself the moment the water reached it, which is exactly what the design intended. It
+is why the daily key sheets are gone entirely — U-534's is reconstructed rather than
+transcribed — and why a complete bigram set is a rarer thing than a rotor wiring. What
+Bletchley mostly had was not captured tables but tables rebuilt from traffic.
 
 **The source has been found and checked.** The Crypto Museum publishes a scan of the
 "Quelle" booklet — *Doppelbuchstabentauschtafeln für Kenngruppen*, serial 2499 — the
@@ -237,10 +244,17 @@ reproduced, and the reverse carries Kennziffer *sieben* to *zwölf*: a full plan
 **twelve columns, not six**. That is what the Quelle photograph's "Fortsetzung
 Rückseite!" was pointing at, and why `BrunoQuelle` holds only half a plan.
 
-What remains is to let the front ends choose between the two sets. That was
-deliberately deferred while Meer was incomplete — offering half a set is worse than
-offering none — and it is now unblocked: `BigramTableChoice` hardcodes Quelle, and
-both panels follow it.
+**Both front ends now choose between the two sets.** `BigramTableSet` pairs a set of
+tables with the calendar issued alongside it, because the two are useless apart, and
+the panel offers *Satz* as one choice rather than two that could be mismatched. The
+command line takes `--set`, with `--list-sets` to say what is on offer and which of
+them is incomplete.
+
+Changing set changes what the other controls can mean, and the wiring honours that:
+Quelle's plan has six Kennziffer columns where Meer's has twelve, and the two sets do
+not hold the same letters, so a column or a Tafel the new set cannot honour falls back
+instead of pointing at nothing. Quelle stays the default — it is the set the pinned
+message was sent on.
 
 **A calendar cannot be checked the way a table can, and that is worth stating
 plainly.** A bigram table is an involution, so a mistyped cell breaks a pair and is

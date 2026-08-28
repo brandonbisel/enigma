@@ -39,6 +39,7 @@ public sealed record NavalArguments
     public bool Wanted => Table is not null;
 
     public static NavalArguments Read(
+        string? setName,
         string? tafel,
         int? kennziffer,
         int? monatstag,
@@ -48,8 +49,17 @@ public sealed record NavalArguments
         string? indicator,
         bool doubled)
     {
-        var columns = Tauschtafelplan.BrunoQuelle.Columns;
-        var wanted = tafel is not null || kennziffer is not null;
+        var wanted = setName is not null || tafel is not null || kennziffer is not null;
+
+        if (setName is not null && !BigramTableSet.All.ContainsKey(setName))
+        {
+            return Refused(
+                $"Unknown set '{setName}'. Known: {string.Join(", ", BigramTableSet.All.Keys)}.");
+        }
+
+        // Quelle is the default because it is the set the pinned message was sent on.
+        var set = setName is null ? BigramTableSet.Quelle : BigramTableSet.All[setName];
+        var columns = set.Plan.Columns;
 
         if (tafel is not null && kennziffer is not null)
         {
@@ -59,7 +69,7 @@ public sealed record NavalArguments
         if (kennziffer is { } column && (column < 1 || column > columns))
         {
             return Refused(
-                $"--kennziffer is a column of the Tauschtafelplan, 1 to {columns}.");
+                $"--kennziffer is a column of the \"{set.Name}\" Tauschtafelplan, 1 to {columns}.");
         }
 
         if (kennziffer is not null && monatstag is null)
@@ -113,7 +123,10 @@ public sealed record NavalArguments
         }
 
         var chosen = BigramTableChoice.From(
-            kennziffer ?? 0, monatstag ?? 1, tafel is { Length: > 0 } named ? Letters(named)[0] : 'A');
+            set,
+            kennziffer ?? 0,
+            monatstag ?? 1,
+            tafel is { Length: > 0 } named ? Letters(named)[0] : 'A');
 
         if (!chosen.Found)
         {
@@ -157,8 +170,8 @@ public sealed record NavalArguments
             // Worth saying only when the operator did not pick the table himself.
             Note = kennziffer is null
                 ? null
-                : $"Tauschtafelplan Bruno, Kennziffer {kennziffer}, Monatstag {monatstag}: " +
-                  $"Tafel {chosen.Letter}"
+                : $"Tauschtafelplan Bruno / {set.Name}, Kennziffer {kennziffer}, " +
+                  $"Monatstag {monatstag}: Tafel {chosen.Letter}"
         };
     }
 

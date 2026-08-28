@@ -61,7 +61,12 @@ clear, as it travelled. Choose **Kriegsmarine** and nothing goes in clear at all
 two Kenngruppen and their padding letters when sending, the eight transmitted letters
 when receiving, and both hidden under a Doppelbuchstabentauschtafel.
 
-Which table is a choice the operator did not make. Give the panel a Kennziffer column
+Which **Satz** — which booklet you are holding — comes first, because a set of tables
+and the calendar issued with it are useless apart. Choosing one changes what the rest
+of the panel offers: Quelle has eight Tafeln and six Kennziffer columns, Meer nine and
+twelve.
+
+Which table is then a choice the operator did not make. Give the panel a Kennziffer column
 — the one his cipher net was allotted — and a day of the month, and the
 Tauschtafelplan names the table, exactly as it did aboard. Pick nothing and any of the
 eight shipped tables can be chosen by hand instead. A day that falls on Tafel J, the
@@ -355,8 +360,9 @@ Tauschtafelplan Bruno, Kennziffer 6, Monatstag 1: Tafel A
 Ground setting IBFK, Schlüsselkenngruppe DUZ, Verfahrenkenngruppe YMU, indicator FNHCGVET, rotors ODFF
 ```
 
-`--kennziffer` with `--monatstag` reads the table off the Tauschtafelplan, as an
-operator did; `--tafel A` names one outright for anyone working without a calendar.
+`--set` picks the booklet and `--list-sets` says what is on offer; `--kennziffer` with
+`--monatstag` reads the table off that set's Tauschtafelplan, as an operator did, and
+`--tafel A` names one outright for anyone working without a calendar.
 Sending takes the two trigrams and the two padding letters, and produces the eight
 letters that went out:
 
@@ -369,7 +375,9 @@ Ground setting IBFK, Schlüsselkenngruppe DUZ, Verfahrenkenngruppe YMU, indicato
 A day that falls on Tafel J stops and says so rather than substituting a table that
 would decipher to plausible nonsense.
 
-Tafel J is in neither source and is not shipped. Supply a table and it will be used:
+Quelle's Tafel J is in neither source and is not shipped, so some days of its calendar
+have no table to offer and say so. Meer has no such day. Supply your own table and it
+will be used:
 
 ```csharp
 var table = BigramTable.Parse("AK=BD HQ=BJ LK=EM GZ=EJ");

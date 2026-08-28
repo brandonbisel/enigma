@@ -217,4 +217,91 @@ public class NavalIndicatorPanelTests : BunitContext
     private static string Windows(IRenderedComponent<Home> page) =>
         string.Concat(page.FindAll("[data-testid=window] .window-letter")
             .Select(window => window.TextContent));
+
+    // -- more than one set -------------------------------------------------------
+
+    [Fact]
+    public void EverySetOnOfferIsListed()
+    {
+        var page = Naval("u534", IndicatorMode.NavalReceiving);
+
+        Assert.Equal(
+            BigramTableSet.All.Count, page.FindAll("[data-testid=table-set] option").Count);
+    }
+
+    [Fact]
+    public void TheSetInUseDecidesWhichTafelnAreOffered()
+    {
+        var page = Naval("u534", IndicatorMode.NavalReceiving);
+
+        // Quelle has eight tables, Meer nine.
+        Assert.Equal(8, page.FindAll("[data-testid=tafel] option").Count);
+
+        page.Find("[data-testid=table-set]").Change("Meer");
+
+        Assert.Equal(9, page.FindAll("[data-testid=tafel] option").Count);
+    }
+
+    [Fact]
+    public void TheSetInUseDecidesHowManyKennzifferColumnsThereAre()
+    {
+        var page = Naval("u534", IndicatorMode.NavalReceiving);
+
+        // Quelle's plan is photographed on one side only: six columns, not twelve.
+        Assert.Equal(7, page.FindAll("[data-testid=kennziffer] option").Count);
+
+        page.Find("[data-testid=table-set]").Change("Meer");
+
+        Assert.Equal(13, page.FindAll("[data-testid=kennziffer] option").Count);
+    }
+
+    [Fact]
+    public void ReadingTheSameIndicatorUnderAnotherSetGivesAnotherKey()
+    {
+        var page = Naval("u534", IndicatorMode.NavalReceiving);
+
+        page.Find("[data-testid=tafel]").Change("A");
+        page.Find("[data-testid=indicator-sent]").Change("FNHC GVET");
+
+        Assert.Equal("ODFF", Windows(page));
+
+        page.Find("[data-testid=table-set]").Change("Meer");
+
+        Assert.NotEqual("ODFF", Windows(page));
+    }
+
+    [Fact]
+    public void ChangingToAShorterPlanDropsAKennzifferItCannotHonour()
+    {
+        // Meer column twelve has no counterpart in Quelle's six, so it falls back to
+        // choosing by hand rather than pointing at a column that is not there.
+        var page = Naval("u534", IndicatorMode.NavalReceiving);
+
+        page.Find("[data-testid=table-set]").Change("Meer");
+        page.Find("[data-testid=kennziffer]").Change("12");
+
+        Assert.NotEmpty(page.FindAll("[data-testid=plan-says]"));
+
+        page.Find("[data-testid=table-set]").Change("Quelle");
+
+        Assert.Empty(page.FindAll("[data-testid=plan-says]"));
+        Assert.False(page.Find("[data-testid=tafel]").HasAttribute("disabled"));
+    }
+
+    [Fact]
+    public void NoDayOfTheCompleteSetIsRefused()
+    {
+        // Quelle has days that name the unpublished Tafel J; Meer has none.
+        var page = Naval("u534", IndicatorMode.NavalReceiving);
+
+        page.Find("[data-testid=table-set]").Change("Quelle");
+        page.Find("[data-testid=kennziffer]").Change("2");
+        page.Find("[data-testid=monatstag]").Change("3");
+
+        Assert.NotEmpty(page.FindAll("[data-testid=tafel-missing]"));
+
+        page.Find("[data-testid=table-set]").Change("Meer");
+
+        Assert.Empty(page.FindAll("[data-testid=tafel-missing]"));
+    }
 }

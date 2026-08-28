@@ -9,36 +9,40 @@ namespace Enigma.App;
 /// table it named. Naming a table outright is the concession to anyone working
 /// without a calendar, and the calendar wins whenever it is given.
 ///
-/// The set ran to nine tables and eight of them survive, so a day can legitimately
-/// call for one that cannot be supplied. That is an answer rather than a fault, and
-/// both front ends have to be able to say it, which is why it is decided here and
-/// not in either of them.
+/// A set can legitimately call for a table that does not survive — "Quelle" is eight
+/// tables of nine. That is an answer rather than a fault, and both front ends have to
+/// be able to say it, which is why it is decided here and not in either of them.
 /// </summary>
 public static class BigramTableChoice
 {
+    /// <param name="set">Which booklet is in use.</param>
     /// <param name="kennziffer">The Tauschtafelplan column, or zero to take the letter as given.</param>
     /// <param name="monatstag">The day of the month, when a Kennziffer is given.</param>
     /// <param name="tafel">The table to use when no Kennziffer is.</param>
-    public static TableChoice From(int kennziffer, int monatstag, char tafel)
+    public static TableChoice From(BigramTableSet set, int kennziffer, int monatstag, char tafel)
     {
+        ArgumentNullException.ThrowIfNull(set);
+
         var letter = char.ToUpperInvariant(
-            kennziffer > 0 ? Tauschtafelplan.BrunoQuelle.Tafel(kennziffer, monatstag) : tafel);
+            kennziffer > 0 ? set.Plan.Tafel(kennziffer, monatstag) : tafel);
 
         return new TableChoice(
+            set,
             letter,
-            BigramTables.Quelle.TryGetValue(letter, out var table) ? table : null);
+            set.Tables.TryGetValue(letter, out var table) ? table : null);
     }
 }
 
 /// <summary>The table a day or a choice comes to, and whether it is published.</summary>
+/// <param name="Set">The booklet it was looked up in.</param>
 /// <param name="Letter">The table named, whether or not it survives.</param>
 /// <param name="Table">The table itself, or null if that letter is not published.</param>
-public sealed record TableChoice(char Letter, BigramTable? Table)
+public sealed record TableChoice(BigramTableSet Set, char Letter, BigramTable? Table)
 {
     public bool Found => Table is not null;
 
     /// <summary>Why there is no table, in words fit to show an operator.</summary>
     public string Missing =>
-        $"Tafel {Letter} is not published. The set ran to nine tables, A to J without I, " +
-        "and the scan that survives holds eight of them.";
+        $"Tafel {Letter} of \"{Set.Name}\" is not published. The set ran to nine tables, " +
+        $"A to J without I, and the scan that survives holds {Set.Tables.Count} of them.";
 }

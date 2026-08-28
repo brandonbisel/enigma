@@ -13,6 +13,7 @@ namespace Enigma.Cmd.Tests;
 public class NavalArgumentsTests
 {
     private static NavalArguments Read(
+        string? setName = null,
         string? tafel = null,
         int? kennziffer = null,
         int? monatstag = null,
@@ -22,7 +23,7 @@ public class NavalArgumentsTests
         string? indicator = null,
         bool doubled = false) =>
         NavalArguments.Read(
-            tafel, kennziffer, monatstag, kenngruppen, fillers, messageKey, indicator, doubled);
+            setName, tafel, kennziffer, monatstag, kenngruppen, fillers, messageKey, indicator, doubled);
 
     // -- not the naval procedure at all -----------------------------------------
 
@@ -245,5 +246,69 @@ public class NavalArgumentsTests
         Assert.False(read.Wanted);
         Assert.Null(read.Table);
         Assert.Null(read.KeyGroup);
+    }
+
+    // -- more than one set -------------------------------------------------------
+
+    [Fact]
+    public void TheSetDefaultsToQuelle()
+    {
+        // The set U-534 was on, and the one the pinned message needs.
+        Assert.Same(BigramTables.QuelleA, Read(tafel: "A", indicator: "FNHCGVET").Table);
+    }
+
+    [Fact]
+    public void AnotherSetGivesAnotherTable()
+    {
+        Assert.Same(
+            BigramTables.MeerA, Read(setName: "Meer", tafel: "A", indicator: "FNHCGVET").Table);
+    }
+
+    [Fact]
+    public void TheSetNameIsNotCaseSensitive()
+    {
+        Assert.Same(
+            BigramTables.MeerA, Read(setName: "meer", tafel: "A", indicator: "FNHCGVET").Table);
+    }
+
+    [Fact]
+    public void AnUnknownSetIsRefusedAndListsTheKnownOnes()
+    {
+        var read = Read(setName: "Flusslauf", tafel: "A", indicator: "FNHCGVET");
+
+        Assert.Contains("Unknown set", read.Error);
+        Assert.Contains("Quelle", read.Error);
+        Assert.Contains("Meer", read.Error);
+    }
+
+    [Fact]
+    public void NamingASetIsEnoughToMeanTheNavalProcedure()
+    {
+        // Without a --tafel or --kennziffer, --set alone still says which procedure
+        // is meant, so the refusal is about the missing work and not the set.
+        Assert.Contains("nothing to work with it", Read(setName: "Meer").Error);
+    }
+
+    [Fact]
+    public void MeersCalendarReachesColumnsQuellesDoesNot()
+    {
+        // Quelle has six Kennziffer columns photographed, Meer twelve.
+        Assert.Contains("--kennziffer", Read(kennziffer: 12, monatstag: 1, indicator: "X").Error);
+
+        Assert.False(
+            Read(setName: "Meer", kennziffer: 12, monatstag: 1, indicator: "FNHCGVET").Failed);
+    }
+
+    [Fact]
+    public void MeerHasNoDayThatCannotBeServed()
+    {
+        // Every column and day of the complete set resolves; Quelle's Tafel J days
+        // do not. This is the difference the set choice exists to expose.
+        Assert.All(
+            from kennziffer in Enumerable.Range(1, BigramTableSet.Meer.Plan.Columns)
+            from day in Enumerable.Range(1, 31)
+            select Read(
+                setName: "Meer", kennziffer: kennziffer, monatstag: day, indicator: "FNHCGVET"),
+            read => Assert.False(read.Failed));
     }
 }

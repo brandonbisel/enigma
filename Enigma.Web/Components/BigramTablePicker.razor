@@ -13,10 +13,19 @@
     </legend>
 
     <div class="fields">
+        <label>Satz <span class="gloss">which booklet you hold</span>
+            <select data-testid="table-set" value="@Choice.Set.Name" @onchange="ChoseSet">
+                @foreach (var (name, set) in BigramTableSet.All)
+                {
+                    <option value="@name">@name — @set.Tables.Count Tafeln</option>
+                }
+            </select>
+        </label>
+
         <label>Kennziffer <span class="gloss">the column for your cipher net</span>
             <select data-testid="kennziffer" value="@Kennziffer" @onchange="ChoseColumn">
                 <option value="0">— none, choose a Tafel below</option>
-                @for (var column = 1; column <= Tauschtafelplan.BrunoQuelle.Columns; column++)
+                @for (var column = 1; column <= Choice.Set.Plan.Columns; column++)
                 {
                     <option value="@column">@column</option>
                 }
@@ -34,7 +43,7 @@
         <label>Tafel
             <select data-testid="tafel" value="@Choice.Letter" @onchange="ChoseTafel"
                     disabled="@(Kennziffer > 0)">
-                @foreach (var letter in BigramTables.Quelle.Keys)
+                @foreach (var letter in Choice.Set.Tables.Keys)
                 {
                     <option value="@letter">Quelle @letter</option>
                 }
@@ -50,7 +59,8 @@
     @if (Kennziffer > 0)
     {
         <p class="worked" data-testid="plan-says">
-            Tauschtafelplan Bruno, Kennziffer @Kennziffer, Monatstag @Monatstag:
+            Tauschtafelplan Bruno / @Choice.Set.Name, Kennziffer @Kennziffer,
+            Monatstag @Monatstag:
             <span>Tafel @Choice.Letter</span>
         </p>
     }
@@ -71,13 +81,19 @@
     /// The table in force: read off the plan when a Kennziffer is set, and whatever
     /// was chosen when one is not.
     /// </summary>
-    [Parameter] public TableChoice Choice { get; set; } = BigramTableChoice.From(0, 1, 'A');
+    [Parameter] public TableChoice Choice { get; set; } =
+        BigramTableChoice.From(BigramTableSet.Quelle, 0, 1, 'A');
+
+    [Parameter] public EventCallback<string> OnSet { get; set; }
 
     [Parameter] public EventCallback<int> OnKennziffer { get; set; }
 
     [Parameter] public EventCallback<int> OnMonatstag { get; set; }
 
     [Parameter] public EventCallback<char> OnTafel { get; set; }
+
+    private Task ChoseSet(ChangeEventArgs args) =>
+        OnSet.InvokeAsync(args.Value?.ToString() ?? BigramTableSet.Quelle.Name);
 
     private Task ChoseColumn(ChangeEventArgs args) => OnKennziffer.InvokeAsync(Number(args, 0));
 

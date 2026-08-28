@@ -12,7 +12,7 @@ public class BigramTableChoiceTests
     public void AKennzifferAndADayGiveTheTableTheCalendarNames()
     {
         // 1 May 1945, the column pencilled "Mai 45": the day U-534 sent on Tafel A.
-        var chosen = BigramTableChoice.From(kennziffer: 6, monatstag: 1, tafel: 'H');
+        var chosen = BigramTableChoice.From(BigramTableSet.Quelle, kennziffer: 6, monatstag: 1, tafel: 'H');
 
         Assert.Equal('A', chosen.Letter);
         Assert.Same(BigramTables.QuelleA, chosen.Table);
@@ -23,13 +23,13 @@ public class BigramTableChoiceTests
     {
         // An operator did not choose his table, so a Kennziffer has to win. The
         // 'H' above and here is deliberately not what the plan says.
-        Assert.NotEqual('H', BigramTableChoice.From(6, 1, 'H').Letter);
+        Assert.NotEqual('H', BigramTableChoice.From(BigramTableSet.Quelle, 6, 1, 'H').Letter);
     }
 
     [Fact]
     public void WithoutAKennzifferTheLetterGivenStands()
     {
-        var chosen = BigramTableChoice.From(kennziffer: 0, monatstag: 1, tafel: 'D');
+        var chosen = BigramTableChoice.From(BigramTableSet.Quelle, kennziffer: 0, monatstag: 1, tafel: 'D');
 
         Assert.Equal('D', chosen.Letter);
         Assert.Same(BigramTables.QuelleD, chosen.Table);
@@ -38,7 +38,7 @@ public class BigramTableChoiceTests
     [Fact]
     public void ALowerCaseLetterIsTheSameTable()
     {
-        Assert.Same(BigramTables.QuelleD, BigramTableChoice.From(0, 1, 'd').Table);
+        Assert.Same(BigramTables.QuelleD, BigramTableChoice.From(BigramTableSet.Quelle, 0, 1, 'd').Table);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class BigramTableChoiceTests
     {
         // Kennziffer two on the third reads J, and Tafel J is in no surviving
         // source. Returning a substitute would decode to plausible nonsense.
-        var chosen = BigramTableChoice.From(kennziffer: 2, monatstag: 3, tafel: 'A');
+        var chosen = BigramTableChoice.From(BigramTableSet.Quelle, kennziffer: 2, monatstag: 3, tafel: 'A');
 
         Assert.Equal('J', chosen.Letter);
         Assert.False(chosen.Found);
@@ -63,7 +63,7 @@ public class BigramTableChoiceTests
         Assert.All(
             from kennziffer in Enumerable.Range(1, Tauschtafelplan.BrunoQuelle.Columns)
             from day in Enumerable.Range(1, 31)
-            select BigramTableChoice.From(kennziffer, day, 'A'),
+            select BigramTableChoice.From(BigramTableSet.Quelle, kennziffer, day, 'A'),
             chosen =>
             {
                 Assert.Contains(chosen.Letter, "ABCDEFGHJ");
@@ -79,7 +79,44 @@ public class BigramTableChoiceTests
         Assert.All(
             from kennziffer in Enumerable.Range(1, Tauschtafelplan.BrunoQuelle.Columns)
             from day in Enumerable.Range(1, 31)
-            select BigramTableChoice.From(kennziffer, day, 'A'),
+            select BigramTableChoice.From(BigramTableSet.Quelle, kennziffer, day, 'A'),
             chosen => Assert.True(chosen.Found || chosen.Letter == 'J'));
+    }
+
+    // -- more than one set -------------------------------------------------------
+
+    [Fact]
+    public void TheSameLetterInAnotherSetIsAnotherTable()
+    {
+        Assert.NotSame(
+            BigramTableChoice.From(BigramTableSet.Quelle, 0, 1, 'A').Table,
+            BigramTableChoice.From(BigramTableSet.Meer, 0, 1, 'A').Table);
+    }
+
+    [Fact]
+    public void EachSetIsReadAgainstItsOwnCalendar()
+    {
+        // The plans are different documents; the same column and day need not name
+        // the same table.
+        Assert.NotEqual(
+            BigramTableChoice.From(BigramTableSet.Quelle, 2, 3, 'A').Letter,
+            BigramTableChoice.From(BigramTableSet.Meer, 2, 3, 'A').Letter);
+    }
+
+    [Fact]
+    public void MeerCanSupplyEveryDayAndQuelleCannot()
+    {
+        // The difference that matters between a complete set and an incomplete one.
+        Assert.True(BigramTableSet.Meer.IsComplete);
+        Assert.False(BigramTableSet.Quelle.IsComplete);
+    }
+
+    [Fact]
+    public void AMissingTableNamesTheSetItIsMissingFrom()
+    {
+        var missing = BigramTableChoice.From(BigramTableSet.Quelle, 2, 3, 'A').Missing;
+
+        Assert.Contains("Tafel J", missing);
+        Assert.Contains("Quelle", missing);
     }
 }
