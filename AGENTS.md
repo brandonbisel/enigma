@@ -8,7 +8,7 @@ what is a future goal, and what is deliberately not scheduled.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 343 tests
+dotnet test               # whole suite, currently 376 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Web    # the panel, on http://localhost:5298
@@ -51,6 +51,9 @@ whichever the neighbouring files use.
 - Methods on the bases are deliberately non-virtual, with one exception:
   `RotorBase.Step` is virtual so `ThinRotorBase` can refuse to turn. Variation
   otherwise belongs in the abstract data members, not in overridden behaviour.
+- A machine knows its own layout (`IEnigmaMachine.Layout`), which is how a caller
+  asks whether it has a plugboard at all. The drive comes from the layout rather
+  than being passed beside it, so the two cannot disagree.
 - The panel is a view of a machine and holds no cipher logic of its own. What it
   shows must come from the session; anything it works out for itself can disagree
   with the machine, which is the one thing a simulator's UI must never do.

@@ -111,6 +111,12 @@ public class KeySheet
             .ToList();
     }
 
+    /// <summary>
+    /// An independent copy, so a caller editing a draft does not disturb the sheet
+    /// the machine in use was keyed from.
+    /// </summary>
+    public KeySheet Copy() => WithPositions(Positions);
+
     /// <summary>The same key sheet with the rotors started somewhere else.</summary>
     public KeySheet WithPositions(string positions) => new()
     {

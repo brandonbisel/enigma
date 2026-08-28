@@ -1,3 +1,4 @@
+using Enigma.Machines;
 using Enigma.Reflectors;
 using Enigma.Rotors;
 
@@ -235,4 +236,31 @@ public class EnigmaMachineTests
 
         Assert.Equal("rotors", exception.ParamName);
     }
+    [Fact]
+    public void AMachineBuiltByHandIsAServiceMachine()
+    {
+        // The layout is what a caller asks to know what could be fitted, so a
+        // machine assembled without one must still answer.
+        var machine = new EnigmaMachine(
+            new PlugBoard(CharacterMap), [new RotorI(), new RotorII(), new RotorIII()], new ReflectorB());
+
+        Assert.Equal("Service", machine.Layout.Name);
+        Assert.True(machine.Layout.AllowsPlugBoard);
+    }
+
+    [Fact]
+    public void TheDriveComesFromTheLayout()
+    {
+        // Given separately they could disagree, and a machine stepping one way while
+        // claiming to be another kind is the worst sort of wrong.
+        var machine = new EnigmaMachine(
+            new PlugBoard(CharacterMap),
+            [new RotorI(), new RotorII(), new RotorIII()],
+            new ReflectorB(),
+            layout: new GearLayout(new GearDrive()));
+
+        Assert.Equal("G-31", machine.Layout.Name);
+        Assert.False(machine.Layout.AllowsPlugBoard);
+    }
+
 }

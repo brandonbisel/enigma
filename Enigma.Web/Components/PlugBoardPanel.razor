@@ -1,0 +1,104 @@
+@* The Steckerbrett. Click a letter to take up a plug, click another to run the
+   cable between them, and click a cabled letter to pull it out again. *@
+
+<section class="stecker" data-testid="stecker">
+    <h2>Steckerbrett</h2>
+
+    <div class="board jacks">
+        @foreach (var row in KeyboardLayout.Rows(Alphabet))
+        {
+            <div class="board-row">
+                @foreach (var character in row)
+                {
+                    var letter = character;
+
+                    <button type="button"
+                            class="jack @State(letter)"
+                            data-testid="jack"
+                            data-letter="@letter"
+                            @onclick="() => Choose(letter)">@letter</button>
+                }
+            </div>
+        }
+    </div>
+
+    <p class="cables" data-testid="cables">
+        @if (Cables.Count == 0)
+        {
+            <span class="muted">No cables.</span>
+        }
+        else
+        {
+            @string.Join(' ', Cables.Select(cable => $"{cable.From}{cable.To}"))
+        }
+    </p>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public required ICharacterMap Alphabet { get; set; }
+
+    /// <summary>The cables on the board, each once.</summary>
+    [Parameter, EditorRequired] public required IReadOnlyList<(char From, char To)> Cables { get; set; }
+
+    [Parameter] public EventCallback<(char From, char To)> OnPatch { get; set; }
+
+    [Parameter] public EventCallback<(char From, char To)> OnUnpatch { get; set; }
+
+    private char? _held;
+
+    private string? State(char letter)
+    {
+        if (_held == letter)
+        {
+            return "jack-held";
+        }
+
+        return Partner(letter) is not null ? "jack-cabled" : null;
+    }
+
+    private async Task Choose(char letter)
+    {
+        // A cabled letter is dealt with first: the plug in the way has to come out
+        // before anything else can go in.
+        if (Partner(letter) is { } partner)
+        {
+            _held = null;
+
+            await OnUnpatch.InvokeAsync((letter, partner));
+
+            return;
+        }
+
+        if (_held is not { } waiting)
+        {
+            _held = letter;
+
+            return;
+        }
+
+        _held = null;
+
+        if (waiting != letter)
+        {
+            await OnPatch.InvokeAsync((waiting, letter));
+        }
+    }
+
+    private char? Partner(char letter)
+    {
+        foreach (var (from, to) in Cables)
+        {
+            if (from == letter)
+            {
+                return to;
+            }
+
+            if (to == letter)
+            {
+                return from;
+            }
+        }
+
+        return null;
+    }
+}

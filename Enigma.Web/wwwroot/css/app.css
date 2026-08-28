@@ -166,3 +166,69 @@ h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.08em; margin: 0 0 1r
     background: #ffe08a;
     color: #2b2000;
 }
+
+.settings, .stecker {
+    margin-top: 1.2rem;
+    padding: 1rem;
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 0.6rem;
+}
+
+.settings h2, .stecker h2 {
+    margin: 0 0 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.fields { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 0.8rem; }
+.fields label, .field-name {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+}
+
+.settings select, .settings input {
+    padding: 0.35rem 0.4rem;
+    background: var(--ground);
+    color: var(--ink);
+    border: 1px solid var(--edge);
+    border-radius: 0.25rem;
+    font: inherit;
+    font-size: 0.85rem;
+}
+.settings input { width: 7rem; }
+
+.wheels { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.8rem; }
+.wheels .field-name { justify-content: flex-end; }
+.wheels select { min-width: 5.5rem; }
+.wheels .action:disabled { opacity: 0.4; cursor: default; }
+
+.jacks { padding: 0; }
+.jack {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--edge);
+    background: var(--ground);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.jack-held { border-color: var(--lamp-lit); border-width: 2px; }
+.jack-cabled { background: var(--key); color: var(--key-ink); }
+
+.cables {
+    margin: 0.8rem 0 0;
+    font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+}
+.muted { color: var(--muted); letter-spacing: normal; font-family: inherit; }

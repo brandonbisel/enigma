@@ -16,25 +16,43 @@
     </select>
 </label>
 
-@if (_session is not null)
-{
-    <MachinePanel Session="_session" @key="_name" />
-}
-else if (_error is not null)
+@if (_error is not null)
 {
     <p class="error" data-testid="error">@_error</p>
 }
 
+@if (_session is not null)
+{
+    <MachinePanel Session="_session" @key="_generation" />
+
+    <KeySheetEditor Sheet="_sheet"
+                    ShowsReflectorSetting="_session.ReflectorPosition is not null"
+                    OnChanged="Rekey" />
+
+    @if (_session.HasPlugBoard)
+    {
+        <PlugBoardPanel Alphabet="_session.Alphabet"
+                        Cables="_session.Cables().ToList()"
+                        OnPatch="Patch"
+                        OnUnpatch="Unpatch" />
+    }
+}
+
 @code {
     private string _name = "default";
+    private KeySheet _sheet = new();
     private EnigmaSession? _session;
     private string? _error;
 
-    protected override void OnInitialized() => Key(_name);
+    // Changing the settings keys a new machine, and the panel holds the tape and
+    // the lamp of the old one, so it is replaced rather than reused.
+    private int _generation;
 
-    private void Choose(ChangeEventArgs args) => Key(args.Value?.ToString() ?? _name);
+    protected override void OnInitialized() => Choose(_name);
 
-    private void Key(string name)
+    private void Choose(ChangeEventArgs args) => Choose(args.Value?.ToString() ?? _name);
+
+    private void Choose(string name)
     {
         _name = name;
 
@@ -45,8 +63,46 @@ else if (_error is not null)
             return;
         }
 
+        Rekey(sheet.Copy());
+    }
+
+    private void Rekey(KeySheet sheet)
+    {
+        _sheet = sheet;
+
         var keyed = EnigmaSession.Open(Factory, sheet);
 
-        (_session, _error) = (keyed.Session, keyed.Error);
+        _error = keyed.Error;
+
+        // A machine that cannot be built leaves the last working one in place: the
+        // operator is midway through setting up, not holding a broken machine.
+        if (keyed.Session is not null)
+        {
+            _session = keyed.Session;
+            _generation++;
+        }
+    }
+
+    private void Patch((char From, char To) cable) =>
+        Rekey(WithCables(Cables().Append($"{cable.From}{cable.To}")));
+
+    private void Unpatch((char From, char To) cable) =>
+        Rekey(WithCables(Cables().Where(pair => !Joins(pair, cable))));
+
+    private static bool Joins(string pair, (char From, char To) cable) =>
+        pair.Contains(cable.From) || pair.Contains(cable.To);
+
+    private IEnumerable<string> Cables() =>
+        (_sheet.Plugboard ?? string.Empty)
+            .Split([' ', '\t', ',', '-', '/'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    // The order is kept because an Uhr numbers its cables by it.
+    private KeySheet WithCables(IEnumerable<string> cables)
+    {
+        var sheet = _sheet.Copy();
+
+        sheet.Plugboard = string.Join(' ', cables);
+
+        return sheet;
     }
 }

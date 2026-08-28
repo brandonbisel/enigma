@@ -50,6 +50,19 @@ shows four as well, but the extra one is its reflector, which turns and so is pa
 of the setting. The keyboard is laid out from the machine's own alphabet rather
 than from a constant, so a machine that does not work in letters gets its own keys.
 
+Below the machine is its key sheet, set by hand. The wheels, reflector, entry
+wheel and alphabet are chosen from the parts catalogue, so a wheel defined in a
+parts file appears in the list without the page knowing it exists. Adding a
+fourth wheel offers a thin one, because that is the only kind that fits beside a
+thin reflector. Settings that will not build a machine are reported, and the
+machine already in use is left alone — being midway through setting up is not the
+same as holding a broken machine.
+
+The Steckerbrett is below that: click a letter to take up a plug, click another to
+run the cable, and click a cabled letter to pull it out. A machine built without a
+board — a Zählwerk Enigma — is offered none at all rather than one whose cables
+would be refused.
+
 It is a WebAssembly page with no server behind it: the library runs in the browser
 unchanged, and nothing typed into it is transmitted anywhere. `dotnet publish`
 produces a folder of static files — about 2.1 MB over the wire once compressed —

@@ -183,6 +183,22 @@ public class EnigmaSessionTests
     }
 
     [Fact]
+    public void TheSessionReportsWhichMachineItIs()
+    {
+        Assert.Equal("Service", Open("default").Model);
+        Assert.Equal("G-31", Open("g31").Model);
+    }
+
+    [Fact]
+    public void AZaehlwerkMachineReportsThatItHasNoBoard()
+    {
+        // A front end asks this to know whether to offer a Steckerbrett at all,
+        // rather than offering one whose cables would be refused.
+        Assert.True(Open("default").HasPlugBoard);
+        Assert.False(Open("g31").HasPlugBoard);
+    }
+
+    [Fact]
     public void AFixedReflectorHasNoPosition()
     {
         Assert.Null(Open("default").ReflectorPosition);

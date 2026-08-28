@@ -50,6 +50,15 @@ public sealed class EnigmaSession
 
     public ICharacterMap Alphabet => Machine.CharacterMap;
 
+    /// <summary>Which machine this is: "Service" for the Enigma I, M3 and M4.</summary>
+    public string Model => Machine.Layout.Name;
+
+    /// <summary>
+    /// False for the machines built without a Steckerbrett, whose front end should
+    /// not offer a board at all rather than offer one that is refused.
+    /// </summary>
+    public bool HasPlugBoard => Machine.Layout.AllowsPlugBoard;
+
     /// <summary>The wheels as they stand, left to right, in the machine's own alphabet.</summary>
     public IReadOnlyList<int> Window => Machine.Rotors.Select(rotor => rotor.Position).ToArray();
 

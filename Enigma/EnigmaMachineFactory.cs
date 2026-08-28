@@ -78,7 +78,7 @@ public class EnigmaMachineFactory : IEnigmaMachineFactory
             _services.GetService<ILogger<EnigmaMachine>>(),
             alphabet,
             entryWheel,
-            layout.Drive);
+            layout);
     }
 
     /// <summary>

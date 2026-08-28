@@ -15,6 +15,7 @@ public class EnigmaMachine : IEnigmaMachine
     public IEnumerable<IRotor> Rotors => _rotors;
     public IReflector Reflector { get; }
     public ICharacterMap CharacterMap { get; }
+    public IMachineLayout Layout { get; }
 
     // Rotors are given in the order they sit in the machine, left to right,
     // so the last one is the fast rotor next to the entry wheel. The logger and
@@ -26,10 +27,13 @@ public class EnigmaMachine : IEnigmaMachine
         ILogger<EnigmaMachine>? logger = null,
         ICharacterMap? characterMap = null,
         IEntryWheel? entryWheel = null,
-        IStepping? stepping = null)
+        IMachineLayout? layout = null)
     {
         _entryWheel = entryWheel ?? EntryWheel.Standard;
-        _stepping = stepping ?? new PawlDrive();
+        // The drive is a property of the model, so it is taken from the layout
+        // rather than given separately: the two could not then disagree.
+        Layout = layout ?? new ServiceLayout(new PawlDrive());
+        _stepping = Layout.Drive;
         PlugBoard = plugBoard;
         Reflector = reflector;
         _rotors = rotors.ToArray();

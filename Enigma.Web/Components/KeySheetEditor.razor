@@ -1,0 +1,215 @@
+@* The key sheet, set by hand. Every list of parts comes from the catalogue, so a
+   parts file's wheels appear here without this component knowing they exist. *@
+@inject IPartsCatalogue Parts
+
+<section class="settings" data-testid="settings">
+    <h2>Schlüsseltafel</h2>
+
+    <div class="fields">
+        <label>Model
+            <select data-testid="model" value="@_draft.Model" @onchange="Model">
+                @foreach (var name in Parts.LayoutNames)
+                {
+                    <option value="@name">@name</option>
+                }
+            </select>
+        </label>
+
+        <label>Umkehrwalze
+            <select data-testid="reflector" value="@_draft.Reflector" @onchange="Reflector">
+                @foreach (var name in Parts.ReflectorNames)
+                {
+                    <option value="@name">@name</option>
+                }
+            </select>
+        </label>
+
+        <label>Eintrittswalze
+            <select data-testid="entry" value="@_draft.EntryWheel" @onchange="Entry">
+                <option value="">model default</option>
+                @foreach (var name in Parts.EntryWheelNames)
+                {
+                    <option value="@name">@name</option>
+                }
+            </select>
+        </label>
+
+        <label>Alphabet
+            <select data-testid="alphabet" value="@_draft.CharacterMap" @onchange="Alphabet">
+                @foreach (var name in Parts.CharacterMapNames)
+                {
+                    <option value="@name">@name</option>
+                }
+            </select>
+        </label>
+    </div>
+
+    <div class="wheels" data-testid="wheels">
+        <span class="field-name">Walzenlage</span>
+
+        @for (var slot = 0; slot < _wheels.Count; slot++)
+        {
+            var index = slot;
+
+            <select data-testid="wheel" value="@_wheels[index]" @onchange="args => Wheel(index, args)">
+                @foreach (var name in Parts.RotorNames)
+                {
+                    <option value="@name">@name</option>
+                }
+            </select>
+        }
+
+        <button type="button" class="action" data-testid="add-wheel" @onclick="AddWheel"
+                disabled="@(_wheels.Count >= 4)">Add</button>
+        <button type="button" class="action" data-testid="remove-wheel" @onclick="RemoveWheel"
+                disabled="@(_wheels.Count <= 1)">Remove</button>
+    </div>
+
+    <div class="fields">
+        <label>Ringstellung
+            <input data-testid="rings" value="@_draft.RingSettings" @onchange="Rings" />
+        </label>
+
+        <label>Grundstellung
+            <input data-testid="positions" value="@_draft.Positions" @onchange="Positions" />
+        </label>
+
+        <label>Uhr
+            <input data-testid="uhr" value="@_draft.Uhr" placeholder="none" @onchange="Uhr" />
+        </label>
+    </div>
+
+    @if (ShowsReflectorSetting)
+    {
+        <div class="fields">
+            <label>UKW Stellung
+                <input data-testid="ukw-position" value="@_draft.ReflectorPosition" @onchange="UkwPosition" />
+            </label>
+
+            <label>UKW Ring
+                <input data-testid="ukw-ring" value="@_draft.ReflectorRingSetting" @onchange="UkwRing" />
+            </label>
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter, EditorRequired] public required KeySheet Sheet { get; set; }
+
+    /// <summary>Whether the machine in use has a turning reflector to set.</summary>
+    [Parameter] public bool ShowsReflectorSetting { get; set; }
+
+    [Parameter] public EventCallback<KeySheet> OnChanged { get; set; }
+
+    private KeySheet _draft = new();
+    private List<string> _wheels = [];
+
+    protected override void OnParametersSet()
+    {
+        _draft = Sheet.Copy();
+        _wheels = Split(_draft.Rotors);
+    }
+
+    private Task Model(ChangeEventArgs args) => Change(() => _draft.Model = Text(args));
+
+    private Task Reflector(ChangeEventArgs args) => Change(() => _draft.Reflector = Text(args));
+
+    private Task Entry(ChangeEventArgs args) => Change(() => _draft.EntryWheel = Text(args));
+
+    private Task Alphabet(ChangeEventArgs args) => Change(() => _draft.CharacterMap = Text(args));
+
+    private Task Rings(ChangeEventArgs args) => Change(() => _draft.RingSettings = Text(args));
+
+    private Task Positions(ChangeEventArgs args) => Change(() => _draft.Positions = Text(args));
+
+    private Task Uhr(ChangeEventArgs args) => Change(() => _draft.Uhr = Text(args));
+
+    private Task UkwPosition(ChangeEventArgs args) => Change(() => _draft.ReflectorPosition = Text(args));
+
+    private Task UkwRing(ChangeEventArgs args) => Change(() => _draft.ReflectorRingSetting = Text(args));
+
+    private Task Wheel(int slot, ChangeEventArgs args) => Change(() =>
+    {
+        _wheels[slot] = Text(args);
+        _draft.Rotors = string.Join(' ', _wheels);
+    });
+
+    private Task AddWheel() => Change(() =>
+    {
+        _wheels.Insert(0, NewWheel());
+        Refit();
+    });
+
+    /// <summary>
+    /// A wheel goes on the left, which is where the M4's fourth one sits. A fourth
+    /// wheel is always a thin one — it is half width, and only the space a thin
+    /// reflector frees will take it — so that is what is offered rather than one
+    /// the layout is bound to refuse.
+    /// </summary>
+    private string NewWheel() =>
+        _wheels.Count == 3
+            ? Parts.RotorNames.FirstOrDefault(IsThin) ?? Parts.RotorNames[0]
+            : Parts.RotorNames[0];
+
+    private bool IsThin(string name)
+    {
+        try
+        {
+            return Parts.CreateRotor(name).IsThin;
+        }
+        catch (ArgumentException)
+        {
+            // A wheel from a parts file that will not build for this alphabet is
+            // simply not the one to offer.
+            return false;
+        }
+    }
+
+    private Task RemoveWheel() => Change(() =>
+    {
+        _wheels.RemoveAt(0);
+        Refit();
+    });
+
+    private void Refit()
+    {
+        _draft.Rotors = string.Join(' ', _wheels);
+        _draft.RingSettings = Resize(_draft.RingSettings, _wheels.Count);
+        _draft.Positions = Resize(_draft.Positions, _wheels.Count);
+    }
+
+    /// <summary>
+    /// Keeps a wheel setting the same length as the wheels. A plain run of letters
+    /// is padded or trimmed; anything written another way, such as "01 01 01", is
+    /// left for the key sheet's own parser to complain about.
+    /// </summary>
+    private static string Resize(string setting, int wheels)
+    {
+        var trimmed = (setting ?? string.Empty).Trim();
+
+        if (trimmed.Length == 0 || trimmed.Any(char.IsWhiteSpace))
+        {
+            return trimmed;
+        }
+
+        // Padded with a character already in the setting, which is the only one this
+        // component can know belongs to the machine's alphabet.
+        return trimmed.Length >= wheels
+            ? trimmed[^wheels..]
+            : new string(trimmed[0], wheels - trimmed.Length) + trimmed;
+    }
+
+    private async Task Change(Action edit)
+    {
+        edit();
+
+        await OnChanged.InvokeAsync(_draft.Copy());
+    }
+
+    private static string Text(ChangeEventArgs args) => args.Value?.ToString() ?? string.Empty;
+
+    private static List<string> Split(string rotors) =>
+        (rotors ?? string.Empty)
+            .Split([' ', '\t', ','], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToList();
+}

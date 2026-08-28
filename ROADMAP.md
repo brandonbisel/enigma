@@ -36,7 +36,7 @@ it runs; it is done when something published says it runs correctly.
 | Key sheets | Complete, in the notation a real key sheet used |
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 
-343 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+376 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -46,11 +46,10 @@ differential suite comparing against an independently written oracle.
 library running unchanged in the browser. There is no server, so nothing typed into
 it is transmitted anywhere.
 
-The panel works: windows, lamps and keyboard, over any packaged key sheet. Still to
-come are the settings editor — choosing wheels, rings and cables by hand, and
-patching the plugboard — and the message panes, with text preparation and
-five-letter groups. After those, a view of the signal path itself, which the
-`TranslationTrace` already carries.
+The panel works, and so does setting it up: windows, lamps and keyboard, the key
+sheet edited by hand, and the plugboard patched by clicking. Still to come are the
+message panes, with text preparation and five-letter groups, and after those a view
+of the signal path itself, which the `TranslationTrace` already carries.
 
 ## Next
 
