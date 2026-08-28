@@ -81,13 +81,28 @@ Doppelbuchstabentauschtafel, pinned by the published worked example.
 It is pinned by a real message: U-534's P1030690 of 1 May 1945, read from its
 transmitted indicator through to the message key its operator wrote down.
 
-Two things remain. **No complete bigram table ships.** Only the four entries of
-"Quelle" Tafel A that message needs are known here as data; the recovered tables
-survive as photographs of the originals. A transcription would in fact be
-self-checking — a table is an involution, so a mistyped cell breaks a pair — but
-that catches transcription error, not invention, so the photograph still has to come
-from somewhere trustworthy. And the procedure is **library only**: neither front end
-offers it yet, where the army one is in both.
+**The source has been found and checked.** The Crypto Museum publishes the whole
+"Quelle" booklet — *Doppelbuchstabentauschtafeln für Kenngruppen*, serial 2499 — as
+a scan: a cover, the Tauschtafelplan, and nine tables lettered A to H and J, each
+across two pages of thirteen columns by twenty-six rows. It is the same set U-534
+was using. All four of the entries that message needed read off the scan exactly:
+
+| | from the message | from the booklet |
+|---|---|---|
+| `FN` | `KY` | `KY` |
+| `HC` | `DM` | `DM` |
+| `GV` | `UU` | `UU` |
+| `ET` | `ZZ` | `ZZ` |
+
+What is left is the transcription itself: 676 entries for one table. OCR manages
+perhaps three quarters of it and misreads `G` for `C`, `U` for `L`, and the dotted
+`İ` the typeface uses, so it cannot be trusted unaided. Read by eye it is
+self-checking twice over — every entry has a mirror that must agree, and four cells
+are known from real traffic.
+
+Two things remain. **No complete bigram table ships.** Only the four entries above are
+here as data. And the procedure is **library only**: neither front end offers it
+yet, where the army one is in both.
 
 ## Future
 

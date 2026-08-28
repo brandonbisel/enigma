@@ -289,10 +289,12 @@ The table is reciprocal: if `AK` is written as `BD` then `BD` is written as `AK`
 one table serves both stations without being reversed. It is an involution on pairs
 of letters, exactly as a reflector is on single ones.
 
-**No table ships here.** A set ran to nine, and the recovered ones survive as
-photographs of the originals rather than as anything machine-readable; six hundred
-and seventy-six entries transcribed by eye is precisely the sort of cipher data this
-library does not invent. Supply one and it will be used:
+**No complete table ships here.** A set ran to nine — lettered A to H and J, a
+calendar saying which applied on which day — and the recovered ones survive as
+photographs of the originals rather than as anything machine-readable. Four entries
+of "Quelle" Tafel A are known here, and known to be right: they are the four the
+U-534 message used, and they read off the scanned booklet exactly. The other six
+hundred and seventy-two are not invented. Supply a table and it will be used:
 
 ```csharp
 var table = BigramTable.Parse("AK=BD HQ=BJ LK=EM GZ=EJ");
