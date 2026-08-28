@@ -25,6 +25,11 @@
 {
     <MachinePanel Session="_session" Lit="_lit" OnKeyed="Keyed" OnReleased="Released" @key="_generation" />
 
+    <SignalPath Alphabet="_session.Alphabet"
+                Trace="_trace"
+                Watching="_watching"
+                OnWatching="Watching" />
+
     @* String parameters take the attribute literally unless it is an expression,
        which is why these two carry an @ and the others do not. *@
     <MessagePanes Plaintext="@_message"
@@ -62,6 +67,12 @@
     private bool _prepare;
     private int? _groups;
     private char? _lit;
+
+    // Following the current is what makes the machine assemble a trace at all, so
+    // it is asked for rather than left on: a long message would otherwise build one
+    // per character for nobody.
+    private bool _watching;
+    private TranslationTrace? _trace;
 
     private string Ciphertext => _groups is { } size ? MessageText.InGroups(_cipher, size) : _cipher;
 
@@ -101,6 +112,12 @@
         _session = keyed.Session;
         _generation++;
 
+        // A new machine, so the watcher has to be put back on it.
+        if (_watching)
+        {
+            _session.Traced += Traced;
+        }
+
         // The message survives a change of settings, which is the point of being
         // able to change them: the same text, keyed a different way.
         Retype();
@@ -124,6 +141,33 @@
     }
 
     private void Released() => _lit = null;
+
+    private void Watching(bool watching)
+    {
+        _watching = watching;
+
+        if (_session is null)
+        {
+            return;
+        }
+
+        if (watching)
+        {
+            _session.Traced += Traced;
+
+            // Keying the message again fills the view in straight away, rather than
+            // leaving it blank until the next key goes down.
+            Retype();
+
+            return;
+        }
+
+        // Not cleared here: Retype is the one place that forgets a trace, and every
+        // way back to showing one goes through it.
+        _session.Traced -= Traced;
+    }
+
+    private void Traced(TranslationTrace trace) => _trace = trace;
 
     private void Wrote(string text)
     {
@@ -151,6 +195,11 @@
         }
 
         _session.Reset();
+
+        // Cleared before, not after: the watcher fills it in again as the message
+        // is keyed, so an empty message correctly leaves nothing to show rather
+        // than a keypress that is no longer part of it.
+        _trace = null;
 
         _cipher = _session.Type(_prepare ? MessageText.Prepare(_message) : _message);
         _lit = null;

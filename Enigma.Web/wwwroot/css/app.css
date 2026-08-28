@@ -273,3 +273,41 @@ h1:focus { outline: none; }
     letter-spacing: 0.1em;
 }
 .muted { color: var(--muted); letter-spacing: normal; font-family: inherit; }
+
+.signal { margin-top: 1.2rem; padding: 1rem; background: var(--panel); border: 1px solid var(--edge); border-radius: 0.6rem; }
+.signal h2 {
+    margin: 0 0 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.watching { display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--muted); }
+.signal p { margin: 0.8rem 0 0; font-size: 0.8rem; }
+
+.signal-ends { color: var(--muted); letter-spacing: 0.04em; }
+.signal-key, .signal-lamp {
+    font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+    font-weight: 600;
+    color: var(--ink);
+}
+.signal-lamp { color: var(--lamp-lit); }
+
+.steps { list-style: none; margin: 0.8rem 0 0; padding: 0; display: flex; flex-direction: column; gap: 0.15rem; }
+.step {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.25rem 0.5rem;
+    border-left: 2px solid var(--edge);
+    font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+    font-size: 0.8rem;
+}
+.step-part { min-width: 5.5rem; color: var(--muted); }
+.step-flow { letter-spacing: 0.1em; }
+
+/* The turning point, and the way back out. */
+.step-reflector { border-left-color: var(--lamp-lit); }
+.step-back { border-left-style: dashed; }

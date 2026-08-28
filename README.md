@@ -50,6 +50,17 @@ shows four as well, but the extra one is its reflector, which turns and so is pa
 of the setting. The keyboard is laid out from the machine's own alphabet rather
 than from a constant, so a machine that does not work in letters gets its own keys.
 
+Under the machine, the current can be followed. Tick **Follow the current** and
+each keypress is set out step by step: in through the board and the stator, right
+to left across the wheels, back off the reflector — marked, because it is the
+turning point — and out the way it came. Every letter shown comes from the
+`TranslationTrace` the machine itself reports, which is the same structure the
+diagnostic log is written from, so the view is the machine's own account rather
+than a retelling.
+
+It is asked for rather than assumed: a machine nobody is watching builds no trace,
+which is what keeps a long message cheap.
+
 Below the machine is the message. The keyboard and the plaintext pane are two ways
 of entering one message, not two messages: type on the keys and the text grows a
 letter at a time, or write the whole thing and it is keyed from the start. Either

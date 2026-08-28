@@ -8,7 +8,7 @@ what is a future goal, and what is deliberately not scheduled.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 397 tests
+dotnet test               # whole suite, currently 418 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Web    # the panel, on http://localhost:5298
@@ -207,6 +207,14 @@ straight-through stator, which the differential test caught.
   which one is wrong.
 - When changing the cipher, it is worth reintroducing a plausible bug and checking
   the suite fails. Tests that cannot fail are worse than no tests.
+
+Component tests do not see a page. Twice now a green bUnit suite has sat over a
+broken rendering: an unstyled loading spinner, and controls whose values matched no
+option. To look at the real thing, run `dotnet run --project Enigma.Web` and drive
+a headless browser at it -- `chromium --headless=new --screenshot` for a still, or
+the DevTools protocol on `--remote-debugging-port` when the page has to be clicked
+first. Note `--dump-dom` does not serialise form values, which are DOM properties
+rather than attributes; assert those in bUnit instead.
 
 ## Traps in the build
 

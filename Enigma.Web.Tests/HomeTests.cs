@@ -228,6 +228,156 @@ public class HomeTests : BunitContext
         Assert.NotEqual(before, Ciphertext(page));
     }
 
+    // -- following the current --------------------------------------------------
+
+    [Fact]
+    public void TheCurrentIsNotFollowedUnlessAskedFor()
+    {
+        var page = Page();
+
+        Type(page, "A");
+
+        Assert.NotEmpty(page.FindAll("[data-testid=signal-off]"));
+        Assert.Empty(page.FindAll("[data-testid=step]"));
+    }
+
+    [Fact]
+    public void FollowingTheCurrentShowsTheLastKeypress()
+    {
+        var page = Page();
+
+        Follow(page);
+        Type(page, "A");
+
+        Assert.NotEmpty(page.FindAll("[data-testid=step]"));
+        Assert.Contains("A", page.Find("[data-testid=signal-ends]").TextContent);
+    }
+
+    [Fact]
+    public void TheLampShownIsTheLampTheTraceReports()
+    {
+        // Two views of one keypress. If they could differ, one of them would be
+        // describing a machine that is not the one enciphering.
+        var page = Page();
+
+        Follow(page);
+        page.Find("[data-testid=key][data-letter=A]").MouseDown();
+
+        var lamp = page.Find("[data-testid=lamp].lamp-lit").TextContent;
+        var steps = page.FindAll("[data-testid=step] .step-flow");
+
+        Assert.EndsWith(lamp, steps[^1].TextContent.Trim());
+    }
+
+    [Fact]
+    public void TheWindowShownIsTheWindowTheTraceReports()
+    {
+        var page = Page();
+
+        Follow(page);
+        Type(page, "ATTACK");
+
+        Assert.Contains(Windows(page), page.Find("[data-testid=signal-ends]").TextContent);
+    }
+
+    [Fact]
+    public void AskingToFollowFillsTheViewFromTheMessageAlreadyKeyed()
+    {
+        // Turning it on after typing should not leave it blank until the next key.
+        var page = Page();
+
+        Type(page, "ATTACK");
+        Follow(page);
+
+        Assert.NotEmpty(page.FindAll("[data-testid=step]"));
+    }
+
+    [Fact]
+    public void TheViewFollowsTheMachineAcrossAChangeOfSettings()
+    {
+        // Changing the settings builds a new machine, and a watcher that quietly
+        // stopped reporting would be worse than one that threw.
+        var page = Page();
+
+        Follow(page);
+        page.Find("[data-testid=positions]").Change("XYZ");
+        Type(page, "A");
+
+        Assert.NotEmpty(page.FindAll("[data-testid=step]"));
+    }
+
+    [Fact]
+    public void TheViewFollowsTheMachineAcrossAChangeOfKeySheet()
+    {
+        var page = Page();
+
+        Follow(page);
+        page.Find("[data-testid=sheet]").Change("u264");
+        Type(page, "A");
+
+        // The M4 has a fourth wheel, so the path is two steps longer.
+        Assert.Equal(13, page.FindAll("[data-testid=step]").Count);
+    }
+
+    [Fact]
+    public void GivingUpFollowingClearsTheView()
+    {
+        var page = Page();
+
+        Follow(page);
+        Type(page, "A");
+        page.Find("[data-testid=watching]").Change(false);
+
+        Assert.Empty(page.FindAll("[data-testid=step]"));
+        Assert.NotEmpty(page.FindAll("[data-testid=signal-off]"));
+    }
+
+    [Fact]
+    public void FollowingTheCurrentDoesNotChangeTheCipher()
+    {
+        var watched = Page();
+        var quiet = Page();
+
+        Follow(watched);
+        watched.Find("[data-testid=plaintext]").Change("ATTACKATDAWN");
+        quiet.Find("[data-testid=plaintext]").Change("ATTACKATDAWN");
+
+        Assert.Equal(Ciphertext(quiet), Ciphertext(watched));
+    }
+
+    [Fact]
+    public void ClearingTheMessageClearsTheView()
+    {
+        // The path shown belongs to a keypress in the message. Clear the message
+        // and there is no such keypress any more.
+        var page = Page();
+
+        Follow(page);
+        Type(page, "A");
+        page.Find("[data-testid=clear]").Click();
+
+        Assert.Empty(page.FindAll("[data-testid=step]"));
+        Assert.NotEmpty(page.FindAll("[data-testid=signal-idle]"));
+    }
+
+    [Fact]
+    public void FollowingAgainAfterClearingShowsNoStaleKeypress()
+    {
+        var page = Page();
+
+        Follow(page);
+        Type(page, "A");
+        page.Find("[data-testid=watching]").Change(false);
+        page.Find("[data-testid=clear]").Click();
+        Follow(page);
+
+        Assert.Empty(page.FindAll("[data-testid=step]"));
+        Assert.NotEmpty(page.FindAll("[data-testid=signal-idle]"));
+    }
+
+    private static void Follow(IRenderedComponent<Home> page) =>
+        page.Find("[data-testid=watching]").Change(true);
+
     // -- settings ---------------------------------------------------------------
 
     [Fact]

@@ -1,0 +1,93 @@
+@* The path the current took on the last keypress: in through the board and the
+   stator, right to left across the wheels, back off the reflector, then out the
+   way it came. This is the machine's own account of itself — the same
+   TranslationTrace the diagnostic log is written from — not a retelling. *@
+
+<section class="signal" data-testid="signal">
+    <h2>Stromweg</h2>
+
+    <label class="watching">
+        <input type="checkbox" data-testid="watching" checked="@Watching" @onchange="Watch" />
+        Follow the current
+    </label>
+
+    @if (!Watching)
+    {
+        <p class="muted" data-testid="signal-off">
+            A machine nobody is watching builds no trace, so following the current is
+            asked for rather than assumed.
+        </p>
+    }
+    else if (Trace is null)
+    {
+        <p class="muted" data-testid="signal-idle">Press a key.</p>
+    }
+    else
+    {
+        <p class="signal-ends" data-testid="signal-ends">
+            <span class="signal-key">@Letter(Trace.Input)</span>
+            keyed, lamp
+            <span class="signal-lamp">@Letter(Trace.Output)</span>,
+            window @Window
+        </p>
+
+        <ol class="steps" data-testid="steps">
+            @foreach (var (step, index) in Trace.Steps.Select((step, index) => (step, index)))
+            {
+                <li class="step @Leg(index)" data-testid="step">
+                    <span class="step-part">@step.Component</span>
+                    <span class="step-flow">@Letter(step.Input) &rarr; @Letter(step.Output)</span>
+                </li>
+            }
+        </ol>
+    }
+</section>
+
+@code {
+    [Parameter, EditorRequired] public required ICharacterMap Alphabet { get; set; }
+
+    /// <summary>The last keypress, or null when nothing has been keyed since watching began.</summary>
+    [Parameter] public TranslationTrace? Trace { get; set; }
+
+    [Parameter] public bool Watching { get; set; }
+
+    [Parameter] public EventCallback<bool> OnWatching { get; set; }
+
+    private string Window =>
+        Trace is null ? string.Empty : string.Concat(Trace.Window.Select(Letter));
+
+    /// <summary>
+    /// Which leg of the journey a step belongs to. The trace names the return leg
+    /// with a trailing apostrophe, so the reflector is the step before the first of
+    /// those — read off the trace's own convention rather than counted to.
+    /// </summary>
+    private string? Leg(int index)
+    {
+        var turn = Turn;
+
+        if (index == turn)
+        {
+            return "step-reflector";
+        }
+
+        return index > turn ? "step-back" : null;
+    }
+
+    private int Turn
+    {
+        get
+        {
+            var first = Trace!.Steps
+                .Select((step, index) => (step, index))
+                .Where(entry => entry.step.Component.EndsWith('\''))
+                .Select(entry => (int?)entry.index)
+                .FirstOrDefault();
+
+            return first - 1 ?? -1;
+        }
+    }
+
+    private char Letter(int contact) => Alphabet.GetCharacter(contact);
+
+    private Task Watch(ChangeEventArgs args) => OnWatching.InvokeAsync(args.Value is true);
+}
