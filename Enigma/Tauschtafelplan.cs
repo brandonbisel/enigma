@@ -84,6 +84,19 @@ public sealed class Tauschtafelplan
     /// </summary>
     public static Tauschtafelplan BrunoQuelle { get; } = Parse("Bruno / Quelle", Printed, Corrections);
 
+    /// <summary>
+    /// Tauschtafelplan "Bruno" for the set Kennwort "Meer", Prüfnr. 3733a, from the
+    /// Crypto Museum's scan of that booklet.
+    ///
+    /// A better sheet than <see cref="BrunoQuelle"/> in two ways. It is clean print
+    /// with no pen corrections, so there is only one layer to read. And both sides
+    /// are reproduced, which is what shows that a full plan carries **twelve**
+    /// Kennziffer columns — the Quelle photograph stops at six and is footed
+    /// "Fortsetzung Rückseite!", and this is what was on the other side of it.
+    /// </summary>
+    public static Tauschtafelplan BrunoMeer { get; } =
+        Parse("Bruno / Meer", MeerPrinted, string.Empty);
+
     private static Tauschtafelplan Parse(string name, string printed, string corrections)
     {
         var rows = printed.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -138,4 +151,14 @@ public sealed class Tauschtafelplan
         "1 4 C A, 3 6 C G, 4 4 H D, 7 1 H G, 8 1 C E, 10 1 H G, 11 1 C E, " +
         "11 4 H D, 12 4 C A, 13 6 H B, 16 4 H D, 17 6 H B, 18 6 C G, 21 6 H B, " +
         "23 1 H G, 24 4 C A, 25 4 H D, 27 1 C E, 28 6 H B, 30 1 H G, 31 6 C G";
+
+    // Rows are Monatstag 1 to 31, characters are Kennziffer one to twelve.
+    private const string MeerPrinted =
+        "ADCGEHGAEHJD EBFDAGHGAFCE GDHJEBCDHBGJ JADCBEFJCDEA BCGEJADFHJBG " +
+        "DHJGFCBHDEFC HCBEDFECFGDH CAEBGJHJBCGF FJADCEGCJEAD CGEFHBJFACEG " +
+        "FBJHAGADGHJC DGBAJCDHEACF GBFCDHABGDHJ ECAJBDGEHFCB BEGDHAEGBJFD " +
+        "HDCGFBJAEBDH AJHBGECFDGEA JFDECAHDAFJE CHAJEGBHJCAF AFGCBDFACHGJ " +
+        "BJDFGHAEFDBC GDFHACFBAGHE JEHADFJGCBAH DBCFEJBJHEDA FAEDHBGCEJHB " +
+        "HEJBFDCDJAEG EHBJCFEBFHJD HGFCJAHGDBCE BEAHFCDJBFGA FCHABJBCGAFH " +
+        "AFBGDEEFADBC";
 }

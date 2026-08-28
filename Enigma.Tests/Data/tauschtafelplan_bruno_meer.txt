@@ -1,0 +1,43 @@
+# Tauschtafelplan "Bruno" zu den Doppelbuchstabentauschtafeln fuer Kenngruppen,
+# Kennwort: Meer -- Pruefnr. 3733a.
+#
+# Source: cryptomuseum.com/crypto/codebook/files/DoppelTafeln_Meer_3733.pdf,
+# pages 3 (Kennziffer eins-sechs) and 4 (sieben-zwoelf).
+#
+# Clean print throughout: no pen corrections, unlike the Quelle sheet, and both
+# sides are reproduced.  Twelve Kennziffer columns, which is what the Quelle
+# sheet's "Fortsetzung Rueckseite!" was pointing at.
+#
+# printed: day, then Kennziffer 1..12
+printed
+ 1  A D C G E H  G A E H J D
+ 2  E B F D A G  H G A F C E
+ 3  G D H J E B  C D H B G J
+ 4  J A D C B E  F J C D E A
+ 5  B C G E J A  D F H J B G
+ 6  D H J G F C  B H D E F C
+ 7  H C B E D F  E C F G D H
+ 8  C A E B G J  H J B C G F
+ 9  F J A D C E  G C J E A D
+10  C G E F H B  J F A C E G
+11  F B J H A G  A D G H J C
+12  D G B A J C  D H E A C F
+13  G B F C D H  A B G D H J
+14  E C A J B D  G E H F C B
+15  B E G D H A  E G B J F D
+16  H D C G F B  J A E B D H
+17  A J H B G E  C F D G E A
+18  J F D E C A  H D A F J E
+19  C H A J E G  B H J C A F
+20  A F G C B D  F A C H G J
+21  B J D F G H  A E F D B C
+22  G D F H A C  F B A G H E
+23  J E H A D F  J G C B A H
+24  D B C F E J  B J H E D A
+25  F A E D H B  G C E J H B
+26  H E J B F D  C D J A E G
+27  E H B J C F  E B F H J D
+28  H G F C J A  H G D B C E
+29  B E A H F C  D J B F G A
+30  F C H A B J  B C G A F H
+31  A F B G D E  E F A D B C

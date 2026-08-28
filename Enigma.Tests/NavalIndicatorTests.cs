@@ -141,6 +141,67 @@ public class NavalIndicatorTests
                 .Count());
     }
 
+    [Theory]
+    [InlineData('A')]
+    public void EveryShippedTableOfMeerIsWholeAndReciprocal(char tafel)
+    {
+        // The same check the "Quelle" tables get. A second set is a second chance
+        // to have transcribed six hundred and seventy-six cells wrongly.
+        var table = BigramTables.Meer[tafel];
+        var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        Assert.True(table.IsComplete);
+        Assert.Equal(676, table.Count);
+
+        Assert.All(
+            from first in alphabet from second in alphabet select $"{first}{second}",
+            bigram =>
+            {
+                Assert.Equal(bigram, table.Substitute(table.Substitute(bigram)));
+                Assert.NotEqual(bigram, table.Substitute(bigram));
+            });
+    }
+
+    [Fact]
+    public void TheTwoSetsAreDifferentSets()
+    {
+        // Same letter, different booklet: nothing should carry over.
+        Assert.NotEqual(
+            BigramTables.QuelleA.Substitute("AA"), BigramTables.MeerA.Substitute("AA"));
+    }
+
+    [Fact]
+    public void TheMeerCalendarCarriesTwelveColumns()
+    {
+        // Both sides of the sheet are reproduced, which is how we know a full plan
+        // runs to twelve Kennziffern -- the Quelle photograph stops at six.
+        Assert.Equal(12, Tauschtafelplan.BrunoMeer.Columns);
+        Assert.Equal(6, Tauschtafelplan.BrunoQuelle.Columns);
+    }
+
+    [Fact]
+    public void EveryColumnOfTheMeerCalendarUsesTheWholeSet()
+    {
+        Assert.All(
+            Enumerable.Range(1, Tauschtafelplan.BrunoMeer.Columns),
+            kennziffer => Assert.Equal(
+                9,
+                Enumerable.Range(1, 31)
+                    .Select(day => Tauschtafelplan.BrunoMeer.Tafel(kennziffer, day))
+                    .Distinct()
+                    .Count()));
+    }
+
+    [Fact]
+    public void TheMeerCalendarNamesNoTableOutsideTheSet()
+    {
+        Assert.All(
+            from kennziffer in Enumerable.Range(1, Tauschtafelplan.BrunoMeer.Columns)
+            from day in Enumerable.Range(1, 31)
+            select Tauschtafelplan.BrunoMeer.Tafel(kennziffer, day),
+            letter => Assert.Contains(letter, "ABCDEFGHJ"));
+    }
+
     private static BigramTable Tafel(string letter) => letter switch
     {
         "A" => BigramTables.QuelleA,

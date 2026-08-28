@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard, both indicator procedures |
 
-635 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+640 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -203,6 +203,38 @@ the two halves that matter: `NavalArguments`, where every refusal is a combinati
 that would otherwise be half-obeyed, and `EnigmaConsole` driven over real files, where
 U-534's indicator has to key the machine at the same place a machine started at `ODFF`
 outright would be. That closes the gap the previous commit had to record as open.
+
+### A second set: "Meer"
+
+The Crypto Museum publishes other booklets of the same kind, and **"Meer",
+Prüf-Nr. 3733, is a complete one**: cover, two copies of the Tauschtafelplan front and
+back, and **all nine tables, A to J**. It is the first set here to include a Tafel J
+at all. A third, "Flußlauf" Prüf-Nr. 3633, runs to fifteen tables, A to P — not
+started.
+
+Its scan is markedly better than Quelle's: four passes a table rather than six, and
+almost every cell agrees with its own mirror on a first reading, where Quelle's poorer
+pages needed the involution to arbitrate.
+
+**Tafel A is transcribed and shipped.** One cell needed adjudicating — `SF` read as
+`ZK`, where `ZK` pairs with `CR` both ways and column Z reads `ZX=SF`; at full
+resolution the glyph is plainly a symmetric X, not a stemmed K. Eight tables to go.
+
+**The Meer Tauschtafelplan ships too, and it settles a question.** Both sides are
+reproduced, and the reverse carries Kennziffer *sieben* to *zwölf*: a full plan has
+**twelve columns, not six**. That is what the Quelle photograph's "Fortsetzung
+Rückseite!" was pointing at, and why `BrunoQuelle` holds only half a plan.
+
+**A calendar cannot be checked the way a table can, and that is worth stating
+plainly.** A bigram table is an involution, so a mistyped cell breaks a pair and is
+caught; that is the whole basis on which the tables here are trusted. A
+Tauschtafelplan has no such redundancy — it is 372 independent letters. The check that
+every column uses all nine letters is weak, and a mutation test confirmed it: changing
+one cell from `D` to `A` left the suite green, because the column still used nine
+distinct letters. So the plans rest on reading alone. Both were read twice and the
+Meer sheet's first fifteen rows compared cell by cell against the first pass, but that
+is double entry rather than a structural guarantee. It is the weakest evidence in this
+document, and the only data here that the suite cannot defend on its own.
 
 ## Future
 
