@@ -68,6 +68,16 @@ public static class ServiceCollectionExtensions
         services.AddKeyedTransient<IRotor, RotorTirpitzVII>("T-VII");
         services.AddKeyedTransient<IRotor, RotorTirpitzVIII>("T-VIII");
 
+        // The Norwegian machines, and the K fitted with a rewirable UKW-D.
+        services.AddKeyedTransient<IRotor, RotorNorwayNI>("N-I");
+        services.AddKeyedTransient<IRotor, RotorNorwayNII>("N-II");
+        services.AddKeyedTransient<IRotor, RotorNorwayNIII>("N-III");
+        services.AddKeyedTransient<IRotor, RotorNorwayNIV>("N-IV");
+        services.AddKeyedTransient<IRotor, RotorNorwayNV>("N-V");
+        services.AddKeyedTransient<IRotor, RotorKDI>("KD-I");
+        services.AddKeyedTransient<IRotor, RotorKDII>("KD-II");
+        services.AddKeyedTransient<IRotor, RotorKDIII>("KD-III");
+
         // The ten contact wheels of the numbers-only Enigma Z30.
         services.AddKeyedTransient<IRotor, RotorZI>("Z-I");
         services.AddKeyedTransient<IRotor, RotorZII>("Z-II");
@@ -79,6 +89,7 @@ public static class ServiceCollectionExtensions
         services.AddKeyedSingleton<IReflector, ReflectorC>("C");
         services.AddKeyedSingleton<IReflector, ReflectorBThin>("B-THIN");
         services.AddKeyedSingleton<IReflector, ReflectorCThin>("C-THIN");
+        services.AddKeyedSingleton<IReflector, ReflectorNorway>("N");
 
         // The Zählwerk reflectors turn, so each machine needs its own.
         services.AddKeyedTransient<IReflector, ReflectorG>("G");
@@ -108,6 +119,9 @@ public static class ServiceCollectionExtensions
         services.AddKeyedSingleton<IMachineLayout>("TIRPITZ",
             (provider, _) => new CommercialLayout(
                 provider.GetRequiredService<IStepping>(), "Tirpitz", "TIRPITZ"));
+        services.AddKeyedSingleton<IMachineLayout>("KD",
+            (provider, _) => new CommercialLayout(
+                provider.GetRequiredService<IStepping>(), "KD", "QWERTZ", settableReflector: false));
         services.AddKeyedSingleton<IMachineLayout>("Z30",
             (provider, _) => new NumericLayout(
                 new ReflectorPawlDrive(provider.GetService<ILogger<ReflectorPawlDrive>>())));

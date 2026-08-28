@@ -454,6 +454,32 @@ nor the keyboard order, and forgetting it would encipher perfectly well and
 wrongly — so its model supplies it, and a key sheet need not say so. Its eight
 wheels carry five notches apiece, which is what stretches its period.
 
+### Two machines that are other machines rewired
+
+The **Norenigma** is an Enigma I. The Norwegian police security service kept theirs
+after the war and gave it new wheels (`N-I`…`N-V`) and a new reflector (`N`),
+leaving the plugboard, the straight-through stator and the pawls exactly as they
+were — so it is a service machine and needs no model named at all. Its notches sit
+where the service wheels of the same numbers had them, wheel I still carrying at Q.
+
+The **Enigma KD** is a commercial K with a rewirable UKW-D in place of its
+reflector. That is the one thing that separates it: a UKW-D has no position to set,
+so it needs its own model, `KD`, which is the commercial one with that requirement
+relaxed. Its three wheels carry nine notches apiece.
+
+```json
+{
+  "Model": "KD",
+  "Reflector": "D",
+  "ReflectorPairs": "AK BO CT DV EP FN GL HM IJ QW RY SX UZ",
+  "Rotors": "KD-III KD-II KD-I"
+}
+```
+
+Those pairs are the wiring of the KD machine held by the FRA in Sweden, written as
+the plain letter pairs this library takes rather than in the printed UKW-D notation,
+which uses the wheel's own contact lettering and is not applied here.
+
 ## The Enigma Z, a machine of figures
 
 The Z30 has no letters at all: ten contacts per wheel, a keyboard of a single row
@@ -707,6 +733,9 @@ rather than reconstructed, and each is pinned by a test.
   also records that its two published wirings differ by a misidentification, "with
   turnover positions of rotors I and III swapped" in Bletchley Park's version, and
   that Friedman's report of a moving reflector on that machine was mistaken.
+- **Palloks, *Universal Enigma*, model tables** — the Norenigma's five wheels and
+  reflector, the KD's nine-notch wheels, and the UKW-D wiring of the KD machine
+  held by the FRA in Sweden, which is the one the packaged key sheet carries.
 - **Reuvers & Simons, *Enigma G-111: A rare version of Zählwerk Enigma G31***
   (Crypto Museum, 2013) — the mechanism in the machine's own terms: cogwheels rather
   than pawls and levers, no double stepping anomaly, notches attached to the letter

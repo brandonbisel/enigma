@@ -36,11 +36,12 @@ it runs; it is done when something published says it runs correctly.
 | Key sheets | Complete, in the notation a real key sheet used |
 | Enigma D and K | Complete — the commercial pattern, shared wheels, notches apart |
 | Swiss K, Railway, Tirpitz | Complete — the same pattern with other wheels |
+| Norenigma and KD | Complete — an Enigma I rewired, and a K with a UKW-D |
 | Enigma Z30 | Complete — ten contacts, figures, a pawl-driven reflector, a rotor-body notch |
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-514 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+528 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -56,10 +57,6 @@ transmitted anywhere.
 new model to *parts plus a layout*. That makes the remaining machines mostly a
 matter of sourcing wirings rather than writing mechanism:
 
-- **Enigma KD.** The K fitted with a rewirable UKW-D, which the library already
-  has, and nine-notch wheels. Parts and their sources.
-- **Norenigma.** The Norwegian machine is an Enigma I with different wheels and
-  reflector. No new mechanism at all — parts, and their sources.
 - **Enigma Z Mk II.** The gear-driven version of the Z30, whose mechanism is the
   `GearDrive` already written for the Zählwerk machines. Its wiring is not
   published — the one simulator that offers the model says so plainly and

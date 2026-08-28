@@ -14,16 +14,17 @@ public static class MachineParts
             "D-I", "D-II", "D-III", "K-I", "K-II", "K-III",
             "SK-I", "SK-II", "SK-III", "R-I", "R-II", "R-III",
             "T-I", "T-II", "T-III", "T-IV", "T-V", "T-VI", "T-VII", "T-VIII",
+            "N-I", "N-II", "N-III", "N-IV", "N-V", "KD-I", "KD-II", "KD-III",
             "Z-I", "Z-II", "Z-III"
         ];
 
     public static IReadOnlyList<string> ReflectorNames { get; } =
-        ["A", "B", "C", "B-THIN", "C-THIN", "G", "G312", "R", "T", "Z"];
+        ["A", "B", "C", "B-THIN", "C-THIN", "G", "G312", "N", "R", "T", "Z"];
 
     public static IReadOnlyList<string> EntryWheelNames { get; } =
         ["STANDARD", "QWERTZ", "TIRPITZ"];
 
     public static IReadOnlyList<string> CharacterMapNames { get; } = ["LATIN", "DIGITS"];
 
-    public static IReadOnlyList<string> LayoutNames { get; } = ["SERVICE", "G-31", "COMMERCIAL", "TIRPITZ", "Z30"];
+    public static IReadOnlyList<string> LayoutNames { get; } = ["SERVICE", "G-31", "COMMERCIAL", "TIRPITZ", "KD", "Z30"];
 }

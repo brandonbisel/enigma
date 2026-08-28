@@ -21,13 +21,24 @@ public class CommercialLayout : IMachineLayout
     /// machines are keyboard wired; the Enigma T has a stator of its own, and a key
     /// sheet that forgot to say so would encipher perfectly well and wrongly.
     /// </param>
+    /// <param name="settableReflector">
+    /// Whether the reflector is one that can be set to a position. Nearly all of
+    /// these machines have one; the KD's UKW-D is rewired instead, and has no
+    /// setting at all.
+    /// </param>
     public CommercialLayout(
-        IStepping drive, string name = "Commercial", string defaultEntryWheel = "QWERTZ")
+        IStepping drive,
+        string name = "Commercial",
+        string defaultEntryWheel = "QWERTZ",
+        bool settableReflector = true)
     {
         Drive = drive;
         Name = name;
         DefaultEntryWheel = defaultEntryWheel;
+        _settableReflector = settableReflector;
     }
+
+    private readonly bool _settableReflector;
 
     public string Name { get; }
     public IStepping Drive { get; }
@@ -48,10 +59,10 @@ public class CommercialLayout : IMachineLayout
                 "A commercial Enigma has no thin wheels; those belong to the naval M4.");
         }
 
-        if (reflector is not IRotatingReflector)
+        if (_settableReflector && reflector is not IRotatingReflector)
         {
             throw new ArgumentException(
-                $"A commercial Enigma's reflector is set to a position, but {reflector.Name} is fixed.");
+                $"A {Name} Enigma's reflector is set to a position, but {reflector.Name} is fixed.");
         }
     }
 }

@@ -65,6 +65,26 @@ public static class KeySheets
                 Positions = "AAA",
                 ReflectorPosition = "A"
             },
+            ["norenigma"] = new()
+            {
+                Name = "Norenigma (Norwegian police security service)",
+                Reflector = "N",
+                Rotors = "N-III N-II N-I",
+                RingSettings = "AAA",
+                Positions = "AAA"
+            },
+            ["kd"] = new()
+            {
+                // The UKW-D wiring of the KD machine held by the FRA in Sweden,
+                // written as the plain letter pairs this library takes.
+                Name = "Enigma KD, with a rewired UKW-D",
+                Model = "KD",
+                Reflector = "D",
+                ReflectorPairs = "AK BO CT DV EP FN GL HM IJ QW RY SX UZ",
+                Rotors = "KD-III KD-II KD-I",
+                RingSettings = "AAA",
+                Positions = "AAA"
+            },
             ["swiss-k"] = new()
             {
                 Name = "Swiss Enigma K",
