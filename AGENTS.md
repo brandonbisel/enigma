@@ -8,9 +8,10 @@ what is a future goal, and what is deliberately not scheduled.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 320 tests
+dotnet test               # whole suite, currently 343 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
+dotnet run --project Enigma.Web    # the panel, on http://localhost:5298
 dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
 dotnet run --project Enigma.Cmd -- --preset barbarossa
 ```
@@ -28,8 +29,11 @@ Enigma/                 The library
   Extensions/           DI registration
 Enigma.App/             Orchestration shared by the front ends, namespace Enigma.App
 Enigma.Cmd/             Console app, packaged as a tool named enigma
+Enigma.Web/             Blazor WebAssembly front end
+  Components/           The panel: windows, lamps, keyboard
 Enigma.Tests/           xUnit tests
   Reference/            An independent implementation used as a test oracle
+Enigma.Web.Tests/       Component tests, on bUnit
 ```
 
 Folders do not always map to namespaces: `Abstractions/` is `namespace Enigma`,
@@ -47,6 +51,9 @@ whichever the neighbouring files use.
 - Methods on the bases are deliberately non-virtual, with one exception:
   `RotorBase.Step` is virtual so `ThinRotorBase` can refuse to turn. Variation
   otherwise belongs in the abstract data members, not in overridden behaviour.
+- The panel is a view of a machine and holds no cipher logic of its own. What it
+  shows must come from the session; anything it works out for itself can disagree
+  with the machine, which is the one thing a simulator's UI must never do.
 - `Enigma.App` is UI-agnostic and must stay so: no `Console`, no `FileInfo`, no
   `System.CommandLine`. It works in strings and streams, so a front end without a
   filesystem can use it. Anything a front end alone needs belongs in that front end.

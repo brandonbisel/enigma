@@ -1,0 +1,52 @@
+@page "/"
+@inject IKeySheetCatalogue KeySheets
+@inject IEnigmaMachineFactory Factory
+
+<PageTitle>Enigma</PageTitle>
+
+<h1>Enigma</h1>
+
+<label class="sheet-picker">
+    Key sheet
+    <select data-testid="sheet" value="@_name" @onchange="Choose">
+        @foreach (var name in KeySheets.Names)
+        {
+            <option value="@name">@KeySheets.All[name].Name</option>
+        }
+    </select>
+</label>
+
+@if (_session is not null)
+{
+    <MachinePanel Session="_session" @key="_name" />
+}
+else if (_error is not null)
+{
+    <p class="error" data-testid="error">@_error</p>
+}
+
+@code {
+    private string _name = "default";
+    private EnigmaSession? _session;
+    private string? _error;
+
+    protected override void OnInitialized() => Key(_name);
+
+    private void Choose(ChangeEventArgs args) => Key(args.Value?.ToString() ?? _name);
+
+    private void Key(string name)
+    {
+        _name = name;
+
+        if (!KeySheets.TryGet(name, out var sheet))
+        {
+            (_session, _error) = (null, $"No key sheet called '{name}'.");
+
+            return;
+        }
+
+        var keyed = EnigmaSession.Open(Factory, sheet);
+
+        (_session, _error) = (keyed.Session, keyed.Error);
+    }
+}

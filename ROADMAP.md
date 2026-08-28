@@ -34,18 +34,23 @@ it runs; it is done when something published says it runs correctly.
 | Indicator procedure | Army version complete, doubled and single |
 | Message formatting | Complete — preparation and five-letter groups |
 | Key sheets | Complete, in the notation a real key sheet used |
-| Front ends | A command line tool, over a shared session layer |
+| Front ends | A command line tool and a browser panel, over a shared session layer |
 
-320 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+343 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
 ## Now
 
-**A web front end.** A Blazor WebAssembly operator's panel: the machine's own
-arrangement of lampboard, keyboard, rotor windows and plugboard, with the verified
+**A web front end.** A Blazor WebAssembly operator's panel, with the verified
 library running unchanged in the browser. There is no server, so nothing typed into
 it is transmitted anywhere.
+
+The panel works: windows, lamps and keyboard, over any packaged key sheet. Still to
+come are the settings editor — choosing wheels, rings and cables by hand, and
+patching the plugboard — and the message panes, with text preparation and
+five-letter groups. After those, a view of the signal path itself, which the
+`TranslationTrace` already carries.
 
 ## Next
 

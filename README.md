@@ -19,7 +19,9 @@ What is planned next, and what is deliberately out of scope, is in
 | `Enigma` | The library: rotors, reflectors, plugboard, machine, and DI wireup |
 | `Enigma.App` | Orchestration shared by the front ends: sessions, key sheet catalogue |
 | `Enigma.Cmd` | A console app, installable as a tool named `enigma` |
+| `Enigma.Web` | A browser front end: the machine as an operator's panel |
 | `Enigma.Tests` | xUnit tests, including a differential suite against an independent oracle |
+| `Enigma.Web.Tests` | Component tests for the panel, on bUnit |
 
 ## Building and running
 
@@ -28,6 +30,31 @@ dotnet build
 dotnet test
 echo "ATTACKATDAWN" | dotnet run --project Enigma.Cmd
 ```
+
+## The panel
+
+```bash
+dotnet run --project Enigma.Web
+```
+
+The machine as an operator faced it: the wheel windows above, the lamps below them
+and the keys below those. Press a key and the wheels turn *before* the lamp
+lights, which is the order the machine works in. A lamp stays lit only while its
+key is held, and the keyboard takes one key at a time, as the real one did. The
+letter that lights, pressed back on a machine returned to the same setting, gives
+the original — reciprocity, which is the first thing anyone tries.
+
+The panel is built from whatever machine the key sheet names. An Enigma I shows
+three windows and an M4 four, for its fourth wheel; a three-wheel Zählwerk machine
+shows four as well, but the extra one is its reflector, which turns and so is part
+of the setting. The keyboard is laid out from the machine's own alphabet rather
+than from a constant, so a machine that does not work in letters gets its own keys.
+
+It is a WebAssembly page with no server behind it: the library runs in the browser
+unchanged, and nothing typed into it is transmitted anywhere. `dotnet publish`
+produces a folder of static files — about 2.1 MB over the wire once compressed —
+that can be served from anywhere. Hosting it under a subpath means changing
+`<base href="/" />` in `wwwroot/index.html` to match.
 
 ## Command line
 

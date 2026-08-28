@@ -1,0 +1,33 @@
+@* The Walzenlage as the operator saw it: the wheel names, and the letter showing
+   through each window. A machine whose reflector turns shows that too, because on
+   those machines it is part of the setting rather than a fixture. *@
+
+<div class="windows" data-testid="windows">
+    @foreach (var wheel in Wheels())
+    {
+        <div class="window @(wheel.Turning ? "window-ukw" : null)" data-testid="window">
+            <span class="window-name">@wheel.Name</span>
+            <span class="window-letter">@wheel.Letter</span>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public required EnigmaSession Session { get; set; }
+
+    private IEnumerable<(string Name, char Letter, bool Turning)> Wheels()
+    {
+        // The reflector sits to the left of the wheels, so it is shown first.
+        if (Session.ReflectorPosition is { } position)
+        {
+            yield return (Session.Machine.Reflector.Name, Letter(position), true);
+        }
+
+        foreach (var (rotor, contact) in Session.Machine.Rotors.Zip(Session.Window))
+        {
+            yield return (rotor.Name, Letter(contact), false);
+        }
+    }
+
+    private char Letter(int contact) => Session.Alphabet.GetCharacter(contact);
+}

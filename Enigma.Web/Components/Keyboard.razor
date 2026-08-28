@@ -1,0 +1,33 @@
+@* The keyboard. A key reports going down and coming up separately, because the
+   machine steps as the key goes down and the lamp stays lit until it is released. *@
+
+<div class="board keys" data-testid="keys">
+    @foreach (var row in KeyboardLayout.Rows(Alphabet))
+    {
+        <div class="board-row">
+            @foreach (var character in row)
+            {
+                var key = character;
+
+                <button type="button"
+                        class="key @(key == Held ? "key-down" : null)"
+                        data-testid="key"
+                        data-letter="@key"
+                        @onmousedown="() => OnDown.InvokeAsync(key)"
+                        @onmouseup="() => OnUp.InvokeAsync()"
+                        @onmouseleave="() => OnUp.InvokeAsync()">@key</button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public required ICharacterMap Alphabet { get; set; }
+
+    /// <summary>The key currently down, so it can be drawn depressed.</summary>
+    [Parameter] public char? Held { get; set; }
+
+    [Parameter] public EventCallback<char> OnDown { get; set; }
+
+    [Parameter] public EventCallback OnUp { get; set; }
+}

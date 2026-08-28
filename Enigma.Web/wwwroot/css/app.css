@@ -1,0 +1,168 @@
+:root {
+    --ground: #f4f1ea;
+    --panel: #e7e1d5;
+    --ink: #23201b;
+    --muted: #6b6459;
+    --edge: #c9c1b1;
+    --key: #33302b;
+    --key-ink: #efeae0;
+    --lamp: #cfc8ba;
+    --lamp-lit: #ffcf63;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ground: #14130f;
+        --panel: #23211c;
+        --ink: #ece7dc;
+        --muted: #9a9285;
+        --edge: #3b382f;
+        --key: #0f0e0c;
+        --key-ink: #d9d3c6;
+        --lamp: #2e2b25;
+        --lamp-lit: #ffcf63;
+    }
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 2rem 1rem;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+}
+
+main { max-width: 44rem; margin: 0 auto; }
+
+h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.08em; margin: 0 0 1rem; }
+
+.sheet-picker { display: block; margin-bottom: 1rem; font-size: 0.85rem; color: var(--muted); }
+.sheet-picker select {
+    display: block;
+    margin-top: 0.3rem;
+    padding: 0.4rem 0.5rem;
+    background: var(--panel);
+    color: var(--ink);
+    border: 1px solid var(--edge);
+    border-radius: 0.3rem;
+    font: inherit;
+}
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-radius: 0.6rem;
+    padding: 1rem;
+    outline: none;
+}
+.panel:focus-visible { box-shadow: 0 0 0 2px var(--lamp-lit); }
+
+.plate {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--edge);
+    font-size: 0.8rem;
+}
+.plate-name { font-weight: 600; }
+.plate-parts { color: var(--muted); letter-spacing: 0.06em; }
+
+.windows { display: flex; justify-content: center; gap: 0.5rem; padding: 1rem 0; }
+.window {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    min-width: 3rem;
+}
+.window-name { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.08em; }
+.window-letter {
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.6rem;
+    background: var(--ground);
+    border: 1px solid var(--edge);
+    border-radius: 0.25rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+.window-ukw .window-letter { border-style: dashed; }
+
+.board { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 0.6rem 0; }
+.board-row { display: flex; gap: 0.4rem; }
+.board-row:nth-child(2) { margin-left: 1.1rem; }
+.board-row:nth-child(3) { margin-left: 0.4rem; }
+
+.lamps { border-bottom: 1px solid var(--edge); }
+.lamp {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--lamp);
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.lamp-lit { background: var(--lamp-lit); color: #2b2000; }
+
+.key {
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    border: 2px solid var(--edge);
+    background: var(--key);
+    color: var(--key-ink);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.key-down { transform: translateY(1px); border-color: var(--lamp-lit); }
+
+.tape {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--edge);
+}
+.tape output {
+    flex: 1;
+    min-height: 1.6rem;
+    font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+    word-break: break-all;
+}
+.action {
+    padding: 0.35rem 0.7rem;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--edge);
+    border-radius: 0.3rem;
+    font: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+}
+.action:hover { color: var(--ink); }
+
+.error { color: #b3261e; font-size: 0.9rem; }
+
+#blazor-error-ui {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.7rem 1rem;
+    background: #ffe08a;
+    color: #2b2000;
+}

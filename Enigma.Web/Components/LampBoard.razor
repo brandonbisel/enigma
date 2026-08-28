@@ -1,0 +1,22 @@
+@* The lamps. Exactly one lights at a time, and only while the key is held down. *@
+
+<div class="board lamps" data-testid="lamps">
+    @foreach (var row in KeyboardLayout.Rows(Alphabet))
+    {
+        <div class="board-row">
+            @foreach (var character in row)
+            {
+                <span class="lamp @(character == Lit ? "lamp-lit" : null)"
+                      data-testid="lamp"
+                      data-letter="@character">@character</span>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public required ICharacterMap Alphabet { get; set; }
+
+    /// <summary>The lamp alight, or null when no key is down.</summary>
+    [Parameter] public char? Lit { get; set; }
+}
