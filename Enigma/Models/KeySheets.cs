@@ -65,6 +65,36 @@ public static class KeySheets
                 Positions = "AAA",
                 ReflectorPosition = "A"
             },
+            ["swiss-k"] = new()
+            {
+                Name = "Swiss Enigma K",
+                Model = "Commercial",
+                Reflector = "G",
+                Rotors = "SK-III SK-II SK-I",
+                RingSettings = "AAA",
+                Positions = "AAA",
+                ReflectorPosition = "A"
+            },
+            ["railway"] = new()
+            {
+                Name = "Railway Enigma (Rocket)",
+                Model = "Commercial",
+                Reflector = "R",
+                Rotors = "R-III R-II R-I",
+                RingSettings = "AAA",
+                Positions = "AAA",
+                ReflectorPosition = "A"
+            },
+            ["tirpitz"] = new()
+            {
+                Name = "Enigma T (Tirpitz)",
+                Model = "Tirpitz",
+                Reflector = "T",
+                Rotors = "T-III T-II T-I",
+                RingSettings = "AAA",
+                Positions = "AAA",
+                ReflectorPosition = "A"
+            },
             ["z30"] = new()
             {
                 Name = "Enigma Z30, numbers only",

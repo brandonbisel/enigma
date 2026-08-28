@@ -15,14 +15,23 @@ namespace Enigma.Machines;
 /// </summary>
 public class CommercialLayout : IMachineLayout
 {
-    public CommercialLayout(IStepping drive)
+    /// <param name="name">What to call this machine when it refuses a key sheet.</param>
+    /// <param name="defaultEntryWheel">
+    /// The stator fitted when a key sheet does not name one. Nearly all of these
+    /// machines are keyboard wired; the Enigma T has a stator of its own, and a key
+    /// sheet that forgot to say so would encipher perfectly well and wrongly.
+    /// </param>
+    public CommercialLayout(
+        IStepping drive, string name = "Commercial", string defaultEntryWheel = "QWERTZ")
     {
         Drive = drive;
+        Name = name;
+        DefaultEntryWheel = defaultEntryWheel;
     }
 
-    public string Name => "Commercial";
+    public string Name { get; }
     public IStepping Drive { get; }
-    public string DefaultEntryWheel => "QWERTZ";
+    public string DefaultEntryWheel { get; }
     public bool AllowsPlugBoard => false;
 
     public void Validate(IReadOnlyList<IRotor> rotors, IReflector reflector, IEntryWheel entryWheel)

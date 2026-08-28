@@ -51,6 +51,23 @@ public static class ServiceCollectionExtensions
         services.AddKeyedTransient<IRotor, RotorKII>("K-II");
         services.AddKeyedTransient<IRotor, RotorKIII>("K-III");
 
+        // The Swiss Air Force's rewired K, the Railway Enigma as found in K438, and
+        // the eight five-notched wheels of the Enigma T.
+        services.AddKeyedTransient<IRotor, RotorSwissKI>("SK-I");
+        services.AddKeyedTransient<IRotor, RotorSwissKII>("SK-II");
+        services.AddKeyedTransient<IRotor, RotorSwissKIII>("SK-III");
+        services.AddKeyedTransient<IRotor, RotorRailwayI>("R-I");
+        services.AddKeyedTransient<IRotor, RotorRailwayII>("R-II");
+        services.AddKeyedTransient<IRotor, RotorRailwayIII>("R-III");
+        services.AddKeyedTransient<IRotor, RotorTirpitzI>("T-I");
+        services.AddKeyedTransient<IRotor, RotorTirpitzII>("T-II");
+        services.AddKeyedTransient<IRotor, RotorTirpitzIII>("T-III");
+        services.AddKeyedTransient<IRotor, RotorTirpitzIV>("T-IV");
+        services.AddKeyedTransient<IRotor, RotorTirpitzV>("T-V");
+        services.AddKeyedTransient<IRotor, RotorTirpitzVI>("T-VI");
+        services.AddKeyedTransient<IRotor, RotorTirpitzVII>("T-VII");
+        services.AddKeyedTransient<IRotor, RotorTirpitzVIII>("T-VIII");
+
         // The ten contact wheels of the numbers-only Enigma Z30.
         services.AddKeyedTransient<IRotor, RotorZI>("Z-I");
         services.AddKeyedTransient<IRotor, RotorZII>("Z-II");
@@ -66,6 +83,8 @@ public static class ServiceCollectionExtensions
         // The Zählwerk reflectors turn, so each machine needs its own.
         services.AddKeyedTransient<IReflector, ReflectorG>("G");
         services.AddKeyedTransient<IReflector, ReflectorG312>("G312");
+        services.AddKeyedTransient<IReflector, ReflectorRailway>("R");
+        services.AddKeyedTransient<IReflector, ReflectorTirpitz>("T");
         services.AddKeyedTransient<IReflector, ReflectorZ>("Z");
 
         // The board is patched per machine, so it is transient for the same reason as the rotors.
@@ -75,6 +94,7 @@ public static class ServiceCollectionExtensions
         // straight-through one.
         services.AddKeyedSingleton<IEntryWheel>("STANDARD", (_, _) => EntryWheel.Standard);
         services.AddKeyedSingleton<IEntryWheel>("QWERTZ", (_, _) => EntryWheel.Qwertz);
+        services.AddKeyedSingleton<IEntryWheel>("TIRPITZ", (_, _) => EntryWheel.Tirpitz);
 
         services.AddSingleton<IStepping, PawlDrive>();
         services.AddKeyedSingleton<IMachineLayout>("SERVICE",
@@ -85,6 +105,9 @@ public static class ServiceCollectionExtensions
 
         services.AddKeyedSingleton<IMachineLayout>("COMMERCIAL",
             (provider, _) => new CommercialLayout(provider.GetRequiredService<IStepping>()));
+        services.AddKeyedSingleton<IMachineLayout>("TIRPITZ",
+            (provider, _) => new CommercialLayout(
+                provider.GetRequiredService<IStepping>(), "Tirpitz", "TIRPITZ"));
         services.AddKeyedSingleton<IMachineLayout>("Z30",
             (provider, _) => new NumericLayout(
                 new ReflectorPawlDrive(provider.GetService<ILogger<ReflectorPawlDrive>>())));

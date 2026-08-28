@@ -433,6 +433,27 @@ Crypto Museum puts it, "the cryptographic effect of the Ringstellung is null. It
 does not enhance the machine's key space." A test proves it by setting ring and
 position together and getting the same ciphertext back.
 
+### The same pattern, other wheels
+
+Three more machines are the commercial arrangement with different parts, and need
+no new mechanism at all:
+
+| | Wheels | Reflector | Stator | Notes |
+|---|---|---|---|---|
+| Swiss K | `SK-I`…`SK-III` | `G` | QWERTZ | the Swiss rewired the wheels and left the rest |
+| Railway | `R-I`…`R-III` | `R` | QWERTZ | the wiring found in machine K438 |
+| Tirpitz | `T-I`…`T-VIII` | `T` | its own | eight wheels, five notches each |
+
+The Railway Enigma has two published wirings: Bletchley Park's wartime
+reconstruction and the original, recovered from machine K438 in 2023. They are
+equivalent up to ring settings, but BP's has the turnovers of wheels I and III
+swapped through a misidentification. The original is what ships.
+
+The Enigma T is the one machine here whose entry wheel is neither straight through
+nor the keyboard order, and forgetting it would encipher perfectly well and
+wrongly — so its model supplies it, and a key sheet need not say so. Its eight
+wheels carry five notches apiece, which is what stretches its period.
+
 ## The Enigma Z, a machine of figures
 
 The Z30 has no letters at all: ten contacts per wheel, a keyboard of a single row
@@ -679,6 +700,13 @@ rather than reconstructed, and each is pinned by a test.
   the difference that matters between them: the D's "notch ring is attached to the
   body of the rotor (rather than to the letter ring)", while the K's is "attached to
   the letter ring rather than rotor body".
+- **Crypto Museum, [*Swiss K*](https://www.cryptomuseum.com/crypto/enigma/k/swiss.htm),
+  [*Railway Enigma*](https://www.cryptomuseum.com/crypto/enigma/k/railway.htm) and
+  [*Enigma T*](https://www.cryptomuseum.com/crypto/enigma/t/index.htm)** — their
+  wheels, notches, reflectors and, for the T, its own entry wheel. The Railway page
+  also records that its two published wirings differ by a misidentification, "with
+  turnover positions of rotors I and III swapped" in Bletchley Park's version, and
+  that Friedman's report of a moving reflector on that machine was mistaken.
 - **Reuvers & Simons, *Enigma G-111: A rare version of Zählwerk Enigma G31***
   (Crypto Museum, 2013) — the mechanism in the machine's own terms: cogwheels rather
   than pawls and levers, no double stepping anomaly, notches attached to the letter

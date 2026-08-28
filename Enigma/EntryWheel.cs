@@ -50,4 +50,11 @@ public class EntryWheel : IEntryWheel
 
     /// <summary>Wired in keyboard order, as the commercial and railway machines were.</summary>
     public static EntryWheel Qwertz { get; } = new("QWERTZ", "QWERTZUIOASDFGHJKPYXCVBNML");
+
+    /// <summary>
+    /// The Enigma T's own stator, which is neither straight through nor the
+    /// keyboard order the other commercial machines used. Getting it wrong costs
+    /// nothing visible and everything cryptographic, so the model supplies it.
+    /// </summary>
+    public static EntryWheel Tirpitz { get; } = new("TIRPITZ", "KZROUQHYAIGBLWVSTDXFPNMCJE");
 }
