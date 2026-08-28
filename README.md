@@ -311,8 +311,17 @@ The whole message now runs end to end in the test suite: the transmitted indicat
 `FNHC GVET`, through the real table, to the message key `ODFF` the operator wrote on
 his sheet — and back again.
 
-Tafel J is not reproduced in the scan, so it is not shipped. Supply a table and it
-will be used:
+**The calendar ships too.** `Tauschtafelplan.BrunoQuelle` is the *Tauschtafelplan
+"Bruno"* for this set, transcribed from Michael Hörenberg's photograph of the
+original: thirty-one days by six Kennziffer columns, the column chosen by cipher net.
+It agrees with the traffic at the one point it can be checked — U-534 sent on Tafel A
+on 1 May 1945, and the column pencilled "Mai 45" reads `A` on the first.
+
+```csharp
+var tafel = Tauschtafelplan.BrunoQuelle.Tafel(kennziffer: 6, dayOfMonth: 1);  // 'A'
+```
+
+Tafel J is in neither source and is not shipped. Supply a table and it will be used:
 
 ```csharp
 var table = BigramTable.Parse("AK=BD HQ=BJ LK=EM GZ=EJ");

@@ -10,11 +10,11 @@ namespace Enigma;
 /// which means a table is an involution on pairs of letters, exactly as a reflector
 /// is on single ones.
 ///
-/// A set ran to nine tables and a calendar said which to use. None ships here: the
-/// recovered tables survive as photographs of the originals rather than as anything
-/// machine-readable, and six hundred and seventy-six entries transcribed by eye is
-/// precisely the sort of cipher data this library does not invent. Supply one and it
-/// will be used.
+/// A set ran to nine tables and a calendar said which to use. Eight of the set
+/// "Quelle" ship in <see cref="BigramTables"/>, transcribed by eye from the Crypto
+/// Museum's photographs of booklet Prüf-Nr. 2499 — every one checked whole and
+/// reciprocal before it shipped — and the calendar that goes with them is
+/// <see cref="Tauschtafelplan.BrunoQuelle"/>. Supply your own and it will be used.
 /// </summary>
 public sealed class BigramTable
 {

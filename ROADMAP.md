@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-561 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+571 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -109,10 +109,27 @@ entries each, every mirror agreeing, no bigram enciphering to itself, and — fo
 A — the four cells known from real traffic correct. U-534's message runs end to end
 through the real table.
 
-**Tafel J and the Tauschtafelplan would need a different source.** Without the plan
-there is no calendar saying which table applied on which day, so the eight that ship
-are the substitution tables themselves and not a usable day-by-day key. That is a gap
-in the published material rather than in the transcription.
+**The Tauschtafelplan has since been found in a different source, and ships.** Michael
+Hörenberg publishes a photograph of *Tauschtafelplan "Bruno" zu den
+Doppelbuchstabentauschtafeln für Kenngruppen, Kennwort: Quelle*, Prüfnr. 1772a — the
+calendar for exactly this set. It is `Tauschtafelplan.BrunoQuelle`: thirty-one days by
+six Kennziffer columns, the column chosen by cipher net from the Zuteilungsliste.
+
+It is checkable at one point and it holds. U-534's P1030690 of 1 May 1945 was sent on
+Tafel A; column six, the one pencilled "Mai 45" on the sheet, reads A on the first of
+the month. The tables and the calendar were transcribed from different documents in
+different archives and agree.
+
+The sheet carries pen corrections as well as print, and both layers ship. Every
+printed `C` and `H` in columns one, four and six is struck out and a replacement
+written over it, consistently per column, so that after correction those three columns
+use only `A B D E F G J` while the uncorrected columns still contain both letters. The
+natural reading is that Tafeln C and H were withdrawn — but the sheet does not say so,
+and the library records the two layers rather than the inference.
+
+Two limits stand. Only the six columns printed on the front are in the photograph; the
+sheet is footed *"Fortsetzung Rückseite!"* and the reverse is not. And **Tafel J is
+still missing** — it is in no source found so far.
 
 That self-checking property is what makes this worth doing by hand. The tables are
 involutions, so a mistyped cell breaks its pair and is caught; eighteen cells have needed

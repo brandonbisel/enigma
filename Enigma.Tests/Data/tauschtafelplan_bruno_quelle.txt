@@ -1,0 +1,79 @@
+# Tauschtafelplan "Bruno" zu den Doppelbuchstabentauschtafeln fuer Kenngruppen,
+# Kennwort: Quelle -- Pruefnr. 1772a.
+#
+# Source: photograph of the original published by Michael Hoerenberg,
+# enigma.hoerenberg.com, "The Kenngruppen System (Navy)", file
+# Tauschtafelplan_Bruno_Quelle.jpg.
+#
+# Rows are Monatstag, 1 to 31.  Columns are the six Kennziffer columns printed on
+# the front, "eins" through "sechs"; the sheet is footed "Fortsetzung Rueckseite!",
+# so further columns exist on the reverse and are NOT in the photograph.
+#
+# The sheet carries pencilled month labels over the columns -- eins "April 45",
+# zwei "November", drei (illegible), vier "Februar 45", fuenf "Oktober", sechs
+# "Mai 45" -- and pen corrections in columns eins, vier and sechs only.  Every
+# correction replaces a printed C or H, consistently per column:
+#     eins  C->E  H->G
+#     vier  C->A  H->D
+#     sechs C->G  H->B
+# After correction those three columns use only A B D E F G J: C and H are gone
+# from them entirely, while the uncorrected columns still contain both.  The
+# obvious reading is that Tafeln C and H were withdrawn and a substitute named
+# per column, but the sheet does not say so and that is inference, not evidence.
+#
+# printed: day, then Kennziffer 1..6
+printed
+ 1  J D B C F A
+ 2  A G D J C F
+ 3  G J E B A C
+ 4  D E A H F B
+ 5  B C F G D A
+ 6  E F G B H D
+ 7  H D B F E J
+ 8  C A H G B D
+ 9  F H C E G A
+10  H E J A B F
+11  C J D H A B
+12  D A E C H F
+13  J G A E B H
+14  G C H D A F
+15  A E B J F G
+16  E B F H A J
+17  B J C A F H
+18  F D G B J C
+19  B A F J E D
+20  E H G B D A
+21  J F E G A H
+22  F C A B G D
+23  H G J D A E
+24  A E B C H G
+25  D A C H E J
+26  G F H A B E
+27  C D F E H A
+28  A B E D J H
+29  F G D J E B
+30  H F A B J D
+31  B H F G A C
+# corrections: day, Kennziffer, printed letter, letter written over it
+corrected
+ 1 4 C A
+ 3 6 C G
+ 4 4 H D
+ 7 1 H G
+ 8 1 C E
+10 1 H G
+11 1 C E
+11 4 H D
+12 4 C A
+13 6 H B
+16 4 H D
+17 6 H B
+18 6 C G
+21 6 H B
+23 1 H G
+24 4 C A
+25 4 H D
+27 1 C E
+28 6 H B
+30 1 H G
+31 6 C G

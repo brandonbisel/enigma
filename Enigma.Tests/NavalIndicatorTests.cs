@@ -383,4 +383,82 @@ public class NavalIndicatorTests
 
     private static IServiceProvider Services() =>
         new ServiceCollection().AddEnigmaServices().BuildServiceProvider();
+
+    [Fact]
+    public void TheCalendarPutsU534OnTheTableItsMessageWasSentWith()
+    {
+        // The one point where the Tauschtafelplan can be checked against real
+        // traffic. U-534's P1030690 of 1 May 1945 was sent on Tafel A, and column
+        // six is the one pencilled "Mai 45" on the sheet.
+        Assert.Equal('A', Tauschtafelplan.BrunoQuelle.Tafel(kennziffer: 6, dayOfMonth: 1));
+    }
+
+    [Fact]
+    public void TheCalendarNamesATableForEveryDayOfEveryColumn()
+    {
+        // Nine tables to the set, lettered A to J with no I, so no other letter may
+        // appear anywhere in the plan.
+        Assert.All(
+            from kennziffer in Enumerable.Range(1, Tauschtafelplan.BrunoQuelle.Columns)
+            from day in Enumerable.Range(1, 31)
+            select Tauschtafelplan.BrunoQuelle.AsPrinted(kennziffer, day),
+            letter => Assert.Contains(letter, "ABCDEFGHJ"));
+    }
+
+    [Fact]
+    public void EveryPrintedColumnUsesTheWholeSet()
+    {
+        // A calendar that left a table out would be a transcription slip, not a plan.
+        Assert.All(
+            Enumerable.Range(1, Tauschtafelplan.BrunoQuelle.Columns),
+            kennziffer => Assert.Equal(
+                9,
+                Enumerable.Range(1, 31)
+                    .Select(day => Tauschtafelplan.BrunoQuelle.AsPrinted(kennziffer, day))
+                    .Distinct()
+                    .Count()));
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(4)]
+    [InlineData(6)]
+    public void TheCorrectedColumnsHaveNoCOrH(int kennziffer)
+    {
+        // The pen strikes out every C and every H in these three columns and writes
+        // a replacement over it. That the letters vanish completely — and only from
+        // these columns — is what makes the corrections read as a withdrawal of two
+        // tables rather than as scattered amendments.
+        Assert.All(
+            Enumerable.Range(1, 31),
+            day =>
+            {
+                var tafel = Tauschtafelplan.BrunoQuelle.Tafel(kennziffer, day);
+                Assert.NotEqual('C', tafel);
+                Assert.NotEqual('H', tafel);
+            });
+    }
+
+    [Theory]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(5)]
+    public void TheUncorrectedColumnsStillHaveThem(int kennziffer)
+    {
+        var letters = Enumerable.Range(1, 31)
+            .Select(day => Tauschtafelplan.BrunoQuelle.Tafel(kennziffer, day))
+            .ToList();
+
+        Assert.Contains('C', letters);
+        Assert.Contains('H', letters);
+    }
+
+    [Fact]
+    public void ADayOutsideTheMonthIsRefused()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(
+            () => Tauschtafelplan.BrunoQuelle.Tafel(kennziffer: 1, dayOfMonth: 32));
+        Assert.Throws<ArgumentOutOfRangeException>(
+            () => Tauschtafelplan.BrunoQuelle.Tafel(kennziffer: 7, dayOfMonth: 1));
+    }
 }
