@@ -264,6 +264,46 @@ indicator whose halves disagree is rejected on the way back. The two halves
 encipher differently because the rotors move between them — the repetition that
 gave Rejewski the relation he used to reconstruct the wiring.
 
+## The naval indicator procedure
+
+The Army sent its ground setting in clear. The Kriegsmarine sent nothing in clear
+at all.
+
+Its operator took two trigrams from the **Kenngruppenbuch**: a *Schlüsselkenngruppe*
+saying which key was in force, and a *Verfahrenkenngruppe* which, typed at the day's
+Grundstellung, gave him the message key. He then padded the first with a letter in
+front and the second with a letter behind, wrote them one above the other, and read
+downwards:
+
+```
+A H L G      filler, then the Schlüsselkenngruppe
+K Q K Z      the Verfahrenkenngruppe, then a filler
+```
+
+The four column pairs — `AK HQ LK GZ` — went through a
+**Doppelbuchstabentauschtafel**, a double-letter conversion table, becoming
+`BD BJ EM EJ`, and those eight letters travelled with the message. Letters that
+were sent together had never been next to each other.
+
+The table is reciprocal: if `AK` is written as `BD` then `BD` is written as `AK`, so
+one table serves both stations without being reversed. It is an involution on pairs
+of letters, exactly as a reflector is on single ones.
+
+**No table ships here.** A set ran to nine, and the recovered ones survive as
+photographs of the originals rather than as anything machine-readable; six hundred
+and seventy-six entries transcribed by eye is precisely the sort of cipher data this
+library does not invent. Supply one and it will be used:
+
+```csharp
+var table = BigramTable.Parse("AK=BD HQ=BJ LK=EM GZ=EJ");
+var sent = navalProcedure.Send(dailyKey, table, "HLG", "KQK", 'A', 'Z');
+```
+
+One detail worth knowing: the Kenngruppenbuch lists trigrams, but an M4 has four
+wheels. The trigram sets the three right-hand ones and the Greek wheel stays where
+the key sheet put it, so a naval message key is three letters on an M3 and four on
+an M4.
+
 ## Writing a message out
 
 An Enigma has twenty six letter keys, no space bar and no digits, so a signaller
@@ -526,6 +566,10 @@ the stepping non-injective, so some windows can never be reached and all zeros i
 one of them. So the brochure describes the geared Mk II rather than this machine,
 and both tests are in the suite.
 
+Whether that Mk II was ever built is itself uncertain, and only the Mk I survives —
+one machine, Z103, held by the FRA in Sweden. Its wheels are what this library
+carries; the geared drive is here because the Zählwerk machines need it anyway.
+
 Its notch sits somewhere unusual, and it matters. On an Enigma I or K the notch is
 cut into the index ring, so a wheel carries its neighbour at a fixed letter in the
 window whatever the Ringstellung — rotor I always at Q. On the Z30, as on the older
@@ -764,6 +808,14 @@ rather than reconstructed, and each is pinned by a test.
 - **Palloks, *Universal Enigma*, model tables** — the Norenigma's five wheels and
   reflector, the KD's nine-notch wheels, and the UKW-D wiring of the KD machine
   held by the FRA in Sweden, which is the one the packaged key sheet carries.
+- **[Dirk Rijmenants, *Enigma Procedures*](https://ciphermachinesandcryptology.com/en/enigmaproc.htm)**
+  — the Kriegsmarine indicator procedure step by step, and the worked example the
+  tests reproduce: groups HLG and KQK with fillers A and Z becoming BDBJ EMEJ under
+  bigram table B. Four entries of that table are published with it, and those four
+  are all this library claims to know.
+- **[Crypto Museum, *Bigram tables*](https://www.cryptomuseum.com/crypto/codebook/bigram.htm)**
+  — what the tables were and how they were used. The recovered ones are reproduced
+  there as photographs of the originals, which is why none is transcribed here.
 - **Reuvers & Simons, *Enigma G-111: A rare version of Zählwerk Enigma G31***
   (Crypto Museum, 2013) — the mechanism in the machine's own terms: cogwheels rather
   than pawls and levers, no double stepping anomaly, notches attached to the letter

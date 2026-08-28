@@ -31,7 +31,7 @@ it runs; it is done when something published says it runs correctly.
 | Entry wheel | Complete, straight-through and QWERTZ |
 | Custom alphabets | Complete — the alphabet is a first-class part of the machine |
 | Custom parts files | Complete — rotors, reflectors and alphabets from user files |
-| Indicator procedure | Army version complete, doubled and single, in both front ends |
+| Indicator procedure | Army version in both front ends; the naval one in the library |
 | Message formatting | Complete — preparation and five-letter groups |
 | Key sheets | Complete, in the notation a real key sheet used |
 | Enigma D and K | Complete — the commercial pattern, shared wheels, notches apart |
@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-530 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+548 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -57,14 +57,16 @@ transmitted anywhere.
 new model to *parts plus a layout*. That makes the remaining machines mostly a
 matter of sourcing wirings rather than writing mechanism:
 
-- **Enigma Z Mk II.** The gear-driven version of the Z30. Its mechanism is the
-  `GearDrive` already written for the Zählwerk machines, and it is now corroborated
-  by a primary source rather than by a simulator alone: the 1931 brochure in the
-  Spanish Foreign Ministry archives claims a period of 10,000, which is exactly what
-  that drive gives on four ten-position wheels and which the Mk I's pawls cannot
-  give at all. Only the wiring is missing, and it is not published anywhere found so
-  far — so the mechanism is there and the wheels wait for a source, as the Uhr's
-  dial did.
+- **Enigma Z Mk II** — *not planned, and probably not possible.* The gear-driven
+  version of the Z30 may never have been built: "it is uncertain whether this
+  machine was actually built", though a brochure photograph shows a serial number in
+  the range its production would have used. Only one Z30 of any mark survives, the
+  Mk I Z103 held by the FRA in Sweden. No wiring is published, and there is no
+  machine to recover one from, so this is listed to record that it was considered
+  rather than as work waiting to be done.
+
+  Its mechanism is nonetheless here already, and tested: `GearDrive` has the period
+  of 10,000 that the 1931 brochure advertised, which the Mk I's pawls cannot give.
 
   The Mk I is done. It needed a character map, a set of wheels and one new drive:
   making the alphabet first-class did carry it, and what it did *not* carry was the
@@ -72,13 +74,14 @@ matter of sourcing wirings rather than writing mechanism:
 
 ### The naval indicator procedure
 
-`IndicatorProcedure` implements the army method: encipher the message key at the
-ground setting and send the ground setting in clear. The Kriegsmarine did not send
-it in clear. It disguised the indicator through the
-**Doppelbuchstabentauschtafel** — bigram substitution tables — with the key groups
-drawn from the **Kenngruppenbuch**. Until those are in, the naval machines are
-modelled but the naval *procedure* is not, which is a gap in a simulator that
-otherwise takes procedure seriously.
+The procedure itself is done: `NavalIndicatorProcedure` and `BigramTable` carry the
+Kenngruppenbuch trigrams, the fillers, the column pairing and the
+Doppelbuchstabentauschtafel, pinned by the published worked example.
+
+Two things remain. **No real bigram table ships**, because the recovered ones exist
+as photographs of the originals and not as data; a transcription would want checking
+against something, and there is nothing to check it against. And the procedure is
+**library only** — neither front end offers it yet, where the army one is in both.
 
 ## Future
 

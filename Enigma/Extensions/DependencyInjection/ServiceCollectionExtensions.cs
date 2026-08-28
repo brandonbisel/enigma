@@ -129,6 +129,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IPartsCatalogue, BuiltInPartsCatalogue>();
         services.AddSingleton<IEnigmaMachineFactory, EnigmaMachineFactory>();
         services.AddSingleton<IIndicatorProcedure, IndicatorProcedure>();
+        services.AddSingleton<INavalIndicatorProcedure, NavalIndicatorProcedure>();
 
         return services;
     }
