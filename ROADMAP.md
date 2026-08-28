@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard, both indicator procedures |
 
-640 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+641 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -216,9 +216,11 @@ Its scan is markedly better than Quelle's: four passes a table rather than six, 
 almost every cell agrees with its own mirror on a first reading, where Quelle's poorer
 pages needed the involution to arbitrate.
 
-**Tafel A is transcribed and shipped.** One cell needed adjudicating — `SF` read as
-`ZK`, where `ZK` pairs with `CR` both ways and column Z reads `ZX=SF`; at full
-resolution the glyph is plainly a symmetric X, not a stemmed K. Eight tables to go.
+**Tafels A and B are transcribed and shipped.** Three cells have needed adjudicating,
+each settled by a pair the table already agreed on: `A/SF` read `ZK` where `ZK` pairs
+with `CR` and column Z reads `ZX=SF`; `B/HR` read `BB` where `BB` pairs with `KM` and
+`BE=HR`; `B/YZ` read `ME` where `ME` pairs with `LP` and `HE=YZ`. `B`/`E` again, and a
+first `M`/`H`. Seven tables to go.
 
 **The Meer Tauschtafelplan ships too, and it settles a question.** Both sides are
 reproduced, and the reverse carries Kennziffer *sieben* to *zwölf*: a full plan has

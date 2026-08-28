@@ -143,6 +143,7 @@ public class NavalIndicatorTests
 
     [Theory]
     [InlineData('A')]
+    [InlineData('B')]
     public void EveryShippedTableOfMeerIsWholeAndReciprocal(char tafel)
     {
         // The same check the "Quelle" tables get. A second set is a second chance
@@ -168,6 +169,8 @@ public class NavalIndicatorTests
         // Same letter, different booklet: nothing should carry over.
         Assert.NotEqual(
             BigramTables.QuelleA.Substitute("AA"), BigramTables.MeerA.Substitute("AA"));
+        Assert.NotEqual(
+            BigramTables.QuelleB.Substitute("AA"), BigramTables.MeerB.Substitute("AA"));
     }
 
     [Fact]
