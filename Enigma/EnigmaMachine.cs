@@ -42,44 +42,48 @@ public class EnigmaMachine : IEnigmaMachine
         }
     }
 
+    public event Action<TranslationTrace>? Translated;
+
     public int Translate(int input)
     {
         _stepping.Advance(_rotors, Reflector);
 
         // The trace is only assembled when someone is listening, so the ordinary
         // path costs nothing more than a null check per component.
-        var trace = _logger.IsEnabled(LogLevel.Debug) ? new List<string>() : null;
+        var watchers = Translated;
+        var tracing = watchers is not null || _logger.IsEnabled(LogLevel.Debug);
+        var steps = tracing ? new List<TranslationStep>(2 * _rotors.Length + 4) : null;
 
         var value = PlugBoard.Translate(input);
-        trace?.Add($"plug {Format(input)}>{Format(value)}");
+        steps?.Add(new TranslationStep("plug", input, value));
 
-        value = Step(_entryWheel.Name, value, _entryWheel.ToContact, trace);
+        value = Step(_entryWheel.Name, value, _entryWheel.ToContact, steps);
 
         for (var i = _rotors.Length - 1; i >= 0; i--)
         {
-            value = Step(_rotors[i].Name, value, _rotors[i].Translate, trace);
+            value = Step(_rotors[i].Name, value, _rotors[i].Translate, steps);
         }
 
-        value = Step(Reflector.Name, value, Reflector.Translate, trace);
+        value = Step(Reflector.Name, value, Reflector.Translate, steps);
 
         for (var i = 0; i < _rotors.Length; i++)
         {
-            value = Step($"{_rotors[i].Name}'", value, _rotors[i].TranslateReverse, trace);
+            value = Step($"{_rotors[i].Name}'", value, _rotors[i].TranslateReverse, steps);
         }
 
-        value = Step($"{_entryWheel.Name}'", value, _entryWheel.ToLamp, trace);
+        value = Step($"{_entryWheel.Name}'", value, _entryWheel.ToLamp, steps);
 
         var output = PlugBoard.TranslateReverse(value);
-        trace?.Add($"plug {Format(value)}>{Format(output)}");
+        steps?.Add(new TranslationStep("plug", value, output));
 
-        if (trace is not null)
+        if (steps is not null)
         {
-            _logger.LogDebug(
-                "{Input} -> {Output}   window {Window}   {Path}",
-                Format(input),
-                Format(output),
-                Window(),
-                string.Join(" | ", trace));
+            // One structure, two readers: the log line is formatted from the same
+            // trace the watchers get, so a diagnostic and a display cannot disagree.
+            var trace = new TranslationTrace(input, output, Window(), steps);
+
+            LogTrace(trace);
+            watchers?.Invoke(trace);
         }
 
         return output;
@@ -92,16 +96,34 @@ public class EnigmaMachine : IEnigmaMachine
         return input.Select(Translate).ToList();
     }
 
-    private int Step(string name, int value, Func<int, int> translate, List<string>? trace)
+    private int Step(string name, int value, Func<int, int> translate, List<TranslationStep>? steps)
     {
         var output = translate(value);
 
-        trace?.Add($"{name} {Format(value)}>{Format(output)}");
+        steps?.Add(new TranslationStep(name, value, output));
 
         return output;
     }
 
-    private string Window() => string.Concat(_rotors.Select(rotor => Format(rotor.Position)));
+    private void LogTrace(TranslationTrace trace)
+    {
+        if (!_logger.IsEnabled(LogLevel.Debug))
+        {
+            return;
+        }
+
+        _logger.LogDebug(
+            "{Input} -> {Output}   window {Window}   {Path}",
+            Format(trace.Input),
+            Format(trace.Output),
+            string.Concat(trace.Window.Select(Format)),
+            string.Join(" | ", trace.Steps.Select(Describe)));
+    }
+
+    private string Describe(TranslationStep step) =>
+        $"{step.Component} {Format(step.Input)}>{Format(step.Output)}";
+
+    private int[] Window() => _rotors.Select(rotor => rotor.Position).ToArray();
 
     private string Format(int contact) => CharacterMap.GetCharacter(contact).ToString();
 }

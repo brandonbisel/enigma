@@ -8,7 +8,7 @@ what is a future goal, and what is deliberately not scheduled.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 281 tests
+dotnet test               # whole suite, currently 292 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
@@ -46,6 +46,10 @@ whichever the neighbouring files use.
 - Methods on the bases are deliberately non-virtual, with one exception:
   `RotorBase.Step` is virtual so `ThinRotorBase` can refuse to turn. Variation
   otherwise belongs in the abstract data members, not in overridden behaviour.
+- The signal path is described once, as a `TranslationTrace`. The debug log line is
+  *formatted from* that structure rather than assembled beside it, so anything that
+  wants to watch the machine — a log, a display — sees the same thing. Do not grow
+  a second path description.
 
 ## Key sheets
 

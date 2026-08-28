@@ -11,4 +11,11 @@ public interface IEnigmaMachine
     
     int Translate(int input);
     IEnumerable<int> Translate(IEnumerable<int> input);
+
+    /// <summary>
+    /// Raised once per keypress with the path the current took. Subscribing is what
+    /// makes the machine assemble a trace at all, so a machine nobody is watching
+    /// pays nothing for this.
+    /// </summary>
+    event Action<TranslationTrace>? Translated;
 }

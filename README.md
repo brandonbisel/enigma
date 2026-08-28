@@ -426,10 +426,26 @@ settings.
 ## Watching it work
 
 `--verbose` traces each character through every component, with the rotor window
-alongside. Primed rotor names are the return leg, after the reflector.
+alongside. Primed names are the return leg, after the reflector.
 
 ```
-A -> B   window AAB   plug A>A | III A>C | II C>D | I D>F | B F>S | I' S>S | II' S>E | III' E>B | plug B>B
+A -> B   window AAB   plug A>A | Standard A>A | III A>C | II C>D | I D>F | B F>S | I' S>S | II' S>E | III' E>B | Standard' B>B | plug B>B
+```
+
+The same path is available as data rather than text. Subscribe to a machine's
+`Translated` event and each keypress arrives as a `TranslationTrace`, carrying the
+key, the lamp, the rotor window, and every component the current passed through.
+The log line above is formatted from exactly that structure, so a trace and a
+diagnostic cannot disagree. A machine nobody is watching builds nothing.
+
+```csharp
+machine.Translated += trace =>
+{
+    // Contacts are numbers in the machine's own alphabet, so map them to read them.
+    var window = string.Concat(trace.Window.Select(machine.CharacterMap.GetCharacter));
+
+    Console.WriteLine($"window {window}, {trace.Steps.Count} components");
+};
 ```
 
 ## Testing

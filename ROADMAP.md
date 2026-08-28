@@ -36,7 +36,7 @@ it runs; it is done when something published says it runs correctly.
 | Key sheets | Complete, in the notation a real key sheet used |
 | Front ends | A command line tool |
 
-281 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+292 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
