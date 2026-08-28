@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-548 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+550 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -78,10 +78,16 @@ The procedure itself is done: `NavalIndicatorProcedure` and `BigramTable` carry 
 Kenngruppenbuch trigrams, the fillers, the column pairing and the
 Doppelbuchstabentauschtafel, pinned by the published worked example.
 
-Two things remain. **No real bigram table ships**, because the recovered ones exist
-as photographs of the originals and not as data; a transcription would want checking
-against something, and there is nothing to check it against. And the procedure is
-**library only** — neither front end offers it yet, where the army one is in both.
+It is pinned by a real message: U-534's P1030690 of 1 May 1945, read from its
+transmitted indicator through to the message key its operator wrote down.
+
+Two things remain. **No complete bigram table ships.** Only the four entries of
+"Quelle" Tafel A that message needs are known here as data; the recovered tables
+survive as photographs of the originals. A transcription would in fact be
+self-checking — a table is an involution, so a mistyped cell breaks a pair — but
+that catches transcription error, not invention, so the photograph still has to come
+from somewhere trustworthy. And the procedure is **library only**: neither front end
+offers it yet, where the army one is in both.
 
 ## Future
 

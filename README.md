@@ -299,10 +299,19 @@ var table = BigramTable.Parse("AK=BD HQ=BJ LK=EM GZ=EJ");
 var sent = navalProcedure.Send(dailyKey, table, "HLG", "KQK", 'A', 'Z');
 ```
 
-One detail worth knowing: the Kenngruppenbuch lists trigrams, but an M4 has four
-wheels. The trigram sets the three right-hand ones and the Greek wheel stays where
-the key sheet put it, so a naval message key is three letters on an M3 and four on
-an M4.
+One detail worth knowing, and one this library got wrong until a real message caught
+it: the Kenngruppenbuch lists trigrams, and three letters cannot key four wheels.
+What sets an M4's fourth wheel is the **filler** — the letter that padded the
+trigram out to fill its bigram column. Both stations have it, the sender by choosing
+it and the receiver by reading it out of the indicator, so the group typed at the
+ground setting is the trigram and its filler, taken to as many letters as the
+machine has wheels.
+
+That is pinned by traffic rather than by reasoning. Message P1030690 from U-534,
+1 May 1945: the indicator `FNHC GVET` decodes through "Quelle" Tafel A to the
+Schlüsselkenngruppe `DUZ` and the Verfahrenkenngruppe `YMU`, and `YMUZ` typed at the
+Grundstellung `IBFK` on that day's key gives the message key `ODFF` — which is what
+the operator's own sheet says it was.
 
 ## Writing a message out
 
@@ -813,6 +822,11 @@ rather than reconstructed, and each is pinned by a test.
   tests reproduce: groups HLG and KQK with fillers A and Z becoming BDBJ EMEJ under
   bigram table B. Four entries of that table are published with it, and those four
   are all this library claims to know.
+- **[Michael Hörenberg, *The Kenngruppen System*](https://enigma.hoerenberg.com/index.php?cat=The+U534+messages&page=The+Kenngruppen+System)**
+  — message P1030690 from U-534 worked right through: the transmitted indicator, the
+  four entries of "Quelle" Tafel A it needs, the day's key, and the message key
+  `ODFF` that comes out. The naval procedure here is pinned by that, and it is what
+  showed the M4's fourth wheel is set by the filler.
 - **[Crypto Museum, *Bigram tables*](https://www.cryptomuseum.com/crypto/codebook/bigram.htm)**
   — what the tables were and how they were used. The recovered ones are reproduced
   there as photographs of the originals, which is why none is transcribed here.

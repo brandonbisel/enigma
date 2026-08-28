@@ -31,7 +31,7 @@ public class NavalIndicatorProcedure : INavalIndicatorProcedure
         return new NavalIndicator(
             key,
             message,
-            MessageKey(dailyKey, message),
+            MessageKey(dailyKey, message, lastFiller),
             Substitute(table, firstFiller + key, message + lastFiller));
     }
 
@@ -55,30 +55,41 @@ public class NavalIndicatorProcedure : INavalIndicatorProcedure
             .Select(column => table.Substitute(letters.Substring(column * 2, 2)))
             .ToArray();
 
-        var key = string.Concat(columns.Select(pair => pair[0]))[1..];
-        var message = string.Concat(columns.Select(pair => pair[1]))[..3];
+        var upper = string.Concat(columns.Select(pair => pair[0]));
+        var lower = string.Concat(columns.Select(pair => pair[1]));
 
-        return new NavalIndicator(key, message, MessageKey(dailyKey, message), letters);
+        // The filler that padded the trigram out is recovered along with it, which
+        // is what lets the receiving station key a four wheel machine.
+        var key = upper[1..];
+        var message = lower[..3];
+
+        return new NavalIndicator(key, message, MessageKey(dailyKey, message, lower[3]), letters);
     }
 
     /// <summary>
-    /// Where the rotors start. The Kenngruppenbuch lists trigrams, so what comes
-    /// back from the machine sets three wheels however many the machine has: on an
-    /// M4 the Greek wheel is not touched, and stays where the key sheet left it.
+    /// Where the rotors start: one letter per wheel, read off the machine at the
+    /// day's ground setting.
+    ///
+    /// The Kenngruppenbuch lists trigrams, which is the whole message key on a three
+    /// wheel machine. An M4 has a fourth wheel to set, and what sets it is the
+    /// filler — the letter that padded the trigram out to fill its bigram column.
+    /// Both stations have it: the sender chose it, and the receiver reads it out of
+    /// the indicator along with everything else. So the group typed is the trigram
+    /// and its filler, taken to as many letters as the machine has wheels.
     /// </summary>
-    private string MessageKey(KeySheet dailyKey, string messageGroup)
+    private string MessageKey(KeySheet dailyKey, string messageGroup, char filler)
     {
         var wheels = dailyKey.Wheels().Count;
-        var enciphered = Run(dailyKey, dailyKey.Positions, messageGroup);
+        var group = messageGroup + char.ToUpperInvariant(filler);
 
-        if (wheels <= 3)
+        if (wheels > group.Length)
         {
-            return enciphered;
+            throw new ArgumentException(
+                $"A trigram and its filler set four wheels at most, but this machine has {wheels}.",
+                nameof(dailyKey));
         }
 
-        var ground = Clean(dailyKey.Positions);
-
-        return ground[..(wheels - 3)] + enciphered;
+        return Run(dailyKey, dailyKey.Positions, group[..wheels]);
     }
 
     // Its own machine, started at the ground setting and stepped by nothing else.

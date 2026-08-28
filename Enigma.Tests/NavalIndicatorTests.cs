@@ -77,27 +77,61 @@ public class NavalIndicatorTests
         Assert.NotEqual(one.Indicator, other.Indicator);
     }
 
-    [Fact]
-    public void OnAnM4TheTrigramSetsThreeWheelsAndTheGreekOneStaysPut()
-    {
-        // The Kenngruppenbuch lists trigrams, but an M4 has four wheels. The Greek
-        // wheel was set from the key sheet and left alone for the message, so the
-        // trigram sets the three to its right.
-        var sheet = FourWheelSheet();
-        var sent = Procedure().Send(sheet, Table(), "HLG", "KQK", 'A', 'Z');
+    // -- a real message ---------------------------------------------------------
 
-        Assert.Equal(4, sent.MessageKey.Length);
-        Assert.Equal(sheet.Positions[0], sent.MessageKey[0]);
+    [Fact]
+    public void TheU534MessageIsReadRightThrough()
+    {
+        // Message P1030690 from U-534, 1 May 1945, as worked through by Michael
+        // Hörenberg. The indicator as transmitted, the four entries of "Quelle"
+        // Tafel A it needs, and the day's key — the whole procedure end to end on
+        // traffic that was actually sent.
+        var received = Procedure().Receive(U534(), QuelleTafelA, "FNHC GVET");
+
+        Assert.Equal("DUZ", received.KeyGroup);        // says the key is Potsdam's
+        Assert.Equal("YMU", received.MessageGroup);
+        Assert.Equal("ODFF", received.MessageKey);     // where the message begins
+    }
+
+    [Fact]
+    public void OnAnM4TheFillerSetsTheFourthWheel()
+    {
+        // The Kenngruppenbuch lists trigrams, and three letters cannot key four
+        // wheels. What sets the Greek wheel is the filler that padded the trigram
+        // out to fill its bigram column: the group typed is YMU plus its Z.
+        var sheet = U534();
+        var army = Services().GetRequiredService<IIndicatorProcedure>();
+
+        Assert.Equal("ODFF", army.EncipherMessageKey(sheet, sheet.Positions, "YMUZ"));
+    }
+
+    [Fact]
+    public void ChangingTheFillerChangesAnM4MessageKey()
+    {
+        // Which is the difference between a four wheel machine and a three wheel
+        // one: on an M3 the filler is discarded, and here it is part of the key.
+        var procedure = Procedure();
+        var table = BigramTable.Parse(Everything());
+
+        Assert.NotEqual(
+            procedure.Send(U534(), table, "DUZ", "YMU", 'K', 'Z').MessageKey,
+            procedure.Send(U534(), table, "DUZ", "YMU", 'K', 'Q').MessageKey);
+
+        Assert.Equal(
+            procedure.Send(Sheet(), table, "DUZ", "YMU", 'K', 'Z').MessageKey,
+            procedure.Send(Sheet(), table, "DUZ", "YMU", 'K', 'Q').MessageKey);
     }
 
     [Fact]
     public void AnM4IndicatorStillReadsBackToTheSameKey()
     {
         var procedure = Procedure();
-        var sent = procedure.Send(FourWheelSheet(), Table(), "HLG", "KQK", 'A', 'Z');
-        var received = procedure.Receive(FourWheelSheet(), Table(), sent.Indicator);
+        var table = BigramTable.Parse(Everything());
+        var sent = procedure.Send(U534(), table, "HLG", "KQK", 'A', 'Z');
+        var received = procedure.Receive(U534(), table, sent.Indicator);
 
         Assert.Equal(sent.MessageKey, received.MessageKey);
+        Assert.Equal(4, sent.MessageKey.Length);
     }
 
     [Fact]
@@ -238,13 +272,28 @@ public class NavalIndicatorTests
         return sheet.Copy();
     }
 
-    /// <summary>The naval M4, where it is not.</summary>
-    private static KeySheet FourWheelSheet()
+    /// <summary>
+    /// The day's key for U-534 on 1 May 1945, as published with message P1030690:
+    /// reflector B, Greek C — which is Gamma, Beta gives the wrong key — wheels
+    /// 4 3 8, rings VCCH, ten plugs, and the Grundstellung the operator wrote at the
+    /// top of the message sheet.
+    /// </summary>
+    private static KeySheet U534() => new()
     {
-        Assert.True(KeySheets.TryGet("u264", out var sheet));
+        Name = "U-534, 1 May 1945",
+        Reflector = "B-Thin",
+        Rotors = "Gamma IV III VIII",
+        RingSettings = "VCCH",
+        Positions = "IBFK",
+        Plugboard = "CH EJ NV OU TY LG SZ PK DI QB"
+    };
 
-        return sheet.Copy();
-    }
+    /// <summary>
+    /// The four entries of "Quelle" Tafel A that message P1030690 needs. The rest of
+    /// that table is not published as data, only as photographs of the original.
+    /// </summary>
+    private static readonly BigramTable QuelleTafelA =
+        BigramTable.Parse("FN=KY HC=DM GV=UU ET=ZZ");
 
     private static INavalIndicatorProcedure Procedure() =>
         Services().GetRequiredService<INavalIndicatorProcedure>();
