@@ -11,6 +11,7 @@ public static class MachineParts
         [
             "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "BETA", "GAMMA",
             "G-I", "G-II", "G-III", "G312-I", "G312-II", "G312-III",
+            "D-I", "D-II", "D-III", "K-I", "K-II", "K-III",
             "Z-I", "Z-II", "Z-III"
         ];
 
@@ -22,5 +23,5 @@ public static class MachineParts
 
     public static IReadOnlyList<string> CharacterMapNames { get; } = ["LATIN", "DIGITS"];
 
-    public static IReadOnlyList<string> LayoutNames { get; } = ["SERVICE", "G-31", "Z30"];
+    public static IReadOnlyList<string> LayoutNames { get; } = ["SERVICE", "G-31", "COMMERCIAL", "Z30"];
 }

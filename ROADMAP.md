@@ -34,11 +34,12 @@ it runs; it is done when something published says it runs correctly.
 | Indicator procedure | Army version complete, doubled and single, in both front ends |
 | Message formatting | Complete — preparation and five-letter groups |
 | Key sheets | Complete, in the notation a real key sheet used |
+| Enigma D and K | Complete — the commercial pattern, shared wheels, notches apart |
 | Enigma Z30 | Complete — ten contacts, figures, a pawl-driven reflector, a rotor-body notch |
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-475 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+492 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -54,13 +55,11 @@ transmitted anywhere.
 new model to *parts plus a layout*. That makes the remaining machines mostly a
 matter of sourcing wirings rather than writing mechanism:
 
-- **Enigma K, Railway (Rocket), Swiss-K and Tirpitz (T).** All follow the
-  commercial pattern: no plugboard, a keyboard-order entry wheel, and a reflector
-  that is settable but — unlike the G-31's — does not turn while enciphering.
-  `RotatingReflectorBase` already provides the settable half, so this needs one new
-  layout between `ServiceLayout` and `GearLayout`. Tirpitz additionally has several
-  notches per wheel and an entry wheel of its own, both of which the library
-  already expresses.
+- **Railway (Rocket), Swiss-K and Tirpitz (T).** The commercial pattern, which the
+  Enigma D and K now establish: `CommercialLayout`, no plugboard, a keyboard-order
+  entry wheel, and a reflector that is settable but does not turn. These are wheels
+  and their sources, nothing more. Tirpitz additionally has several notches per
+  wheel and an entry wheel of its own, both of which the library already expresses.
 - **Norenigma.** The Norwegian machine is an Enigma I with different wheels and
   reflector. No new mechanism at all — parts, and their sources.
 - **Enigma Z Mk II.** The gear-driven version of the Z30, whose mechanism is the

@@ -45,6 +45,26 @@ public static class KeySheets
                 Positions = "VJNA",
                 Plugboard = "AT BL DF GJ HM NW OP QY RZ VX"
             },
+            ["enigma-d"] = new()
+            {
+                Name = "Enigma D, commercial",
+                Model = "Commercial",
+                Reflector = "G",
+                Rotors = "D-III D-II D-I",
+                RingSettings = "AAA",
+                Positions = "AAA",
+                ReflectorPosition = "A"
+            },
+            ["enigma-k"] = new()
+            {
+                Name = "Enigma K, commercial",
+                Model = "Commercial",
+                Reflector = "G",
+                Rotors = "K-III K-II K-I",
+                RingSettings = "AAA",
+                Positions = "AAA",
+                ReflectorPosition = "A"
+            },
             ["z30"] = new()
             {
                 Name = "Enigma Z30, numbers only",

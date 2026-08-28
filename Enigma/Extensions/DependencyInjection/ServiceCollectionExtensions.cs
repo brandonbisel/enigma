@@ -42,6 +42,15 @@ public static class ServiceCollectionExtensions
         services.AddKeyedTransient<IRotor, RotorG312II>("G312-II");
         services.AddKeyedTransient<IRotor, RotorG312III>("G312-III");
 
+        // The commercial wheels: the same three wirings, notched differently. The D's
+        // notches are cut into the rotor bodies, the K's into the letter rings.
+        services.AddKeyedTransient<IRotor, RotorDI>("D-I");
+        services.AddKeyedTransient<IRotor, RotorDII>("D-II");
+        services.AddKeyedTransient<IRotor, RotorDIII>("D-III");
+        services.AddKeyedTransient<IRotor, RotorKI>("K-I");
+        services.AddKeyedTransient<IRotor, RotorKII>("K-II");
+        services.AddKeyedTransient<IRotor, RotorKIII>("K-III");
+
         // The ten contact wheels of the numbers-only Enigma Z30.
         services.AddKeyedTransient<IRotor, RotorZI>("Z-I");
         services.AddKeyedTransient<IRotor, RotorZII>("Z-II");
@@ -74,6 +83,8 @@ public static class ServiceCollectionExtensions
             (provider, _) => new GearLayout(
                 new GearDrive(provider.GetService<ILogger<GearDrive>>())));
 
+        services.AddKeyedSingleton<IMachineLayout>("COMMERCIAL",
+            (provider, _) => new CommercialLayout(provider.GetRequiredService<IStepping>()));
         services.AddKeyedSingleton<IMachineLayout>("Z30",
             (provider, _) => new NumericLayout(
                 new ReflectorPawlDrive(provider.GetService<ILogger<ReflectorPawlDrive>>())));

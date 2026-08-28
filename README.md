@@ -398,6 +398,41 @@ The entry wheel is the keyboard-wired one, and a key sheet need not say so: leav
 Because of all this a Zählwerk machine cannot exchange messages with an Enigma I,
 which is exactly what its makers intended.
 
+## The commercial machines: Enigma D and K
+
+The Enigma D of 1926 and the Enigma K that followed it were sold to whoever would
+buy them, and are the ancestors of everything else here. Three wheels driven by
+pawls, a keyboard-order entry wheel, a reflector set to a position but never driven,
+and no plugboard — the Steckerbrett was an Army fitting.
+
+```json
+{
+  "Model": "Commercial",
+  "Reflector": "G",
+  "Rotors": "K-III K-II K-I",
+  "RingSettings": "AAA",
+  "Positions": "AAA",
+  "ReflectorPosition": "A"
+}
+```
+
+The D, the K and the Zählwerk A28/G31 were fitted with **the same three wheel
+wirings and the same reflector**, which is why they share them here too. What
+separates them is entirely in the notches:
+
+| | Notches | Cut into | Driven by |
+|---|---|---|---|
+| Enigma D | Z, Z, Z | the rotor body | pawls, double stepping |
+| Enigma K | Y, E, N | the letter ring | pawls, double stepping |
+| A28 / G31 | 17, 15, 11 | the letter ring | cogwheels, no double step |
+
+The D's notch placement has a consequence its makers may not have intended: since
+the notch keeps its place against the wiring, moving the ring moves the turnover
+with it, and a Ringstellung is only ever a different starting position. As the
+Crypto Museum puts it, "the cryptographic effect of the Ringstellung is null. It
+does not enhance the machine's key space." A test proves it by setting ring and
+position together and getting the same ciphertext back.
+
 ## The Enigma Z, a machine of figures
 
 The Z30 has no letters at all: ten contacts per wheel, a keyboard of a single row
@@ -638,6 +673,12 @@ rather than reconstructed, and each is pinned by a test.
   wirings indexed 0 to 9, which agree exactly once converted; the pawl chain that
   reaches the reflector; and the vectors the Z30 tests are built on, taken from it
   before any of this was written.
+- **[Crypto Museum, *Enigma D*](https://www.cryptomuseum.com/crypto/enigma/d/index.htm)**
+  and **[*Enigma K*](https://www.cryptomuseum.com/crypto/enigma/k/index.htm)** — the
+  commercial wirings the D, the K and the A28/G31 share, their notch positions, and
+  the difference that matters between them: the D's "notch ring is attached to the
+  body of the rotor (rather than to the letter ring)", while the K's is "attached to
+  the letter ring rather than rotor body".
 - **Reuvers & Simons, *Enigma G-111: A rare version of Zählwerk Enigma G31***
   (Crypto Museum, 2013) — the mechanism in the machine's own terms: cogwheels rather
   than pawls and levers, no double stepping anomaly, notches attached to the letter

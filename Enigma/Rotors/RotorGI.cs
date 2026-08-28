@@ -4,7 +4,7 @@ namespace Enigma.Rotors;
 public class RotorGI : RotorBase
 {
     private static readonly IDictionary<int, int> RotorWiring =
-        WiringTable.FromString("LPGSZMHAEOQKVXRFYBUTNICJDW");
+        WiringTable.FromString(CommercialWiring.First);
 
     // The notch positions are identical on every surviving Zählwerk machine,
     // whatever its wiring and whoever the customer was.
