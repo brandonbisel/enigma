@@ -394,6 +394,44 @@ The entry wheel is the keyboard-wired one, and a key sheet need not say so: leav
 Because of all this a Zählwerk machine cannot exchange messages with an Enigma I,
 which is exactly what its makers intended.
 
+## The Enigma Z, a machine of figures
+
+The Z30 has no letters at all: ten contacts per wheel, a keyboard of a single row
+of figures, and no plugboard. It was built for traffic that was numeric to begin
+with, such as weather reports.
+
+```json
+{
+  "Model": "Z30",
+  "CharacterMap": "Digits",
+  "Reflector": "Z",
+  "Rotors": "Z-III Z-II Z-I",
+  "RingSettings": "000",
+  "Positions": "000",
+  "ReflectorPosition": "0"
+}
+```
+
+Its reflector is driven, as the Zählwerk machines' is, but by pawls rather than
+cogs: there is one pawl more than there are wheels, and the extra one rides the
+leftmost wheel's notch ring. That gives the leftmost wheel a double step of its
+own, for the same reason the middle wheel has one on an Enigma I — and it is
+exactly the pawl a service machine does not have.
+
+The wheel wirings are published by the Crypto Museum indexed 1 to 0 and by Daniel
+Palloks' simulator indexed 0 to 9; converting between the two makes them identical.
+The vectors in the test suite come from that simulator.
+
+**One thing here is not settled.** Where a wheel carries its neighbour depends on
+whether the notch sits on the letter ring or on the core. On a service Enigma it is
+on the letter ring, so the turnover happens at a fixed figure in the window whatever
+the Ringstellung — and that is what this library does everywhere, verified by four
+historical messages with non-zero ring settings. Palloks' simulator moves the
+turnover with the ring instead. Nothing published says the Z30 differs from every
+other Enigma in this respect, so it is modelled like the rest, and the vectors are
+all taken at ring zero where the two agree exactly. A source that settles it would
+be welcome.
+
 ## The entry wheel
 
 The entry wheel (*Eintrittswalze*) is the fixed stator between the plugboard and

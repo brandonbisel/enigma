@@ -13,8 +13,16 @@ namespace Enigma.Web;
 public static class KeyboardLayout
 {
     private const string Latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private const string Digits = "0123456789";
 
     private static readonly string[] Qwertz = ["QWERTZUIO", "ASDFGHJK", "PYXCVBNML"];
+
+    /// <summary>
+    /// The Enigma Z's keyboard: a single row of ten figures, reading 1 to 0 rather
+    /// than 0 to 9. Where a key sits is not the same question as where a contact
+    /// sits, so this changes nothing about the cipher.
+    /// </summary>
+    private static readonly string[] Figures = ["1234567890"];
 
     /// <summary>The widest a row gets before the keys are wrapped onto the next one.</summary>
     private const int RowWidth = 9;
@@ -26,12 +34,17 @@ public static class KeyboardLayout
     {
         ArgumentNullException.ThrowIfNull(alphabet);
 
-        return IsLatin(alphabet) ? Qwertz : Wrapped(alphabet);
+        if (Is(alphabet, Latin))
+        {
+            return Qwertz;
+        }
+
+        return Is(alphabet, Digits) ? Figures : Wrapped(alphabet);
     }
 
-    private static bool IsLatin(ICharacterMap alphabet) =>
-        alphabet.Count == Latin.Length &&
-        Latin.Select((letter, index) => alphabet.GetCharacter(index) == letter).All(same => same);
+    private static bool Is(ICharacterMap alphabet, string characters) =>
+        alphabet.Count == characters.Length &&
+        characters.Select((character, index) => alphabet.GetCharacter(index) == character).All(same => same);
 
     private static string[] Wrapped(ICharacterMap alphabet)
     {

@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<ICharacterMap, DefaultCharacterMap>();
         services.AddKeyedSingleton<ICharacterMap>("LATIN", (_, _) => CharacterMap.Latin);
+        services.AddKeyedSingleton<ICharacterMap>("DIGITS", (_, _) => CharacterMap.Digits);
 
         // The plugboard has one contact per character, so it is built for whichever
         // alphabet the machine works in rather than resolved ready-made.
@@ -41,6 +42,11 @@ public static class ServiceCollectionExtensions
         services.AddKeyedTransient<IRotor, RotorG312II>("G312-II");
         services.AddKeyedTransient<IRotor, RotorG312III>("G312-III");
 
+        // The ten contact wheels of the numbers-only Enigma Z30.
+        services.AddKeyedTransient<IRotor, RotorZI>("Z-I");
+        services.AddKeyedTransient<IRotor, RotorZII>("Z-II");
+        services.AddKeyedTransient<IRotor, RotorZIII>("Z-III");
+
         // Reflectors hold no state, so one of each is enough.
         services.AddKeyedSingleton<IReflector, ReflectorA>("A");
         services.AddKeyedSingleton<IReflector, ReflectorB>("B");
@@ -51,6 +57,7 @@ public static class ServiceCollectionExtensions
         // The Zählwerk reflectors turn, so each machine needs its own.
         services.AddKeyedTransient<IReflector, ReflectorG>("G");
         services.AddKeyedTransient<IReflector, ReflectorG312>("G312");
+        services.AddKeyedTransient<IReflector, ReflectorZ>("Z");
 
         // The board is patched per machine, so it is transient for the same reason as the rotors.
         services.AddTransient<IPlugBoard, PlugBoard>();
@@ -66,6 +73,10 @@ public static class ServiceCollectionExtensions
         services.AddKeyedSingleton<IMachineLayout>("G-31",
             (provider, _) => new GearLayout(
                 new GearDrive(provider.GetService<ILogger<GearDrive>>())));
+
+        services.AddKeyedSingleton<IMachineLayout>("Z30",
+            (provider, _) => new NumericLayout(
+                new ReflectorPawlDrive(provider.GetService<ILogger<ReflectorPawlDrive>>())));
 
         services.AddSingleton<IPartsCatalogue, BuiltInPartsCatalogue>();
         services.AddSingleton<IEnigmaMachineFactory, EnigmaMachineFactory>();

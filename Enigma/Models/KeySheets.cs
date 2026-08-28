@@ -45,6 +45,18 @@ public static class KeySheets
                 Positions = "VJNA",
                 Plugboard = "AT BL DF GJ HM NW OP QY RZ VX"
             },
+            ["z30"] = new()
+            {
+                Name = "Enigma Z30, numbers only",
+                Model = "Z30",
+                CharacterMap = "Digits",
+                Reflector = "Z",
+                Rotors = "Z-III Z-II Z-I",
+                RingSettings = "000",
+                Positions = "000",
+                ReflectorPosition = "0",
+                ReflectorRingSetting = "0"
+            },
             ["instruction-manual"] = new()
             {
                 Name = "Enigma Instruction Manual, 1930",

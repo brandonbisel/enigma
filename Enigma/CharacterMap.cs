@@ -47,4 +47,16 @@ public class CharacterMap : ICharacterMap
 
     /// <summary>The twenty six capital letters every service Enigma worked in.</summary>
     public static ICharacterMap Latin { get; } = new CharacterMap("Latin", "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
+    /// <summary>
+    /// The ten digits, which is the whole alphabet of the numbers-only Enigma Z.
+    /// Its wheels carry ten contacts rather than twenty six, and the keyboard is a
+    /// single row of figures — the machine was built for weather reports and other
+    /// traffic that was numeric to begin with.
+    ///
+    /// Ordered 0 to 9, which is how the wheel wirings are indexed here. The
+    /// keyboard itself reads 1 to 0; that is an arrangement of keys rather than a
+    /// property of the alphabet.
+    /// </summary>
+    public static ICharacterMap Digits { get; } = new CharacterMap("Digits", "0123456789");
 }

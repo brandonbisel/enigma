@@ -24,13 +24,30 @@ public class KeyboardLayoutTests
     }
 
     [Fact]
+    public void TheTenDigitsAreOneRowOfFigures()
+    {
+        // The Enigma Z's keyboard is a single row reading 1 to 0, not two rows
+        // reading 0 to 9. Where a key sits is not where a contact sits.
+        Assert.Equal(["1234567890"], KeyboardLayout.Rows(CharacterMap.Digits));
+    }
+
+    [Fact]
+    public void EveryFigureAppearsOnTheKeyboardExactlyOnce()
+    {
+        var keys = string.Concat(KeyboardLayout.Rows(CharacterMap.Digits));
+
+        Assert.Equal(10, keys.Length);
+        Assert.Equal(10, keys.Distinct().Count());
+    }
+
+    [Fact]
     public void AnAlphabetOfAnotherShapeIsLaidOutInItsOwnOrder()
     {
-        // The QWERTZ arrangement is only known for the twenty six letter machines.
-        // A numeric machine such as an Enigma Z has its own keyboard.
-        var digits = new CharacterMap("Digits", "0123456789");
+        // The known arrangements are the twenty six letter keyboard and the ten
+        // figure one. Anything else is laid out in the order its alphabet runs.
+        var short_ = new CharacterMap("Short", "ABCDEFGHIJKL");
 
-        Assert.Equal(["012345678", "9"], KeyboardLayout.Rows(digits));
+        Assert.Equal(["ABCDEFGHI", "JKL"], KeyboardLayout.Rows(short_));
     }
 
     [Fact]

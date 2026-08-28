@@ -34,10 +34,11 @@ it runs; it is done when something published says it runs correctly.
 | Indicator procedure | Army version complete, doubled and single, in both front ends |
 | Message formatting | Complete — preparation and five-letter groups |
 | Key sheets | Complete, in the notation a real key sheet used |
+| Enigma Z30 | Complete — ten contacts, figures, a pawl-driven reflector |
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-440 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+455 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -62,10 +63,15 @@ matter of sourcing wirings rather than writing mechanism:
   already expresses.
 - **Norenigma.** The Norwegian machine is an Enigma I with different wheels and
   reflector. No new mechanism at all — parts, and their sources.
-- **Enigma Z.** The ten-contact numeric machine, whose keyboard is the digits
-  rather than letters. Making the alphabet first-class was done with this in mind,
-  so it should need a character map and a set of wheels and nothing more. It is the
-  best test of whether that refactor actually bought what it claimed.
+- **Enigma Z Mk II.** The gear-driven version of the Z30, whose mechanism is the
+  `GearDrive` already written for the Zählwerk machines. Its wiring is not
+  published — the one simulator that offers the model says so plainly and
+  substitutes the Mk I wheels — so the mechanism is there and the wheels wait for
+  a source, as the Uhr's dial did.
+
+  The Mk I is done. It needed a character map, a set of wheels and one new drive:
+  making the alphabet first-class did carry it, and what it did *not* carry was the
+  stepping, because the Z30 has a pawl the service machines do not.
 
 ### The naval indicator procedure
 
