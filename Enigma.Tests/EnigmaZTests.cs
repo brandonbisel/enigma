@@ -1,4 +1,5 @@
 using Enigma.App;
+using Enigma.Machines;
 using Enigma.Extensions.DependencyInjection;
 using Enigma.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -159,6 +160,50 @@ public class EnigmaZTests
         }
 
         Assert.Equal([1, 13, 122, 1100], moves);
+    }
+
+    [Fact]
+    public void TheGearedDriveHasThePeriodTheBrochureAdvertised()
+    {
+        // The 1931 brochure offered to the Spanish Foreign Ministry claims "a period
+        // of 10,000 — that is, all wheels reach their original setting after 10,000
+        // keystrokes — thereby suggesting a non-Enigma (odometer) stepping"
+        // (Quirantes, "Model Z: a numbers-only Enigma version").
+        //
+        // A pure odometer of four ten-position wheels has exactly that period, and
+        // this is the mechanism of the Z30 Mk II. Nothing about the wiring is
+        // claimed here: the Mk II's wheels are not published, and the period is a
+        // property of the drive alone.
+        Assert.Equal(10_000, Period(new GearDrive()));
+    }
+
+    [Fact]
+    public void ThePawlDriveDoesNotComeBackAtAll()
+    {
+        // The Mk I is the machine this library ships, and it is not an odometer. A
+        // double step makes the stepping map non-injective — some windows can never
+        // be reached — so the wheels leaving all zeros never return to them. Which
+        // is why the brochure's claim cannot describe this variant.
+        Assert.Equal(0, Period(new ReflectorPawlDrive(), limit: 200_000));
+    }
+
+    /// <summary>How many keypresses bring every wheel back to zero, or 0 if none do.</summary>
+    private static int Period(IStepping drive, int limit = 20_000)
+    {
+        IRotor[] rotors = [new Rotors.RotorZIII(), new Rotors.RotorZII(), new Rotors.RotorZI()];
+        var reflector = new Reflectors.ReflectorZ();
+
+        for (var key = 1; key <= limit; key++)
+        {
+            drive.Advance(rotors, reflector);
+
+            if (rotors.All(rotor => rotor.Position == 0) && reflector.Position == 0)
+            {
+                return key;
+            }
+        }
+
+        return 0;
     }
 
     [Fact]

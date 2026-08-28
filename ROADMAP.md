@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-528 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+530 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -57,11 +57,14 @@ transmitted anywhere.
 new model to *parts plus a layout*. That makes the remaining machines mostly a
 matter of sourcing wirings rather than writing mechanism:
 
-- **Enigma Z Mk II.** The gear-driven version of the Z30, whose mechanism is the
-  `GearDrive` already written for the Zählwerk machines. Its wiring is not
-  published — the one simulator that offers the model says so plainly and
-  substitutes the Mk I wheels — so the mechanism is there and the wheels wait for
-  a source, as the Uhr's dial did.
+- **Enigma Z Mk II.** The gear-driven version of the Z30. Its mechanism is the
+  `GearDrive` already written for the Zählwerk machines, and it is now corroborated
+  by a primary source rather than by a simulator alone: the 1931 brochure in the
+  Spanish Foreign Ministry archives claims a period of 10,000, which is exactly what
+  that drive gives on four ten-position wheels and which the Mk I's pawls cannot
+  give at all. Only the wiring is missing, and it is not published anywhere found so
+  far — so the mechanism is there and the wheels wait for a source, as the Uhr's
+  dial did.
 
   The Mk I is done. It needed a character map, a set of wheels and one new drive:
   making the alphabet first-class did carry it, and what it did *not* carry was the

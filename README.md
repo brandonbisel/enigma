@@ -508,6 +508,24 @@ The wheel wirings are published by the Crypto Museum indexed 1 to 0 and by Danie
 Palloks' simulator indexed 0 to 9; converting between the two makes them identical.
 The vectors in the test suite come from that simulator.
 
+The machine reached the Spanish Foreign Ministry in 1931 as a 600-Reichsmark offer
+alongside the commercial A27 and the printing H29, and the papers that survive there
+are most of what is known about it. Its key had two parts and no plugboard: an
+*inner* key naming the wheels and their order, and an *outer* key of four figures —
+three wheels and the reflector — written like `III I II 5 2 8 1`.
+
+Those papers also describe a machine that counts. The wheels and the reflector are
+"coupled to each other in the manner of a normal decade counter", so the windows
+tell the operator how many figures have been enciphered, and the brochure claims a
+period of 10,000: every wheel back where it started after ten thousand keystrokes.
+
+That is an odometer, and it is a claim worth testing. This library's `GearDrive`
+has a period of exactly 10,000 on four ten-position wheels. The pawl drive of the
+Mk I shipped here never returns to its starting window at all — a double step makes
+the stepping non-injective, so some windows can never be reached and all zeros is
+one of them. So the brochure describes the geared Mk II rather than this machine,
+and both tests are in the suite.
+
 Its notch sits somewhere unusual, and it matters. On an Enigma I or K the notch is
 cut into the index ring, so a wheel carries its neighbour at a fixed letter in the
 window whatever the Ringstellung — rotor I always at Q. On the Z30, as on the older
@@ -716,6 +734,16 @@ rather than reconstructed, and each is pinned by a test.
   Ringstellung does not alter its position with respect to the wiring... different
   from the rotors of later machines like Enigma K and Enigma I where the notch is
   attached to the index ring."
+- **Arturo Quirantes, *Model Z: a numbers-only Enigma version*** — the paper that
+  found the machine in the Spanish Foreign Affairs Ministry archives (reference
+  007459-4-R), with the 1931 offer, the two-part key, and the brochure's claim of "a
+  period of 10,000... thereby suggesting a non-Enigma (odometer) stepping". Its
+  worked example, 25183 91467 enciphering to 38760 15924, cannot be used as a vector
+  here: as the paper says, no machine settings are given with it.
+- **The Z30 instruction manual (Spanish) and brochure (German)**, both from those
+  archives — the decade-counter description of the drive, and the key count of
+  1,200,000,000 with six cylinders fitted three at a time, which is exactly 120 wheel
+  orders times ten thousand window positions times a thousand ring settings.
 - **[Palloks, *Enigma Z*](https://palloks.2ix.de/enigma/index_en.html)** — the same
   wirings indexed 0 to 9, which agree exactly once converted; the pawl chain that
   reaches the reflector; and the vectors the Z30 tests are built on, taken from it
