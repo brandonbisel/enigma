@@ -35,31 +35,77 @@ public class EnigmaZTests
     }
 
     [Fact]
-    public void TheNotchIsOnTheLetterRing()
+    public void TheNotchIsCutIntoTheRotorBodyNotTheIndexRing()
     {
-        // Where this library and Daniel Palloks' Z30 simulator part company, and
-        // the one thing about this machine no source settles.
+        // "The notch is attached to the rotor body, which means that altering the
+        // Ringstellung does not alter its position with respect to the wiring...
+        // different from the rotors of later machines like Enigma K and Enigma I
+        // where the notch is attached to the index ring." -- Crypto Museum.
         //
-        // On a service Enigma the notch is cut into the letter ring, so a wheel
-        // carries its neighbour at a fixed window figure whatever the Ringstellung
-        // is -- rotor I always at Q. That is what this library does everywhere, and
-        // four historical messages with non-zero ring settings say it is right for
-        // those machines. The simulator instead moves the turnover with the ring,
-        // on the Z30 and on the service machines alike.
-        //
-        // Nothing published says the Z30 differs from every other Enigma here, so
-        // it is modelled like the rest. This test pins that choice so a future
-        // source can change it deliberately rather than by accident. The vectors
-        // above are all taken at ring zero, where the two agree exactly.
+        // So the turnover travels with the ring here, where on an Enigma I it does
+        // not. With the fast wheel's ring at 5 the carry comes at window 4 rather
+        // than at 9.
         var sheet = Sheet();
         sheet.RingSettings = "005";
-        sheet.Positions = "009";
+        sheet.Positions = "004";
 
         var session = Open(sheet);
 
         session.Press('1');
 
-        Assert.Equal("010", session.WindowText);
+        Assert.Equal("015", session.WindowText);
+    }
+
+    [Fact]
+    public void TheServiceWheelsKeepTheirNotchOnTheIndexRing()
+    {
+        // The same question the other way round, so neither answer can drift into
+        // the other machine. Rotor I carries at Q whatever the Ringstellung.
+        var machine = new EnigmaMachine(
+            new PlugBoard(CharacterMap.Latin),
+            [new Rotors.RotorI()],
+            new Reflectors.ReflectorB(),
+            characterMap: CharacterMap.Latin);
+
+        var rotor = machine.Rotors.First();
+
+        foreach (var ring in new[] { 0, 5, 11, 25 })
+        {
+            rotor.SetRingSetting(ring);
+            rotor.SetPosition(CharacterMap.Latin.GetIndex('Q'));
+
+            Assert.True(rotor.IsTurnoverPosition());
+        }
+    }
+
+    [Theory]
+    // The vectors that disagreed while the notch was in the wrong place: the
+    // reflector's ring, then the wheels' (left, middle, fast), then twenty keys.
+    [InlineData("0", "000", "26795883638428047973")]
+    [InlineData("0", "001", "38428047973342735759")]
+    [InlineData("0", "010", "44200699007290964629")]
+    [InlineData("0", "100", "59454300464006755495")]
+    [InlineData("1", "000", "84258436267335975456")]
+    [InlineData("0", "123", "62329458330664038775")]
+    public void EachRingSettingOnItsOwn(string reflectorRing, string rings, string expected)
+    {
+        var sheet = Sheet();
+        sheet.RingSettings = rings;
+        sheet.ReflectorRingSetting = reflectorRing;
+
+        Assert.Equal(expected, Encipher(sheet, new string('1', 20)));
+    }
+
+    [Fact]
+    public void WithRingSettings()
+    {
+        var sheet = Sheet();
+        sheet.RingSettings = "123";
+        sheet.ReflectorRingSetting = "0";
+
+        Assert.Equal(
+            "2763294269145815684772627317936882231624",
+            Encipher(sheet, new string('0', 40)));
     }
 
     // -- the mechanism ----------------------------------------------------------

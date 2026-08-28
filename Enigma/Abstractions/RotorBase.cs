@@ -53,9 +53,20 @@ public abstract class RotorBase : IRotor
         return Wheel.Translate(InverseWiring, input, Offset);
     }
 
+    /// <summary>
+    /// Where the turnover notch is cut. On the Enigma I and the Enigma K it is on
+    /// the index ring, so the wheel carries its neighbour at a fixed letter in the
+    /// window whatever the Ringstellung is — rotor I always at Q. On the older
+    /// Enigma D and the Enigma Z it is cut into the rotor body instead, so it keeps
+    /// its place against the wiring and setting the ring carries the turnover with
+    /// it. Every wheel here is of the first kind unless it says otherwise.
+    /// </summary>
+    protected virtual bool NotchOnTheIndexRing => true;
+
     public bool IsTurnoverPosition()
     {
-        return TurnoverPositions.Contains(Position);
+        return TurnoverPositions.Contains(
+            NotchOnTheIndexRing ? Position : Mod(Position - RingSetting));
     }
 
     public IEnumerable<int> GetTurnoverPositions()

@@ -426,15 +426,17 @@ The wheel wirings are published by the Crypto Museum indexed 1 to 0 and by Danie
 Palloks' simulator indexed 0 to 9; converting between the two makes them identical.
 The vectors in the test suite come from that simulator.
 
-**One thing here is not settled.** Where a wheel carries its neighbour depends on
-whether the notch sits on the letter ring or on the core. On a service Enigma it is
-on the letter ring, so the turnover happens at a fixed figure in the window whatever
-the Ringstellung — and that is what this library does everywhere, verified by four
-historical messages with non-zero ring settings. Palloks' simulator moves the
-turnover with the ring instead. Nothing published says the Z30 differs from every
-other Enigma in this respect, so it is modelled like the rest, and the vectors are
-all taken at ring zero where the two agree exactly. A source that settles it would
-be welcome.
+Its notch sits somewhere unusual, and it matters. On an Enigma I or K the notch is
+cut into the index ring, so a wheel carries its neighbour at a fixed letter in the
+window whatever the Ringstellung — rotor I always at Q. On the Z30, as on the older
+Enigma D, it is cut into the rotor body instead, so it keeps its place against the
+wiring and setting the ring carries the turnover with it. `RotorBase` models both,
+and every wheel is of the first kind unless it says otherwise.
+
+That is not a detail one can reason out from first principles: the same corpus that
+settles it for the service machines says nothing about this one. It is settled here
+because the Crypto Museum states it outright, and because the simulator's vectors
+with ring settings only match once the notch is in the right place.
 
 ## The entry wheel
 
@@ -626,6 +628,16 @@ rather than reconstructed, and each is pinned by a test.
   the geared drive. Its `engage_gear` gives the carry chain the Zählwerk machines
   use and where it ends, and its `etq` table independently confirms the direction of
   the keyboard-wired entry wheel used here.
+- **[Crypto Museum, *Enigma Z*](https://www.cryptomuseum.com/crypto/enigma/z/index.htm)**
+  — the Z30's wheel and reflector wirings, indexed 1 to 0, and where its notch is
+  cut: "The notch is attached to the rotor body, which means that altering the
+  Ringstellung does not alter its position with respect to the wiring... different
+  from the rotors of later machines like Enigma K and Enigma I where the notch is
+  attached to the index ring."
+- **[Palloks, *Enigma Z*](https://palloks.2ix.de/enigma/index_en.html)** — the same
+  wirings indexed 0 to 9, which agree exactly once converted; the pawl chain that
+  reaches the reflector; and the vectors the Z30 tests are built on, taken from it
+  before any of this was written.
 - **Reuvers & Simons, *Enigma G-111: A rare version of Zählwerk Enigma G31***
   (Crypto Museum, 2013) — the mechanism in the machine's own terms: cogwheels rather
   than pawls and levers, no double stepping anomaly, notches attached to the letter

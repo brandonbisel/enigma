@@ -8,7 +8,7 @@ what is a future goal, and what is deliberately not scheduled.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 467 tests
+dotnet test               # whole suite, currently 475 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Web    # the panel, on http://localhost:5298
@@ -64,6 +64,11 @@ whichever the neighbouring files use.
 - A string-typed component parameter takes its attribute *literally*:
   `Plaintext="_message"` passes the text `_message`. Write `Plaintext="@_message"`.
   Parameters of any other type are expressions already.
+- Where a wheel's notch is cut is a property of the wheel, not of Enigmas: on the
+  Enigma I and K it is on the index ring, so the turnover stays at a fixed window
+  letter; on the Enigma D and Z it is on the rotor body, so the Ringstellung
+  carries it. `RotorBase.NotchOnTheIndexRing` says which, defaulting to the first.
+  The historical messages pin the service answer; only a source can pin the other.
 - `Enigma.App` is UI-agnostic and must stay so: no `Console`, no `FileInfo`, no
   `System.CommandLine`. It works in strings and streams, so a front end without a
   filesystem can use it. Anything a front end alone needs belongs in that front end.

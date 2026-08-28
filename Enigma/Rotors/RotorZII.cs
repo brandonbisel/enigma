@@ -14,6 +14,13 @@ public class RotorZII : RotorBase
 
     private static readonly int[] Turnover = WiringTable.Notches("9", CharacterMap.Digits);
 
+    // "The notch is attached to the rotor body, which means that altering the
+    // Ringstellung does not alter its position with respect to the wiring... this is
+    // identical to the rotors of Enigma D, but different from the rotors of later
+    // machines like Enigma K and Enigma I where the notch is attached to the index
+    // ring." -- Crypto Museum, Enigma Z.
+    protected override bool NotchOnTheIndexRing => false;
+
     public override string Name => "Z-II";
     protected override IEnumerable<int> TurnoverPositions => Turnover;
     protected override IDictionary<int, int> Wiring => RotorWiring;

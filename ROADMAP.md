@@ -34,11 +34,11 @@ it runs; it is done when something published says it runs correctly.
 | Indicator procedure | Army version complete, doubled and single, in both front ends |
 | Message formatting | Complete — preparation and five-letter groups |
 | Key sheets | Complete, in the notation a real key sheet used |
-| Enigma Z30 | Complete — ten contacts, figures, a pawl-driven reflector |
+| Enigma Z30 | Complete — ten contacts, figures, a pawl-driven reflector, a rotor-body notch |
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-467 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+475 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
