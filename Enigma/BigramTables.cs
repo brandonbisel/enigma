@@ -79,6 +79,9 @@ public static class BigramTables
     /// <summary>Tafel G of "Meer".</summary>
     public static BigramTable MeerG { get; } = BigramTable.Parse(MeerGEntries);
 
+    /// <summary>Tafel H of "Meer".</summary>
+    public static BigramTable MeerH { get; } = BigramTable.Parse(MeerHEntries);
+
     /// <summary>
     /// The tables of "Meer" by their letter. The edition runs to nine, A to J
     /// without I, and unlike "Quelle" the scan holds all of them.
@@ -93,6 +96,7 @@ public static class BigramTables
             ['E'] = MeerE,
             ['F'] = MeerF,
             ['G'] = MeerG,
+            ['H'] = MeerH,
         };
 
     /// <summary>
@@ -523,4 +527,31 @@ public static class BigramTables
         "SQ=YJ SV=UG SY=ZH TD=VL TF=ZL TH=VS TK=UY TM=XY TT=YW TU=ZX TX=YS TY=VH UA=YO UD=ZV " +
         "UN=YK UX=WF VF=ZO VY=XN WC=XV WV=YB WW=YT WX=ZP XD=YQ XF=YY XJ=YH XO=ZK XP=YN XR=YV " +
         "XX=ZF YF=YU";
+
+    private const string MeerHEntries =
+        "AA=SQ AB=HF AC=FT AD=OG AE=ZZ AF=EH AG=QM AH=SB AI=KK AJ=XH AK=IQ AL=JN AM=NP AN=PW " +
+        "AO=TA AP=WX AQ=YZ AR=LE AS=VT AT=UR AU=BA AV=EC AW=DO AX=GL AY=MD AZ=FA BB=JF BC=UM " +
+        "BD=OR BE=IK BF=FG BG=EX BH=FL BI=HB BJ=PK BK=QN BL=IO BM=NG BN=GC BO=PV BP=SR BQ=OZ " +
+        "BR=IH BS=WM BT=ZA BU=RI BV=YD BW=OC BX=DT BY=UU BZ=NL CA=HP CB=OJ CC=RD CD=FF CE=GM " +
+        "CF=HD CG=IM CH=MA CI=HZ CJ=QR CK=QA CL=SZ CM=TK CN=LV CO=RK CP=LD CQ=NK CR=PD CS=ZP " +
+        "CT=UO CU=XA CV=WU CW=RV CX=YT CY=VX CZ=LP DA=EZ DB=JQ DC=MJ DD=HO DE=RE DF=OK DG=QO " +
+        "DH=OA DI=PH DJ=YH DK=QF DL=KQ DM=VQ DN=LR DP=HX DQ=MF DR=NA DS=KI DU=HI DV=MB DW=II " +
+        "DX=UJ DY=ZE DZ=SL EA=JJ EB=LQ ED=KS EE=OQ EF=SN EG=ZU EI=XU EJ=YO EK=MR EL=TP EM=WD " +
+        "EN=WJ EO=QH EP=RM EQ=PF ER=GF ES=ZM ET=TC EU=NZ EV=YB EW=VK EY=SH FB=UL FC=RZ FD=MP " +
+        "FE=JS FH=SI FI=VG FJ=QL FK=TI FM=OI FN=PA FO=ZX FP=MH FQ=QP FR=RH FS=KA FU=VD FV=LA " +
+        "FW=KU FX=JI FY=KM FZ=ML GA=XK GB=JL GD=MZ GE=LH GG=KO GH=ND GI=JU GJ=SA GK=IW GN=LL " +
+        "GO=SU GP=MN GQ=WB GR=NV GS=KE GT=IE GU=ZI GV=HR GW=OM GX=RR GY=XP GZ=VO HA=KZ HC=WH " +
+        "HE=KT HG=YL HH=OT HJ=QE HK=PJ HL=JE HM=NI HN=QW HQ=ZR HS=JZ HT=XS HU=RX HV=JC HW=KB " +
+        "HY=IT IA=MU IB=QC IC=UP ID=NN IF=XE IG=MS IJ=LI IL=JX IN=VB IP=ZB IR=PS IS=TM IU=QK " +
+        "IV=WQ IX=UC IY=UX IZ=VV JA=NF JB=ME JD=KX JG=TH JH=UE JK=SO JM=KD JO=ZW JP=RO JR=XX " +
+        "JT=PP JV=YW JW=MG JY=VI KC=XB KF=LB KG=UI KH=MX KJ=VL KL=VW KN=UD KP=MQ KR=QI KV=WG " +
+        "KW=NM KY=TN LC=WT LF=QJ LG=RW LJ=ZF LK=WA LM=RJ LN=RT LO=UH LS=NW LT=MC LU=YE LW=PR " +
+        "LX=YV LY=TV LZ=OW MI=UQ MK=PT MM=TQ MO=NS MT=VN MV=YQ MW=WO MY=TF NB=VE NC=TW NE=SK " +
+        "NH=XQ NJ=UB NO=RB NQ=PM NR=WK NT=YM NU=OS NX=ZK NY=QZ OB=UZ OD=YI OE=RG OF=WN OH=YX " +
+        "OL=UV ON=TD OO=UT OP=TT OU=TJ OV=VC OX=VY OY=XT PB=XL PC=WF PE=WC PG=TO PI=UG PL=SV " +
+        "PN=RU PO=XJ PQ=QU PU=ZY PX=VZ PY=VU PZ=XD QB=SD QD=WV QG=SY QQ=YJ QS=YF QT=XZ QV=SC " +
+        "QX=VJ QY=XW RA=WI RC=SS RF=XG RL=ZD RN=XY RP=VA RQ=WS RS=UN RY=VP SE=TX SF=WL SG=ZH " +
+        "SJ=XO SM=XR SP=ZT ST=YU SW=ZN SX=UW TB=YY TE=ZO TG=WE TL=YC TR=ZL TS=YK TU=ZS TY=ZJ " +
+        "TZ=XF UA=VS UF=VR UK=VM US=XM UY=ZG VF=YN VH=WW WP=YR WR=XV WY=ZC WZ=YP XC=XN XI=ZV " +
+        "YA=ZQ YG=YS";
 }
