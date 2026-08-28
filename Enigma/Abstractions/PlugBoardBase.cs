@@ -17,8 +17,31 @@ public abstract class PlugBoardBase : IPlugBoard
 
     public void Connect(int input, int output)
     {
+        if (input == output)
+        {
+            throw new ArgumentException(
+                $"Contact {input} cannot be cabled to itself.", nameof(input));
+        }
+
+        // A jack takes one plug. Overwriting one end of an existing cable would
+        // strand the letter at the other end, leaving two contacts pointing at the
+        // same letter and a board that is no longer its own inverse.
+        Occupied(input);
+        Occupied(output);
+
         Wiring[input] = output;
         Wiring[output] = input;
+
+        void Occupied(int contact)
+        {
+            if (Wiring[contact] != contact && Wiring[contact] != Other(contact))
+            {
+                throw new ArgumentException(
+                    $"Contact {contact} is already cabled to {Wiring[contact]}.", nameof(input));
+            }
+        }
+
+        int Other(int contact) => contact == input ? output : input;
     }
 
     public void Disconnect(int input, int output)

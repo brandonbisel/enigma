@@ -55,6 +55,42 @@ public class PlugBoardTests
     }
 
     [Fact]
+    public void CablingAJackThatAlreadyHasACableIsRefused()
+    {
+        // A jack takes one plug. Overwriting one end of a cable would strand the
+        // letter at the other end, which is the same hazard Disconnect guards.
+        var board = BuildPlugBoard();
+
+        board.Connect(0, 2);
+
+        Assert.Throws<ArgumentException>(() => board.Connect(0, 1));
+        Assert.Throws<ArgumentException>(() => board.Connect(1, 2));
+    }
+
+    [Fact]
+    public void ARefusedCableLeavesTheBoardItsOwnInverse()
+    {
+        // The consequence that matters: a board which is not an involution makes
+        // the whole machine non-reciprocal.
+        var board = BuildPlugBoard();
+
+        board.Connect(0, 2);
+
+        try
+        {
+            board.Connect(0, 1);
+        }
+        catch (ArgumentException)
+        {
+            // The refusal is asserted above; here we care about what it left behind.
+        }
+
+        Assert.All(
+            Enumerable.Range(0, 26),
+            letter => Assert.Equal(letter, board.Translate(board.Translate(letter))));
+    }
+
+    [Fact]
     public void TheBoardIsAlwaysItsOwnInverse()
     {
         var board = BuildPlugBoard();
