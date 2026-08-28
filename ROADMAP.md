@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-557 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+558 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -94,7 +94,7 @@ was using. All four of the entries that message needed read off the scan exactly
 | `GV` | `UU` | `UU` |
 | `ET` | `ZZ` | `ZZ` |
 
-**Tafels A, B, C and D are transcribed and shipped.** 676 entries each, every mirror
+**Tafels A to E are transcribed and shipped.** 676 entries each, every mirror
 agreeing, no bigram enciphering to itself, and — for Tafel A — the four cells known
 from real traffic correct. U-534's message runs end to end through the real table.
 
@@ -121,13 +121,21 @@ the other. None of them was decided by eye. The involution check settles every o
 which is the point — the reading that survives is the one the rest of the table
 agrees with.
 
+Tafel E needed no adjudication at all, but six of its cells — `LA`, `LB`, `MA`, `MB`,
+`NA` and `NB`, all in the first two printed rows — are covered by later hand-written
+ink and could not be read. They were **reconstructed from their mirrors** instead
+(`MC=LA`, `CM=LB`, `SV=MA`, `FR=MB`, `OZ=NA`, `IQ=NB`). On an involution that is not a
+guess: the mirror is the same fact written twice, and a misread mirror would have
+surfaced as a break somewhere else in the table. It is still worth recording that
+those six were derived rather than seen.
+
 Note what the check does and does not do: it catches transcription error, not
 fabrication, so a table still only ships against a scan.
 
-Two things remain. **The other five tables of the set** — E, F, G, H and J — are
+Two things remain. **The other four tables of the set** — F, G, H and J — are
 still only scans; OCR manages perhaps three quarters and confuses `G` with `C`, `U`
 with `L`, and the dotted `İ` the typeface uses, so they have to be read by eye as the
-first four were. And the procedure is **library only**: neither front end offers it
+first five were. And the procedure is **library only**: neither front end offers it
 yet, where the army one is in both.
 
 ## Future
