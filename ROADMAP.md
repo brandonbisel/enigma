@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard |
 
-558 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+559 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -94,12 +94,12 @@ was using. All four of the entries that message needed read off the scan exactly
 | `GV` | `UU` | `UU` |
 | `ET` | `ZZ` | `ZZ` |
 
-**Tafels A to E are transcribed and shipped.** 676 entries each, every mirror
+**Tafels A to F are transcribed and shipped.** 676 entries each, every mirror
 agreeing, no bigram enciphering to itself, and — for Tafel A — the four cells known
 from real traffic correct. U-534's message runs end to end through the real table.
 
 That self-checking property is what makes this worth doing by hand. The tables are
-involutions, so a mistyped cell breaks its pair and is caught; six cells have needed
+involutions, so a mistyped cell breaks its pair and is caught; seven cells have needed
 adjudicating so far and each time the table itself said what the answer was:
 
 | Tafel | cell | misread as | what settled it |
@@ -110,10 +110,13 @@ adjudicating so far and each time the table itself said what the answer was:
 | C | `DM` | `YB` | `YB` is taken by `ST`; `YE=DM` in column Y |
 | D | `BP` | `YK` | `YK` pairs with `LJ` both ways; `YX=BP` in column Y |
 | D | `JN` | `PI` | `PI` pairs with `ZY` both ways; `FI=JN` in column F |
+| F | `JA` | `QP` | `QP` pairs with `MS` both ways; `QF=JA` in column Q |
 
-Three are the same `B`/`E` confusion, and the rest are `K`/`X`, `F`/`P` and a speck of
-dirt. Two kinds of evidence settle them: an exclusion argument from the rest of the
-table, and then the glyph itself at magnification, which has agreed every time.
+Three are the same `B`/`E` confusion, two are `F`/`P`, one is `K`/`X` and one is a
+speck of dirt. Two kinds of evidence settle them: an exclusion argument from the rest
+of the table, and then the glyph itself at magnification, which has agreed every time.
+The `F`/`P` pair is the one to watch after `G`/`C` — an `F` whose crossbar has filled
+in reads as a `P`, and it has now caught me twice in the same way.
 
 `G` and `C` are the standing hazard rather than a one-off: at scan resolution they
 are near identical in this typeface, and 100 of Tafel D's 676 values contain one or
@@ -132,10 +135,10 @@ those six were derived rather than seen.
 Note what the check does and does not do: it catches transcription error, not
 fabrication, so a table still only ships against a scan.
 
-Two things remain. **The other four tables of the set** — F, G, H and J — are
+Two things remain. **The other three tables of the set** — G, H and J — are
 still only scans; OCR manages perhaps three quarters and confuses `G` with `C`, `U`
 with `L`, and the dotted `İ` the typeface uses, so they have to be read by eye as the
-first five were. And the procedure is **library only**: neither front end offers it
+first six were. And the procedure is **library only**: neither front end offers it
 yet, where the army one is in both.
 
 ## Future
