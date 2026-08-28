@@ -147,6 +147,7 @@ public class NavalIndicatorTests
     [InlineData('C')]
     [InlineData('D')]
     [InlineData('E')]
+    [InlineData('F')]
     public void EveryShippedTableOfMeerIsWholeAndReciprocal(char tafel)
     {
         // The same check the "Quelle" tables get. A second set is a second chance
