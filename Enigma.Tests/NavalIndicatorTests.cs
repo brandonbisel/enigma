@@ -97,6 +97,7 @@ public class NavalIndicatorTests
     [InlineData("A")]
     [InlineData("B")]
     [InlineData("C")]
+    [InlineData("D")]
     public void EveryShippedTableIsWholeAndReciprocal(string tafel)
     {
         // The check that makes a transcription trustworthy: 676 entries, every one
@@ -123,8 +124,12 @@ public class NavalIndicatorTests
         // Nine tables to a set, and a calendar to say which applied. If two agreed
         // everywhere one of them would have been transcribed twice.
         Assert.Equal(
-            3,
-            new[] { BigramTables.QuelleA, BigramTables.QuelleB, BigramTables.QuelleC }
+            4,
+            new[]
+                {
+                    BigramTables.QuelleA, BigramTables.QuelleB,
+                    BigramTables.QuelleC, BigramTables.QuelleD,
+                }
                 .Select(table => table.Substitute("AA"))
                 .Distinct()
                 .Count());
@@ -135,6 +140,7 @@ public class NavalIndicatorTests
         "A" => BigramTables.QuelleA,
         "B" => BigramTables.QuelleB,
         "C" => BigramTables.QuelleC,
+        "D" => BigramTables.QuelleD,
         _ => throw new ArgumentOutOfRangeException(nameof(letter), letter, "No such tafel is shipped."),
     };
 
