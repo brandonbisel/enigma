@@ -34,9 +34,9 @@ it runs; it is done when something published says it runs correctly.
 | Indicator procedure | Army version complete, doubled and single |
 | Message formatting | Complete — preparation and five-letter groups |
 | Key sheets | Complete, in the notation a real key sheet used |
-| Front ends | A command line tool |
+| Front ends | A command line tool, over a shared session layer |
 
-292 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+320 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 

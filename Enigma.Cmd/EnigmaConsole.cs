@@ -1,3 +1,4 @@
+using Enigma.App;
 using Enigma.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,6 @@ public class EnigmaConsole : BackgroundService
 {
     private readonly IEnigmaMachineFactory _factory;
     private readonly IIndicatorProcedure _procedure;
-    private readonly ICharacterMap _characterMap;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly ILogger<EnigmaConsole> _logger;
     private readonly ConsoleOptions _options;
@@ -18,7 +18,6 @@ public class EnigmaConsole : BackgroundService
     public EnigmaConsole(
         IEnigmaMachineFactory factory,
         IIndicatorProcedure procedure,
-        ICharacterMap characterMap,
         IHostApplicationLifetime lifetime,
         ILogger<EnigmaConsole> logger,
         ConsoleOptions options,
@@ -26,7 +25,6 @@ public class EnigmaConsole : BackgroundService
     {
         _factory = factory;
         _procedure = procedure;
-        _characterMap = characterMap;
         _lifetime = lifetime;
         _logger = logger;
         _options = options;
@@ -65,7 +63,20 @@ public class EnigmaConsole : BackgroundService
 
     private async Task RunAsync(CancellationToken stoppingToken)
     {
-        var machine = _factory.Create(KeyTheMachine());
+        var keyed = EnigmaSession.Open(_factory, KeyTheMachine());
+
+        if (!keyed.Succeeded)
+        {
+            // A key sheet the machine cannot be built from is a mistake in the
+            // settings, not a fault in the program, so say what is wrong and stop.
+            await Console.Error.WriteLineAsync(keyed.Error);
+            _logger.LogDebug(keyed.Fault, "Key sheet rejected");
+            Environment.ExitCode = 1;
+
+            return;
+        }
+
+        var session = keyed.Session!;
 
         // Only the streams we opened get disposed: closing Console.In or Console.Out
         // would take standard input and output down with them.
@@ -79,14 +90,14 @@ public class EnigmaConsole : BackgroundService
 
             if (_options.ShowBanner)
             {
-                WriteBanner(machine);
+                WriteBanner(session.Machine);
             }
 
             // The machine keeps stepping across lines, exactly as the real one does:
             // running it again is what returns the rotors to their configured start.
             while (await reader.ReadLineAsync(stoppingToken) is { } line)
             {
-                await writer.WriteLineAsync(Translate(machine, line));
+                await writer.WriteLineAsync(Translate(session, line));
             }
 
             await writer.FlushAsync(stoppingToken);
@@ -133,30 +144,15 @@ public class EnigmaConsole : BackgroundService
         return _keySheet;
     }
 
-    private string Translate(IEnigmaMachine machine, string line)
+    private string Translate(EnigmaSession session, string line)
     {
-        var alphabet = machine.CharacterMap;
-
         // Preparing first means the substitutions are enciphered, which is what
         // happened: the signaller fitted the text to the keyboard, then typed it.
         var text = _options.Prepare ? MessageText.Prepare(line) : line;
 
-        var input = text
-            .Select(character => IndexOf(alphabet, character))
-            .Where(index => index >= 0);
-
-        var output = string.Concat(machine.Translate(input).Select(alphabet.GetCharacter));
+        var output = session.Type(text);
 
         return _options.Groups is { } size ? MessageText.InGroups(output, size) : output;
-    }
-
-    // Typing in lower case is a convenience the machine never had. It is applied
-    // only as a fallback, so an alphabet that distinguishes case keeps both.
-    private static int IndexOf(ICharacterMap alphabet, char character)
-    {
-        var index = alphabet.GetIndex(character);
-
-        return index >= 0 ? index : alphabet.GetIndex(char.ToUpperInvariant(character));
     }
 
     private void WriteBanner(IEnigmaMachine machine)

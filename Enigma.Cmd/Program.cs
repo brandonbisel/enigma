@@ -1,6 +1,7 @@
 using Enigma;
 using System.CommandLine;
 using System.Text.Json;
+using Enigma.App;
 using Enigma.Cmd;
 using Enigma.Extensions.DependencyInjection;
 using Enigma.Models;
@@ -12,6 +13,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
+
+// The packaged key sheets, behind the catalogue both front ends look them up in.
+var keySheets = new KeySheetCatalogue();
 
 var keySheetOption = new Option<FileInfo?>("--key-sheet", "-k", "--settings")
 {
@@ -155,10 +159,10 @@ async Task<int> RunAsync(
         return await WriteDefaultKeySheetAsync(initKeySheet, cancellationToken);
     }
 
-    if (preset is not null && !KeySheets.TryGet(preset, out _))
+    if (preset is not null && !keySheets.TryGet(preset, out _))
     {
         await Console.Error.WriteLineAsync(
-            $"Unknown key sheet '{preset}'. Known: {string.Join(", ", KeySheets.All.Keys)}");
+            $"Unknown key sheet '{preset}'. Known: {string.Join(", ", keySheets.Names)}");
 
         return 1;
     }
@@ -234,7 +238,7 @@ async Task<int> RunAsync(
     builder.Services.AddSingleton(
         new ConsoleOptions(input, output, messageKey, indicator, doubled, prepare, groups));
     builder.Services.AddHostedService<EnigmaConsole>();
-    if (preset is not null && KeySheets.TryGet(preset, out var packaged))
+    if (preset is not null && keySheets.TryGet(preset, out var packaged))
     {
         builder.Services.AddSingleton(Options.Create(packaged));
     }
@@ -269,7 +273,7 @@ IConfiguration KeySheetConfiguration(HostApplicationBuilder builder, FileInfo? k
 
 int ListPresets()
 {
-    foreach (var (key, sheet) in KeySheets.All)
+    foreach (var (key, sheet) in keySheets.All)
     {
         Console.WriteLine($"{key,-20} {sheet.Name}");
         Console.WriteLine(

@@ -8,7 +8,7 @@ what is a future goal, and what is deliberately not scheduled.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 292 tests
+dotnet test               # whole suite, currently 320 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
@@ -26,6 +26,7 @@ Enigma/                 The library
   Rotors/               RotorI..RotorVIII plus the thin Beta and Gamma
   Reflectors/           ReflectorA/B/C plus the thin B and C of the M4
   Extensions/           DI registration
+Enigma.App/             Orchestration shared by the front ends, namespace Enigma.App
 Enigma.Cmd/             Console app, packaged as a tool named enigma
 Enigma.Tests/           xUnit tests
   Reference/            An independent implementation used as a test oracle
@@ -46,6 +47,9 @@ whichever the neighbouring files use.
 - Methods on the bases are deliberately non-virtual, with one exception:
   `RotorBase.Step` is virtual so `ThinRotorBase` can refuse to turn. Variation
   otherwise belongs in the abstract data members, not in overridden behaviour.
+- `Enigma.App` is UI-agnostic and must stay so: no `Console`, no `FileInfo`, no
+  `System.CommandLine`. It works in strings and streams, so a front end without a
+  filesystem can use it. Anything a front end alone needs belongs in that front end.
 - The signal path is described once, as a `TranslationTrace`. The debug log line is
   *formatted from* that structure rather than assembled beside it, so anything that
   wants to watch the machine — a log, a display — sees the same thing. Do not grow

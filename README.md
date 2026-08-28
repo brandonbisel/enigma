@@ -17,6 +17,7 @@ What is planned next, and what is deliberately out of scope, is in
 | Project | What it is |
 |---|---|
 | `Enigma` | The library: rotors, reflectors, plugboard, machine, and DI wireup |
+| `Enigma.App` | Orchestration shared by the front ends: sessions, key sheet catalogue |
 | `Enigma.Cmd` | A console app, installable as a tool named `enigma` |
 | `Enigma.Tests` | xUnit tests, including a differential suite against an independent oracle |
 
@@ -422,6 +423,28 @@ carry state — two machines sharing a rotor instance would silently corrupt eac
 other's positions. `IEnigmaMachineFactory` builds a configured machine, which is
 what selects three rotors out of eight and applies their positions and ring
 settings.
+
+To work a machine rather than build one, `Enigma.App` has a session: a machine
+keyed for the day, pressed a key at a time. A key sheet it cannot be built from
+comes back as a message rather than an exception, which is what a front end needs.
+
+```csharp
+var keyed = EnigmaSession.Open(factory, keySheet);
+
+if (!keyed.Succeeded)
+{
+    Console.Error.WriteLine(keyed.Error);
+    return;
+}
+
+var session = keyed.Session!;
+
+session.Press('A');           // the lamp that lit, or null for a key it has not got
+session.Type("ATTACKATDAWN"); // the same, for a run of text
+session.WindowText;           // where the wheels stand
+session.Patch('A', 'V');      // run a cable, as the board itself allows it
+session.Reset();              // back to the key sheet, rebuilt rather than wound back
+```
 
 ## Watching it work
 
