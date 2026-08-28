@@ -93,8 +93,39 @@ public class NavalIndicatorTests
         Assert.Equal("ODFF", received.MessageKey);     // where the message begins
     }
 
+    [Theory]
+    [InlineData("A")]
+    [InlineData("B")]
+    public void EveryShippedTableIsWholeAndReciprocal(string tafel)
+    {
+        // The check that makes a transcription trustworthy: 676 entries, every one
+        // paired with its mirror, none enciphering to itself. A single mistyped cell
+        // breaks a pair and fails here.
+        var table = tafel == "A" ? BigramTables.QuelleA : BigramTables.QuelleB;
+        var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        Assert.True(table.IsComplete);
+        Assert.Equal(676, table.Count);
+
+        Assert.All(
+            from first in alphabet from second in alphabet select $"{first}{second}",
+            bigram =>
+            {
+                Assert.Equal(bigram, table.Substitute(table.Substitute(bigram)));
+                Assert.NotEqual(bigram, table.Substitute(bigram));
+            });
+    }
+
     [Fact]
-    public void TheShippedTableIsWholeAndReciprocal()
+    public void TheTablesOfASetAreDifferentTables()
+    {
+        // Nine tables to a set, and a calendar to say which applied. If two agreed
+        // everywhere one of them would have been transcribed twice.
+        Assert.NotEqual(BigramTables.QuelleA.Substitute("AA"), BigramTables.QuelleB.Substitute("AA"));
+    }
+
+    [Fact]
+    public void TheOldTableCheckStillHolds()
     {
         // Transcribed from the Crypto Museum's scan of booklet 2499. Six hundred and
         // seventy-six entries, every one paired with its mirror: a single mistyped
