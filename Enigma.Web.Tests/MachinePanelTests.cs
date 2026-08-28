@@ -11,8 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Enigma.Web.Tests;
 
 /// <summary>
-/// The panel is a view of a machine, so what it owes is that what it shows is what
-/// the machine did — the same lamp, the same window, at the same instant.
+/// The panel is a view of a machine. It reports which key went down and shows the
+/// lamp it is given; it works nothing out for itself, so it cannot tell a different
+/// story from the message it belongs to.
 /// </summary>
 public class MachinePanelTests : BunitContext
 {
@@ -26,159 +27,129 @@ public class MachinePanelTests : BunitContext
     }
 
     [Fact]
-    public void PressingAKeyLightsTheLampTheMachineReturns()
+    public void TheLampItIsGivenIsTheLampThatLights()
     {
-        var expected = Session("default").Press('A');
-        var panel = Render(Open("default"));
+        var panel = Render(Open("default"), lit: 'Q');
 
-        Key(panel, 'A').MouseDown();
-
-        Assert.Equal(expected.ToString(), Lit(panel));
+        Assert.Equal("Q", Lit(panel));
     }
 
     [Fact]
-    public void NoLampIsAlightBeforeAKeyIsPressed()
+    public void NoLampIsAlightWhenThereIsNoneToShow()
     {
         Assert.Null(Lit(Render(Open("default"))));
     }
 
     [Fact]
-    public void ReleasingTheKeyPutsTheLampOut()
+    public void PressingAKeyReportsIt()
     {
-        var panel = Render(Open("default"));
+        var keyed = new List<char>();
+        var panel = Render(Open("default"), keyed: keyed.Add);
+
+        Key(panel, 'A').MouseDown();
+
+        Assert.Equal(['A'], keyed);
+    }
+
+    [Fact]
+    public void ReleasingAKeyIsReported()
+    {
+        var released = 0;
+        var panel = Render(Open("default"), released: () => released++);
 
         Key(panel, 'A').MouseDown();
         Key(panel, 'A').MouseUp();
 
-        Assert.Null(Lit(panel));
+        Assert.Equal(1, released);
     }
 
     [Fact]
-    public void TheWheelsTurnBeforeTheLampLights()
+    public void ReleasingWithNothingHeldReportsNothing()
     {
-        // The window a keypress shows is the one the operator read as the lamp lit,
-        // which is after the wheels moved. Showing the earlier one would teach the
-        // machine backwards.
-        var panel = Render(Open("default"));
+        var released = 0;
+        var panel = Render(Open("default"), released: () => released++);
 
-        Assert.Equal("AAA", Windows(panel));
+        Key(panel, 'A').MouseUp();
 
-        Key(panel, 'A').MouseDown();
-
-        Assert.Equal("AAB", Windows(panel));
+        Assert.Equal(0, released);
     }
 
     [Fact]
-    public void HoldingAKeyDownEnciphersOnlyOnce()
+    public void HoldingAKeyDownReportsItOnlyOnce()
     {
-        // The real keyboard locks out a second key while one is down, and a held
-        // key does not step the wheels again however long it is held.
-        var panel = Render(Open("default"));
+        // The real keyboard locks out a second key while one is down, and letting
+        // two through would step the wheels twice.
+        var keyed = new List<char>();
+        var panel = Render(Open("default"), keyed: keyed.Add);
 
         Key(panel, 'A').MouseDown();
         Key(panel, 'A').MouseDown();
         Key(panel, 'B').MouseDown();
 
-        Assert.Equal("AAB", Windows(panel));
-        Assert.Equal(1, Tape(panel).Length);
-    }
-
-    [Fact]
-    public void TheTapeCollectsWhatWasEnciphered()
-    {
-        var expected = Session("default").Type("ATTACK");
-        var panel = Render(Open("default"));
-
-        foreach (var key in "ATTACK")
-        {
-            Key(panel, key).MouseDown();
-            Key(panel, key).MouseUp();
-        }
-
-        Assert.Equal(expected, Tape(panel));
-    }
-
-    [Fact]
-    public void PressingTheLitLetterGivesTheOriginalBack()
-    {
-        // Reciprocity, as an operator would check it: the property the machine was
-        // built around and the first thing anyone tries.
-        var panel = Render(Open("default"));
-
-        Key(panel, 'A').MouseDown();
-
-        var lamp = Lit(panel)![0];
-
-        Key(panel, 'A').MouseUp();
-        panel.Find("[data-testid=reset]").Click();
-
-        Key(panel, lamp).MouseDown();
-
-        Assert.Equal("A", Lit(panel));
-    }
-
-    [Fact]
-    public void AKeyTheMachineHasNotGotDoesNothing()
-    {
-        var panel = Render(Open("default"));
-
-        panel.Find("[data-testid=panel]").KeyDown(new KeyboardEventArgs
-        {
-            Key = "7"
-        });
-
-        Assert.Null(Lit(panel));
-        Assert.Equal("AAA", Windows(panel));
-        Assert.Empty(Tape(panel));
+        Assert.Equal(['A'], keyed);
     }
 
     [Fact]
     public void AnAutorepeatIsNeverAFreshPress()
     {
         // Held keys autorepeat in a browser. A repeat is not a press, whatever the
-        // panel currently believes is held -- asserted on its own first, because
-        // the one-key-at-a-time lockout would otherwise hide this entirely.
-        var panel = Render(Open("default"));
+        // panel currently believes is held — asserted on its own first, because the
+        // one-key-at-a-time lockout would otherwise hide this entirely.
+        var keyed = new List<char>();
+        var panel = Render(Open("default"), keyed: keyed.Add);
         var element = panel.Find("[data-testid=panel]");
 
         element.KeyDown(new KeyboardEventArgs { Key = "a", Repeat = true });
 
-        Assert.Null(Lit(panel));
-        Assert.Equal("AAA", Windows(panel));
-        Assert.Empty(Tape(panel));
+        Assert.Empty(keyed);
 
         element.KeyDown(new KeyboardEventArgs { Key = "a" });
         element.KeyDown(new KeyboardEventArgs { Key = "a", Repeat = true });
 
-        Assert.Equal("AAB", Windows(panel));
-        Assert.Equal(1, Tape(panel).Length);
+        Assert.Equal(['a'], keyed);
     }
 
     [Fact]
-    public void ResettingReturnsTheWheelsAndClearsTheTape()
+    public void APhysicalKeyIsReportedLikeAClick()
     {
-        var panel = Render(Open("default"));
+        var keyed = new List<char>();
+        var panel = Render(Open("default"), keyed: keyed.Add);
 
-        foreach (var key in "ATTACK")
-        {
-            Key(panel, key).MouseDown();
-            Key(panel, key).MouseUp();
-        }
+        panel.Find("[data-testid=panel]").KeyDown(new KeyboardEventArgs { Key = "Q" });
 
-        panel.Find("[data-testid=reset]").Click();
+        Assert.Equal(['Q'], keyed);
+    }
+
+    [Fact]
+    public void AKeyWithNoSingleCharacterIsNotAKey()
+    {
+        var keyed = new List<char>();
+        var panel = Render(Open("default"), keyed: keyed.Add);
+
+        panel.Find("[data-testid=panel]").KeyDown(new KeyboardEventArgs { Key = "Shift" });
+
+        Assert.Empty(keyed);
+    }
+
+    [Fact]
+    public void TheWindowsShowWhereTheWheelsStand()
+    {
+        var session = Open("default");
+        var panel = Render(session);
 
         Assert.Equal("AAA", Windows(panel));
-        Assert.Empty(Tape(panel));
+
+        session.Press('A');
+        panel.Render();
+
+        Assert.Equal("AAB", Windows(panel));
     }
 
     [Fact]
     public void AMachineWhoseReflectorTurnsShowsItsWindow()
     {
-        // A Zählwerk machine's UKW is part of the setting, so the operator can see
-        // it. Four windows, not three.
-        var panel = Render(Open(Zaehlwerk));
-
-        Assert.Equal(4, panel.FindAll("[data-testid=window]").Count);
+        // A Zählwerk machine's UKW is part of the setting, so the operator sees it.
+        Assert.Equal(4, Render(Open(Zaehlwerk)).FindAll("[data-testid=window]").Count);
     }
 
     [Fact]
@@ -193,8 +164,16 @@ public class MachinePanelTests : BunitContext
         Assert.Equal(4, Render(Open("u264")).FindAll("[data-testid=window]").Count);
     }
 
-    private IRenderedComponent<MachinePanel> Render(EnigmaSession session) =>
-        Render<MachinePanel>(parameters => parameters.Add(panel => panel.Session, session));
+    private IRenderedComponent<MachinePanel> Render(
+        EnigmaSession session,
+        char? lit = null,
+        Action<char>? keyed = null,
+        Action? released = null) =>
+        Render<MachinePanel>(parameters => parameters
+            .Add(panel => panel.Session, session)
+            .Add(panel => panel.Lit, lit)
+            .Add(panel => panel.OnKeyed, key => keyed?.Invoke(key))
+            .Add(panel => panel.OnReleased, () => released?.Invoke()));
 
     private static IElement Key(IRenderedComponent<MachinePanel> panel, char letter) =>
         panel.Find($"[data-testid=key][data-letter={letter}]");
@@ -206,12 +185,9 @@ public class MachinePanelTests : BunitContext
         string.Concat(panel.FindAll("[data-testid=window] .window-letter")
             .Select(window => window.TextContent));
 
-    private static string Tape(IRenderedComponent<MachinePanel> panel) =>
-        panel.Find("[data-testid=tape]").TextContent;
-
     private static EnigmaSession Open(string name)
     {
-        var catalogue = new KeySheetCatalogue([new("g31", Zaehlwerk)]);
+        var catalogue = new KeySheetCatalogue();
 
         Assert.True(catalogue.TryGet(name, out var sheet));
 
@@ -226,8 +202,6 @@ public class MachinePanelTests : BunitContext
 
         return result.Session!;
     }
-
-    private static EnigmaSession Session(string name) => Open(name);
 
     private static readonly KeySheet Zaehlwerk = new()
     {

@@ -10,18 +10,26 @@ namespace Enigma.Web.Tests;
 
 public class HomeTests : BunitContext
 {
+    private IKeySheetCatalogue _catalogue = new KeySheetCatalogue();
+
+    // bUnit will not take services once anything has been resolved, and several of
+    // these render two pages.
+    public HomeTests()
+    {
+        Services.AddEnigmaServices();
+        Services.AddSingleton<IKeySheetCatalogue>(_ => _catalogue);
+    }
+
     [Fact]
     public void EveryKeySheetOnOfferIsListed()
     {
-        var page = Render(new KeySheetCatalogue());
-
-        Assert.Equal(KeySheets.All.Count, page.FindAll("[data-testid=sheet] option").Count);
+        Assert.Equal(KeySheets.All.Count, Page().FindAll("[data-testid=sheet] option").Count);
     }
 
     [Fact]
     public void APanelIsShownForTheSheetInUse()
     {
-        var page = Render(new KeySheetCatalogue());
+        var page = Page();
 
         Assert.NotNull(page.Find("[data-testid=panel]"));
         Assert.Equal(26, page.FindAll("[data-testid=key]").Count);
@@ -30,7 +38,7 @@ public class HomeTests : BunitContext
     [Fact]
     public void ChoosingAnotherSheetKeysAnotherMachine()
     {
-        var page = Render(new KeySheetCatalogue());
+        var page = Page();
 
         page.Find("[data-testid=sheet]").Change("u264");
 
@@ -38,62 +46,195 @@ public class HomeTests : BunitContext
         Assert.Equal(4, page.FindAll("[data-testid=window]").Count);
     }
 
-    [Fact]
-    public void ChoosingAnotherSheetStartsItsMachineAfresh()
-    {
-        var page = Render(new KeySheetCatalogue());
+    // -- the message ------------------------------------------------------------
 
+    [Fact]
+    public void TypingOnTheKeyboardWritesTheMessageAndTheCipher()
+    {
+        var page = Page();
+
+        Type(page, "ATTACK");
+
+        Assert.Equal("ATTACK", Plaintext(page));
+        Assert.Equal(Session("default").Type("ATTACK"), Ciphertext(page));
+    }
+
+    [Fact]
+    public void TheKeyboardAndTheTextAgree()
+    {
+        // Two ways of entering one message. If they could differ, one of the two
+        // views would be lying about what the machine did.
+        var typed = Page();
+        var written = Page();
+
+        Type(typed, "ATTACKATDAWN");
+        written.Find("[data-testid=plaintext]").Change("ATTACKATDAWN");
+
+        Assert.Equal(Ciphertext(typed), Ciphertext(written));
+    }
+
+    [Fact]
+    public void WritingTheMessageKeysItFromTheStart()
+    {
+        var page = Page();
+
+        Type(page, "ZZZZZ");
+        page.Find("[data-testid=plaintext]").Change("ATTACK");
+
+        // Keyed from the start, not carried on from the five letters before it, so
+        // the fast wheel stands six on from A -- the length of the message.
+        Assert.Equal(Session("default").Type("ATTACK"), Ciphertext(page));
+        Assert.Equal("AAG", Windows(page));
+    }
+
+    [Fact]
+    public void AKeyTheMachineHasNotGotChangesNothing()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=panel]").KeyDown(
+            new Microsoft.AspNetCore.Components.Web.KeyboardEventArgs { Key = "7" });
+
+        Assert.Empty(Plaintext(page));
+        Assert.Empty(Ciphertext(page));
+        Assert.Equal("AAA", Windows(page));
+    }
+
+    [Fact]
+    public void PressingTheLitLetterGivesTheOriginalBack()
+    {
+        // Reciprocity, as an operator would check it.
+        var page = Page();
+
+        Type(page, "A");
+
+        var lamp = Ciphertext(page)[0];
+
+        page.Find("[data-testid=clear]").Click();
+        Type(page, lamp.ToString());
+
+        Assert.Equal("A", Ciphertext(page));
+    }
+
+    [Fact]
+    public void ClearingPutsTheWheelsBack()
+    {
+        var page = Page();
+
+        Type(page, "ATTACK");
+        page.Find("[data-testid=clear]").Click();
+
+        Assert.Empty(Plaintext(page));
+        Assert.Empty(Ciphertext(page));
+        Assert.Equal("AAA", Windows(page));
+    }
+
+    [Fact]
+    public void FittingTheTextToTheKeyboardIsOffered()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=plaintext]").Change("ATTACK AT DAWN");
+        page.Find("[data-testid=prepare]").Change(true);
+
+        Assert.Equal(Session("default").Type("ATTACKXATXDAWN"), Ciphertext(page));
+    }
+
+    [Fact]
+    public void WithoutFittingItTheSpacesAreSimplyNotKeyed()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=plaintext]").Change("ATTACK AT DAWN");
+
+        Assert.Equal(Session("default").Type("ATTACKATDAWN"), Ciphertext(page));
+    }
+
+    [Fact]
+    public void TheCipherIsWrittenInGroups()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=plaintext]").Change("ATTACKATDAWN");
+        page.Find("[data-testid=grouped]").Change(true);
+
+        Assert.Equal(MessageText.InGroups(Session("default").Type("ATTACKATDAWN")), Ciphertext(page));
+    }
+
+    [Fact]
+    public void TheGroupSizeCanBeSet()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=plaintext]").Change("ATTACKATDAWN");
+        page.Find("[data-testid=grouped]").Change(true);
+        page.Find("[data-testid=group-size]").Change("4");
+
+        Assert.Equal(MessageText.InGroups(Session("default").Type("ATTACKATDAWN"), 4), Ciphertext(page));
+    }
+
+    [Fact]
+    public void GroupingChangesOnlyHowTheCipherIsWrittenOut()
+    {
+        // Writing the message out in groups is a convention of the signaller, not
+        // an operation on the machine. Asserting the window alone cannot show that:
+        // re-keying the same message lands on the same window. A lamp still held
+        // down can, because re-keying would put it out.
+        var page = Page();
+
+        Type(page, "ATTACK");
         page.Find("[data-testid=key][data-letter=A]").MouseDown();
+
+        var window = Windows(page);
+        var lamp = page.Find("[data-testid=lamp].lamp-lit").TextContent;
+
+        page.Find("[data-testid=grouped]").Change(true);
+
+        Assert.Equal(window, Windows(page));
+        Assert.Equal(lamp, page.Find("[data-testid=lamp].lamp-lit").TextContent);
+        Assert.Equal(Session("default").Type("ATTACKA"), Ciphertext(page).Replace(" ", string.Empty));
+    }
+
+    [Fact]
+    public void ChangingASettingKeysTheSameMessageAgain()
+    {
+        // The point of being able to change the settings: the same text, keyed a
+        // different way.
+        var page = Page();
+
+        page.Find("[data-testid=plaintext]").Change("ATTACKATDAWN");
+
+        var before = Ciphertext(page);
+
+        page.Find("[data-testid=positions]").Change("XYZ");
+
+        Assert.Equal("ATTACKATDAWN", Plaintext(page));
+        Assert.NotEqual(before, Ciphertext(page));
+        Assert.NotEmpty(Ciphertext(page));
+    }
+
+    [Fact]
+    public void ChoosingAnotherSheetKeysTheSameMessageAgain()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=plaintext]").Change("ATTACKATDAWN");
+
+        var before = Ciphertext(page);
+
         page.Find("[data-testid=sheet]").Change("barbarossa");
 
-        // Barbarossa's Grundstellung, not a machine that has already been typed on.
-        Assert.Equal("BLA", string.Concat(
-            page.FindAll("[data-testid=window] .window-letter").Select(window => window.TextContent)));
-        Assert.Empty(page.Find("[data-testid=tape]").TextContent);
+        Assert.Equal("ATTACKATDAWN", Plaintext(page));
+        Assert.NotEqual(before, Ciphertext(page));
     }
 
-    [Fact]
-    public void AKeySheetTheMachineCannotBeBuiltFromShowsAMessage()
-    {
-        // A front end that threw here would show a blank page and a console error.
-        var page = Render(new KeySheetCatalogue([new("default", Broken)]));
-
-        Assert.Contains("NOSUCHWHEEL", page.Find("[data-testid=error]").TextContent);
-        Assert.Empty(page.FindAll("[data-testid=panel]"));
-    }
-
-    [Fact]
-    public void ChangingASettingKeysTheMachineAgain()
-    {
-        var page = Render(new KeySheetCatalogue());
-
-        page.Find("[data-testid=positions]").Change("XYZ");
-
-        Assert.Equal("XYZ", Windows(page));
-    }
-
-    [Fact]
-    public void ChangingASettingStartsTheMessageAgain()
-    {
-        // A machine keyed afresh has typed nothing, and the tape belongs to the
-        // machine that was replaced.
-        var page = Render(new KeySheetCatalogue());
-
-        page.Find("[data-testid=key][data-letter=A]").MouseDown();
-        page.Find("[data-testid=key][data-letter=A]").MouseUp();
-
-        Assert.NotEmpty(page.Find("[data-testid=tape]").TextContent);
-
-        page.Find("[data-testid=positions]").Change("XYZ");
-
-        Assert.Empty(page.Find("[data-testid=tape]").TextContent);
-    }
+    // -- settings ---------------------------------------------------------------
 
     [Fact]
     public void ASettingTheMachineCannotBeBuiltFromLeavesTheLastWorkingOneInPlace()
     {
         // Mid-way through setting up is not the same as holding a broken machine.
-        var page = Render(new KeySheetCatalogue());
+        var page = Page();
 
         page.Find("[data-testid=rings]").Change("NOTASETTING");
 
@@ -105,7 +246,7 @@ public class HomeTests : BunitContext
     [Fact]
     public void TheErrorClearsOnceTheSettingsWorkAgain()
     {
-        var page = Render(new KeySheetCatalogue());
+        var page = Page();
 
         page.Find("[data-testid=rings]").Change("NOTASETTING");
         page.Find("[data-testid=rings]").Change("BUL");
@@ -114,11 +255,20 @@ public class HomeTests : BunitContext
     }
 
     [Fact]
+    public void AKeySheetTheMachineCannotBeBuiltFromShowsAMessage()
+    {
+        var page = Page(new KeySheetCatalogue([new("default", Broken)]));
+
+        Assert.Contains("NOSUCHWHEEL", page.Find("[data-testid=error]").TextContent);
+        Assert.Empty(page.FindAll("[data-testid=panel]"));
+    }
+
+    // -- the board --------------------------------------------------------------
+
+    [Fact]
     public void AMachineWithNoPlugboardIsOfferedNone()
     {
-        // A Zählwerk Enigma has no Steckerbrett, so the page shows none rather than
-        // showing one whose cables are refused.
-        var page = Render(new KeySheetCatalogue([new("g31", Zaehlwerk)]));
+        var page = Page(new KeySheetCatalogue([new("g31", Zaehlwerk)]));
 
         Assert.NotEmpty(page.FindAll("[data-testid=stecker]"));
 
@@ -130,7 +280,7 @@ public class HomeTests : BunitContext
     [Fact]
     public void CablingTwoLettersPatchesTheMachine()
     {
-        var page = Render(new KeySheetCatalogue());
+        var page = Page();
 
         page.Find("[data-testid=jack][data-letter=A]").Click();
         page.Find("[data-testid=jack][data-letter=V]").Click();
@@ -142,7 +292,7 @@ public class HomeTests : BunitContext
     [Fact]
     public void PullingACableOutUnpatchesTheMachine()
     {
-        var page = Render(new KeySheetCatalogue());
+        var page = Page();
 
         page.Find("[data-testid=sheet]").Change("barbarossa");
 
@@ -156,24 +306,57 @@ public class HomeTests : BunitContext
     [Fact]
     public void CablingChangesTheCipher()
     {
-        // The point of the board: the same key gives a different lamp.
-        var page = Render(new KeySheetCatalogue());
+        var page = Page();
 
-        page.Find("[data-testid=key][data-letter=A]").MouseDown();
+        page.Find("[data-testid=plaintext]").Change("AAAAA");
 
-        var plain = page.Find("[data-testid=lamp].lamp-lit").TextContent;
+        var plain = Ciphertext(page);
 
-        page.Find("[data-testid=key][data-letter=A]").MouseUp();
         page.Find("[data-testid=jack][data-letter=A]").Click();
         page.Find("[data-testid=jack][data-letter=V]").Click();
-        page.Find("[data-testid=key][data-letter=A]").MouseDown();
 
-        Assert.NotEqual(plain, page.Find("[data-testid=lamp].lamp-lit").TextContent);
+        Assert.NotEqual(plain, Ciphertext(page));
     }
+
+    // -- helpers ----------------------------------------------------------------
+
+    private static void Type(IRenderedComponent<Home> page, string text)
+    {
+        foreach (var key in text)
+        {
+            page.Find($"[data-testid=key][data-letter={key}]").MouseDown();
+            page.Find($"[data-testid=key][data-letter={key}]").MouseUp();
+        }
+    }
+
+    private static string Plaintext(IRenderedComponent<Home> page) =>
+        page.Find("[data-testid=plaintext]").GetAttribute("value") ?? string.Empty;
+
+    private static string Ciphertext(IRenderedComponent<Home> page) =>
+        page.Find("[data-testid=ciphertext]").TextContent;
 
     private static string Windows(IRenderedComponent<Home> page) =>
         string.Concat(page.FindAll("[data-testid=window] .window-letter")
             .Select(window => window.TextContent));
+
+    private static EnigmaSession Session(string name)
+    {
+        Assert.True(new KeySheetCatalogue().TryGet(name, out var sheet));
+
+        var result = EnigmaSession.Open(
+            new ServiceCollection().AddEnigmaServices().BuildServiceProvider()
+                .GetRequiredService<IEnigmaMachineFactory>(),
+            sheet);
+
+        return result.Session!;
+    }
+
+    private IRenderedComponent<Home> Page(IKeySheetCatalogue? catalogue = null)
+    {
+        _catalogue = catalogue ?? _catalogue;
+
+        return Render<Home>();
+    }
 
     private static readonly KeySheet Zaehlwerk = new()
     {
@@ -186,14 +369,6 @@ public class HomeTests : BunitContext
         ReflectorPosition = "A",
         ReflectorRingSetting = "A"
     };
-
-    private IRenderedComponent<Home> Render(IKeySheetCatalogue catalogue)
-    {
-        Services.AddEnigmaServices();
-        Services.AddSingleton(catalogue);
-
-        return Render<Home>();
-    }
 
     private static readonly KeySheet Broken = new()
     {

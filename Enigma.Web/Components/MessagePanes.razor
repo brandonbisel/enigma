@@ -1,0 +1,75 @@
+@* The message, written out. The signaller fitted his text to a keyboard of
+   twenty six letters and no space bar, then the clerk read the lamps off in
+   groups of five so a miscount would show at the far end. *@
+
+<section class="message" data-testid="message">
+    <h2>Spruch</h2>
+
+    <label class="pane">
+        <span>Klartext</span>
+        <textarea data-testid="plaintext" rows="3" spellcheck="false"
+                  value="@Plaintext" @onchange="Plain"></textarea>
+    </label>
+
+    <div class="toggles">
+        <label>
+            <input type="checkbox" data-testid="prepare" checked="@Prepare" @onchange="Preparing" />
+            Fit to the keyboard
+        </label>
+
+        <label>
+            <input type="checkbox" data-testid="grouped" checked="@(Groups is not null)" @onchange="Grouping" />
+            Groups of
+        </label>
+
+        @if (Groups is { } size)
+        {
+            <input type="number" class="size" data-testid="group-size"
+                   min="1" max="26" value="@size" @onchange="Sizing" />
+        }
+
+        <button type="button" class="action" data-testid="clear" @onclick="Clear">Clear</button>
+    </div>
+
+    <label class="pane">
+        <span>Geheimtext</span>
+        <output data-testid="ciphertext">@Ciphertext</output>
+    </label>
+</section>
+
+@code {
+    [Parameter] public string Plaintext { get; set; } = string.Empty;
+
+    [Parameter] public string Ciphertext { get; set; } = string.Empty;
+
+    /// <summary>Whether the text is fitted to the keyboard before it is keyed.</summary>
+    [Parameter] public bool Prepare { get; set; }
+
+    /// <summary>The group size the ciphertext is broken into, or null for a run.</summary>
+    [Parameter] public int? Groups { get; set; }
+
+    [Parameter] public EventCallback<string> OnPlaintext { get; set; }
+
+    [Parameter] public EventCallback<bool> OnPrepare { get; set; }
+
+    [Parameter] public EventCallback<int?> OnGroups { get; set; }
+
+    private const int Conventional = 5;
+
+    private Task Plain(ChangeEventArgs args) =>
+        OnPlaintext.InvokeAsync(args.Value?.ToString() ?? string.Empty);
+
+    private Task Preparing(ChangeEventArgs args) => OnPrepare.InvokeAsync(args.Value is true);
+
+    // Clearing the message is what puts the wheels back: there is no separate
+    // reset, because a machine with nothing typed on it is a machine at its start.
+    private Task Clear() => OnPlaintext.InvokeAsync(string.Empty);
+
+    private Task Grouping(ChangeEventArgs args) =>
+        OnGroups.InvokeAsync(args.Value is true ? Groups ?? Conventional : null);
+
+    private Task Sizing(ChangeEventArgs args) =>
+        int.TryParse(args.Value?.ToString(), out var size) && size >= 1
+            ? OnGroups.InvokeAsync(size)
+            : Task.CompletedTask;
+}

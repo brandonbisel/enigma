@@ -1,5 +1,6 @@
 @* The machine itself: what an operator faced. Windows above, lamps in the middle,
-   keys below, and the tape of what has been enciphered so far. *@
+   keys below. It holds no message and no cipher logic — the lamp it lights is
+   handed to it, so the panel and the message pane cannot tell different stories. *@
 
 <div class="panel" tabindex="0" data-testid="panel"
      @onkeydown="PhysicalDown" @onkeyup="PhysicalUp" @onblur="Release">
@@ -14,29 +15,24 @@
 
     <RotorWindows Session="Session" />
 
-    <LampBoard Alphabet="Session.Alphabet" Lit="_lit" />
+    <LampBoard Alphabet="Session.Alphabet" Lit="Lit" />
 
     <Keyboard Alphabet="Session.Alphabet" Held="_held" OnDown="Press" OnUp="Release" />
-
-    <section class="tape">
-        <output data-testid="tape">@_tape</output>
-        <button type="button" class="action" data-testid="reset" @onclick="Reset">Reset</button>
-    </section>
 </div>
 
 @code {
     [Parameter, EditorRequired] public required EnigmaSession Session { get; set; }
 
-    private char? _held;
-    private char? _lit;
-    private string _tape = string.Empty;
+    /// <summary>The lamp alight, decided by whoever is working the machine.</summary>
+    [Parameter] public char? Lit { get; set; }
 
-    /// <summary>
-    /// A key goes down. The wheels turn first and the lamp lights after, which is
-    /// the order the machine works in and the reason the window and the lamp of a
-    /// single keypress belong to the same instant.
-    /// </summary>
-    private void Press(char key)
+    [Parameter] public EventCallback<char> OnKeyed { get; set; }
+
+    [Parameter] public EventCallback OnReleased { get; set; }
+
+    private char? _held;
+
+    private async Task Press(char key)
     {
         // One key at a time: the real keyboard locks out a second while the first
         // is down, and letting two through would step the wheels twice.
@@ -46,48 +42,38 @@
         }
 
         _held = key;
-        _lit = Session.Press(key);
 
-        if (_lit is { } lamp)
-        {
-            _tape += lamp;
-        }
+        await OnKeyed.InvokeAsync(key);
     }
 
-    private void Release()
+    private async Task Release()
     {
-        _held = null;
-        _lit = null;
-    }
-
-    private void PhysicalDown(KeyboardEventArgs args)
-    {
-        // Held keys repeat, and a repeat is not a fresh press of anything.
-        if (args.Repeat || args.Key.Length != 1)
+        if (_held is null)
         {
             return;
         }
 
-        Press(args.Key[0]);
+        _held = null;
+
+        await OnReleased.InvokeAsync();
     }
 
-    private void PhysicalUp(KeyboardEventArgs args)
+    private Task PhysicalDown(KeyboardEventArgs args)
     {
-        if (args.Key.Length == 1 && Matches(args.Key[0]))
+        // Held keys repeat, and a repeat is not a fresh press of anything.
+        if (args.Repeat || args.Key.Length != 1)
         {
-            Release();
+            return Task.CompletedTask;
         }
+
+        return Press(args.Key[0]);
     }
+
+    private Task PhysicalUp(KeyboardEventArgs args) =>
+        args.Key.Length == 1 && Matches(args.Key[0]) ? Release() : Task.CompletedTask;
 
     // The key that goes up is the one that went down, whatever case it was typed in.
     private bool Matches(char key) =>
         _held is { } held &&
         (key == held || char.ToUpperInvariant(key) == char.ToUpperInvariant(held));
-
-    private void Reset()
-    {
-        Session.Reset();
-        Release();
-        _tape = string.Empty;
-    }
 }

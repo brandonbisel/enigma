@@ -50,7 +50,24 @@ shows four as well, but the extra one is its reflector, which turns and so is pa
 of the setting. The keyboard is laid out from the machine's own alphabet rather
 than from a constant, so a machine that does not work in letters gets its own keys.
 
-Below the machine is its key sheet, set by hand. The wheels, reflector, entry
+Below the machine is the message. The keyboard and the plaintext pane are two ways
+of entering one message, not two messages: type on the keys and the text grows a
+letter at a time, or write the whole thing and it is keyed from the start. Either
+way the ciphertext is the same, because the machine is the only thing deciding it.
+
+Two conventions of the signaller sit behind toggles. **Fit to the keyboard** applies
+`MessageText.Prepare`, expanding umlauts, spelling digits out and writing spaces as
+X, so ordinary German can be keyed on a machine that has none of those. **Groups of**
+breaks the ciphertext into fives, as it was transmitted, so a miscount showed up at
+the far end. Grouping is how the message is written out rather than how it was
+enciphered, so it moves no wheels — a lamp still held stays lit.
+
+Changing any setting keys the same message again, which is the point of being able
+to change them: the same text, keyed a different way. Clearing the message is what
+puts the wheels back; there is no separate reset, because a machine with nothing
+typed on it is a machine at its start.
+
+Below that is its key sheet, set by hand. The wheels, reflector, entry
 wheel and alphabet are chosen from the parts catalogue, so a wheel defined in a
 parts file appears in the list without the page knowing it exists. Adding a
 fourth wheel offers a thin one, because that is the only kind that fits beside a

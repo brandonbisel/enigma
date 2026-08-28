@@ -23,7 +23,17 @@
 
 @if (_session is not null)
 {
-    <MachinePanel Session="_session" @key="_generation" />
+    <MachinePanel Session="_session" Lit="_lit" OnKeyed="Keyed" OnReleased="Released" @key="_generation" />
+
+    @* String parameters take the attribute literally unless it is an expression,
+       which is why these two carry an @ and the others do not. *@
+    <MessagePanes Plaintext="@_message"
+                  Ciphertext="@Ciphertext"
+                  Prepare="_prepare"
+                  Groups="_groups"
+                  OnPlaintext="Wrote"
+                  OnPrepare="Preparing"
+                  OnGroups="Grouping" />
 
     <KeySheetEditor Sheet="_sheet"
                     ShowsReflectorSetting="_session.ReflectorPosition is not null"
@@ -43,10 +53,17 @@
     private KeySheet _sheet = new();
     private EnigmaSession? _session;
     private string? _error;
-
-    // Changing the settings keys a new machine, and the panel holds the tape and
-    // the lamp of the old one, so it is replaced rather than reused.
     private int _generation;
+
+    // The message is held here rather than in either view, so the keyboard and the
+    // pane are two ways of entering one message rather than two messages.
+    private string _message = string.Empty;
+    private string _cipher = string.Empty;
+    private bool _prepare;
+    private int? _groups;
+    private char? _lit;
+
+    private string Ciphertext => _groups is { } size ? MessageText.InGroups(_cipher, size) : _cipher;
 
     protected override void OnInitialized() => Choose(_name);
 
@@ -76,11 +93,67 @@
 
         // A machine that cannot be built leaves the last working one in place: the
         // operator is midway through setting up, not holding a broken machine.
-        if (keyed.Session is not null)
+        if (keyed.Session is null)
         {
-            _session = keyed.Session;
-            _generation++;
+            return;
         }
+
+        _session = keyed.Session;
+        _generation++;
+
+        // The message survives a change of settings, which is the point of being
+        // able to change them: the same text, keyed a different way.
+        Retype();
+    }
+
+    /// <summary>
+    /// A key goes down. The wheels turn and a lamp lights, and both the message and
+    /// the ciphertext grow by one, so the incremental path and
+    /// <see cref="Retype"/> can never disagree: only keys the machine has are kept.
+    /// </summary>
+    private void Keyed(char key)
+    {
+        if (_session?.Press(key) is not { } lamp)
+        {
+            return;
+        }
+
+        _message += key;
+        _cipher += lamp;
+        _lit = lamp;
+    }
+
+    private void Released() => _lit = null;
+
+    private void Wrote(string text)
+    {
+        _message = text;
+
+        Retype();
+    }
+
+    private void Preparing(bool prepare)
+    {
+        _prepare = prepare;
+
+        Retype();
+    }
+
+    // Grouping is how the ciphertext is written out, not how it was enciphered,
+    // so it changes nothing about the machine.
+    private void Grouping(int? groups) => _groups = groups;
+
+    private void Retype()
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        _session.Reset();
+
+        _cipher = _session.Type(_prepare ? MessageText.Prepare(_message) : _message);
+        _lit = null;
     }
 
     private void Patch((char From, char To) cable) =>

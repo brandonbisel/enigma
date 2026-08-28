@@ -8,7 +8,7 @@ what is a future goal, and what is deliberately not scheduled.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 378 tests
+dotnet test               # whole suite, currently 397 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Web    # the panel, on http://localhost:5298
@@ -56,7 +56,12 @@ whichever the neighbouring files use.
   than being passed beside it, so the two cannot disagree.
 - The panel is a view of a machine and holds no cipher logic of its own. What it
   shows must come from the session; anything it works out for itself can disagree
-  with the machine, which is the one thing a simulator's UI must never do.
+  with the machine, which is the one thing a simulator's UI must never do. The
+  message lives on the page for the same reason: the keyboard and the plaintext
+  pane are two ways of entering one message, so neither owns it.
+- A string-typed component parameter takes its attribute *literally*:
+  `Plaintext="_message"` passes the text `_message`. Write `Plaintext="@_message"`.
+  Parameters of any other type are expressions already.
 - `Enigma.App` is UI-agnostic and must stay so: no `Console`, no `FileInfo`, no
   `System.CommandLine`. It works in strings and streams, so a front end without a
   filesystem can use it. Anything a front end alone needs belongs in that front end.
