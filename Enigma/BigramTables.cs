@@ -106,6 +106,13 @@ public static class BigramTables
     public static BigramTable FlusslaufB { get; } = BigramTable.Parse(FlusslaufBEntries);
 
     /// <summary>
+    /// Tafel C of "Flußlauf". One cell needed adjudicating: AT read WO, but WO pairs
+    /// with XG both ways and WD reads AT, so the value is WD — an ink blot where the
+    /// D's stem meets its bowl closes the letter into an O at page scale.
+    /// </summary>
+    public static BigramTable FlusslaufC { get; } = BigramTable.Parse(FlusslaufCEntries);
+
+    /// <summary>
     /// The tables of "Meer" by their letter: all nine, A to J without I. Unlike
     /// "Quelle", whose scan stops at H, this set is complete — every day of its
     /// Tauschtafelplan leads to a table that is actually here.
@@ -133,6 +140,7 @@ public static class BigramTables
         {
             ['A'] = FlusslaufA,
             ['B'] = FlusslaufB,
+            ['C'] = FlusslaufC,
         };
 
     /// <summary>
@@ -671,4 +679,31 @@ public static class BigramTables
         "RW=ZF SF=VM SP=VC ST=XN SX=YJ SY=VB TC=ZZ TG=UK TJ=UL TK=XU TT=UH TV=XQ UB=VH UC=YP " +
         "UJ=WK UO=ZG UU=WU UW=WG UY=WM VD=WB VF=YI VG=WA VK=XG VY=ZV VZ=YO WL=YV WQ=XB XL=ZA " +
         "XP=YD ZJ=ZQ";
+
+    private const string FlusslaufCEntries =
+        "AA=IM AB=JQ AC=IE AD=LU AE=QC AF=FJ AG=NZ AH=EN AI=NI AJ=LY AK=VP AL=WA AM=IC AN=EI " +
+        "AO=VI AP=HC AQ=ZM AR=TO AS=WT AT=WD AU=BE AV=NM AW=CW AX=RF AY=OU AZ=QH BA=OE BB=ZQ " +
+        "BC=BI BD=NG BF=VW BG=VR BH=TZ BJ=FX BK=DZ BL=UI BM=JK BN=SH BO=SF BP=JS BQ=VZ BR=PP " +
+        "BS=RY BT=YE BU=HD BV=LA BW=XV BX=HH BY=YN BZ=JD CA=FI CB=EW CC=FN CD=GT CE=XH CF=OD " +
+        "CG=CV CH=LK CI=TF CJ=OG CK=SU CL=FQ CM=CQ CN=DN CO=IX CP=EH CR=GH CS=RM CT=XN CU=QD " +
+        "CX=FY CY=PZ CZ=TY DA=KO DB=NN DC=FT DD=FF DE=YM DF=DI DG=ZS DH=DP DJ=OC DK=VN DL=XL " +
+        "DM=MG DO=TH DQ=EF DR=GC DS=HA DT=ZU DU=KL DV=UD DW=QI DX=LM DY=GZ EA=WY EB=HG EC=VL " +
+        "ED=KZ EE=SM EG=XJ EJ=WJ EK=GD EL=XS EM=XX EO=WQ EP=GM EQ=ZD ER=RC ES=JU ET=QT EU=QX " +
+        "EV=TJ EX=SR EY=KH EZ=TT FA=FP FB=YA FC=UA FD=IA FE=TE FG=JE FH=RT FK=JF FL=MQ FM=LJ " +
+        "FO=QU FR=OF FS=JP FU=LB FV=TQ FW=GS FZ=MX GA=WU GB=HO GE=XM GF=ZJ GG=UJ GI=TS GJ=ON " +
+        "GK=GW GL=WR GN=UT GO=ZP GP=KS GQ=JY GR=WV GU=MJ GV=NT GX=RE GY=OI HB=NY HE=YS HF=KG " +
+        "HI=HN HJ=KD HK=QP HL=ZL HM=TC HP=YU HQ=IS HR=XY HS=YY HT=QZ HU=RW HV=MD HW=IG HX=QR " +
+        "HY=UO HZ=QG IB=VA ID=ZV IF=SG IH=LG II=IU IJ=ZY IK=SX IL=LO IN=OX IO=IT IP=MW IQ=KN " +
+        "IR=XZ IV=UN IW=OQ IY=UG IZ=VJ JA=MK JB=NK JC=JJ JG=OO JH=SO JI=QE JL=WS JM=JZ JN=UQ " +
+        "JO=XW JR=MM JT=RV JV=PS JW=NE JX=VY KA=OL KB=PY KC=ME KE=XU KF=UW KI=UL KJ=OA KK=YI " +
+        "KM=SP KP=PU KQ=PO KR=NB KT=KU KV=MZ KW=WC KX=PV KY=ZT LC=UH LD=YK LE=PF LF=VX LH=PE " +
+        "LI=PQ LL=NF LN=YW LP=QA LQ=YQ LR=SC LS=OZ LT=RK LV=NV LW=TK LX=SV LZ=OW MA=RL MB=ST " +
+        "MC=PC MF=YV MH=UV MI=ZN ML=QV MN=ZB MO=UF MP=TP MR=NP MS=MT MU=TN MV=SB MY=TU NA=NJ " +
+        "NC=XB ND=OP NH=WK NL=SD NO=SY NQ=TA NR=YG NS=RI NU=OH NW=XF NX=QO OB=TX OJ=XO OK=XC " +
+        "OM=UC OR=PB OS=ZC OT=QQ OV=QB OY=SJ PA=QJ PD=RP PG=YL PH=ZX PI=PX PJ=UR PK=RD PL=PW " +
+        "PM=VE PN=VU PR=RO PT=ZK QF=WI QK=TI QL=VS QM=WX QN=TV QS=VB QW=WM QY=YR RA=ZH RB=SE " +
+        "RG=YP RH=XE RJ=ZI RN=TW RQ=WB RR=ZG RS=UZ RU=SK RX=YD RZ=YO SA=WH SI=WF SL=XI SN=UX " +
+        "SQ=UB SS=WZ SW=YX SZ=US TB=WG TD=ZW TG=TL TM=VK TR=YT UE=WW UK=XR UM=ZZ UP=YB UU=YZ " +
+        "UY=ZF VC=VH VD=ZA VF=XQ VG=YH VM=WE VO=YC VQ=XD VT=XP VV=XA WL=YF WN=ZR WO=XG WP=ZE " +
+        "XK=YJ XT=ZO";
 }

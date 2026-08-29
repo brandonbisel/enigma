@@ -310,12 +310,19 @@ each. That column was read cell by cell a second time and the irregularity is in
 print. It is recorded as a test rather than tidied away, so that a later pass cannot
 quietly "correct" the document into agreeing with a pattern.
 
-**Tafeln A and B are transcribed, and both came through clean.** All 676 entries
-each, every mirror agreeing, no bigram enciphering to itself, and not one cell needing
-adjudication — from the *worst* scan of the three sets. That is the pipeline rather
-than the paper: the page is cut on its own printed rules and each cell is magnified
-from native pixels, instead of being read out of an upsampled render. Thirteen tables
-remain.
+**Tafeln A, B and C are transcribed.** All 676 entries each, every mirror agreeing,
+no bigram enciphering to itself. A and B came through with nothing to adjudicate at
+all — from the *worst* scan of the three sets — which is the pipeline rather than the
+paper: the page is cut on its own printed rules and each cell magnified from native
+pixels, instead of being read out of an upsampled render. Twelve tables remain.
+
+Tafel C needed one adjudication, and it is a new confusion for this project — the
+eleventh distinct letter pair. `AT` read `WO`; but `WO` already pairs with `XG` both
+ways, and `WD` reads `AT`, so the value has to be `WD`. At magnification an ink blot
+where the D's stem meets its bowl closes the letter into an O. **`D`/`O`** joins
+`B`/`E`, `F`/`P`, `G`/`C`, `K`/`X`, `I`/`L`, `M`/`H`, `S`/`B`, `B`/`D`, `Y`/`V` and
+`J`/`T`. The involution found it, named the cell, and supplied the answer from the
+mirror — which is the whole reason a table can be trusted where a calendar cannot.
 
 Cutting the pages is now done by a script rather than by hand, and two things had to
 be right for it. The booklet **alternates white and pink stock** — Tafel B is red ink
