@@ -256,16 +256,25 @@ not hold the same letters, so a column or a Tafel the new set cannot honour fall
 instead of pointing at nothing. Quelle stays the default — it is the set the pinned
 message was sent on.
 
-**A calendar cannot be checked the way a table can, and that is worth stating
-plainly.** A bigram table is an involution, so a mistyped cell breaks a pair and is
-caught; that is the whole basis on which the tables here are trusted. A
-Tauschtafelplan has no such redundancy — it is 372 independent letters. The check that
-every column uses all nine letters is weak, and a mutation test confirmed it: changing
-one cell from `D` to `A` left the suite green, because the column still used nine
-distinct letters. So the plans rest on reading alone. Both were read twice and the
-Meer sheet's first fifteen rows compared cell by cell against the first pass, but that
-is double entry rather than a structural guarantee. It is the weakest evidence in this
-document, and the only data here that the suite cannot defend on its own.
+**A calendar cannot be checked the way a table can — so the Meer one was checked
+against a second copy instead.** A bigram table is an involution, so a mistyped cell
+breaks a pair and is caught; that is the whole basis on which the tables here are
+trusted. A Tauschtafelplan has no such redundancy — it is 372 independent letters. The
+check that every column uses all nine letters is weak, and a mutation test confirmed
+it: changing one cell from `D` to `A` left the suite green, because the column still
+used nine distinct letters.
+
+The Crypto Museum publishes a **second Meer booklet, Prüf-Nr. 4002**, separately
+photographed. Every one of the 372 cells was read again from it and compared against
+the grid transcribed from 3733. **All 372 agreed.** That is a real check on the
+transcription, and it is the only cipher data in this repository to have one of this
+kind.
+
+Two limits on what it proves. It verifies the *reading*, not the *edition*: an error
+in the printing would appear in both copies — and would anyway be what the operators
+worked from. And **`BrunoQuelle` has had no such check**: there is only one photograph
+of that sheet, its pen corrections add a second layer to read, and half of it was
+never photographed at all. It remains the weakest evidence here.
 
 ## Future
 

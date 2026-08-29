@@ -88,11 +88,19 @@ public sealed class Tauschtafelplan
     /// Tauschtafelplan "Bruno" for the set Kennwort "Meer", Prüfnr. 3733a, from the
     /// Crypto Museum's scan of that booklet.
     ///
-    /// A better sheet than <see cref="BrunoQuelle"/> in two ways. It is clean print
-    /// with no pen corrections, so there is only one layer to read. And both sides
-    /// are reproduced, which is what shows that a full plan carries **twelve**
-    /// Kennziffer columns — the Quelle photograph stops at six and is footed
-    /// "Fortsetzung Rückseite!", and this is what was on the other side of it.
+    /// A better sheet than <see cref="BrunoQuelle"/> in three ways. It is clean print
+    /// with no pen corrections, so there is only one layer to read. Both sides are
+    /// reproduced, which is what shows that a full plan carries **twelve** Kennziffer
+    /// columns — the Quelle photograph stops at six and is footed "Fortsetzung
+    /// Rückseite!", and this is what was on the other side of it.
+    ///
+    /// And it is the only cipher data here that has been checked against a second
+    /// physical copy. A calendar has no involution to catch a mistyped cell, so this
+    /// grid was read a second time from the Crypto Museum's scan of Prüf-Nr. 4002 — a
+    /// different booklet of the same edition, separately photographed — and all 372
+    /// cells agreed. That verifies the transcription rather than the edition: an error
+    /// in the printing itself would appear in both copies, and would anyway be what
+    /// the operators worked from.
     /// </summary>
     public static Tauschtafelplan BrunoMeer { get; } =
         Parse("Bruno / Meer", MeerPrinted, string.Empty);
