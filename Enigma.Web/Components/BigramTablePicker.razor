@@ -45,12 +45,12 @@
                     disabled="@(Kennziffer > 0)">
                 @foreach (var letter in Choice.Set.Tables.Keys)
                 {
-                    <option value="@letter">Quelle @letter</option>
+                    <option value="@letter">@Choice.Set.Name @letter</option>
                 }
                 @if (Kennziffer > 0 && !Choice.Found)
                 {
                     @* So the disabled control still shows what the plan called for. *@
-                    <option value="@Choice.Letter">Quelle @Choice.Letter</option>
+                    <option value="@Choice.Letter">@Choice.Set.Name @Choice.Letter</option>
                 }
             </select>
         </label>

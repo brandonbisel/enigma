@@ -310,6 +310,22 @@ each. That column was read cell by cell a second time and the irregularity is in
 print. It is recorded as a test rather than tidied away, so that a later pass cannot
 quietly "correct" the document into agreeing with a pattern.
 
+**Tafel A is transcribed, and it came through clean.** All 676 entries, every mirror
+agreeing, no bigram enciphering to itself, and not one cell needing adjudication —
+from the *worst* scan of the three sets. That is the pipeline rather than the paper:
+the page is cut on its own printed column rules, and each cell is magnified from
+native pixels instead of being read out of an upsampled render. Fourteen tables
+remain.
+
+The set ships incomplete, which is the case `BigramTableChoice` exists for. Ask
+Flußlauf for 2 May on Kennziffer one and it answers "Tafel L of "Flußlauf" is not
+published. Its Tauschtafelplan names 15 tables, A to P without I, and the scan that
+survives holds 1 of them" — rather than quietly handing back the one table it has.
+
+Adding a third set also caught a defect in the panel: the Tafel dropdown labelled
+every option "Quelle" whatever set was chosen, so Meer's Tafel A had been offered
+under Quelle's name since the set picker landed. The option now names its own set.
+
 ## Future
 
 **Cryptanalysis** — bombe simulation, index-of-coincidence rotor search, and

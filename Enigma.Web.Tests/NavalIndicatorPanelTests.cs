@@ -234,12 +234,30 @@ public class NavalIndicatorPanelTests : BunitContext
     {
         var page = Naval("u534", IndicatorMode.NavalReceiving);
 
-        // Quelle has eight tables, Meer nine.
+        // Quelle has eight tables, Meer nine, Flußlauf one so far.
         Assert.Equal(8, page.FindAll("[data-testid=tafel] option").Count);
 
         page.Find("[data-testid=table-set]").Change("Meer");
 
         Assert.Equal(9, page.FindAll("[data-testid=tafel] option").Count);
+
+        page.Find("[data-testid=table-set]").Change("Flusslauf");
+
+        Assert.Equal(1, page.FindAll("[data-testid=tafel] option").Count);
+    }
+
+    [Fact]
+    public void ATafelIsOfferedUnderTheNameOfTheSetItBelongsTo()
+    {
+        // The same letter means a different table in each booklet, so the option has
+        // to say which one it is rather than always claiming to be Quelle's.
+        var page = Naval("u534", IndicatorMode.NavalReceiving);
+
+        Assert.StartsWith("Quelle", page.Find("[data-testid=tafel] option").TextContent.Trim());
+
+        page.Find("[data-testid=table-set]").Change("Meer");
+
+        Assert.StartsWith("Meer", page.Find("[data-testid=tafel] option").TextContent.Trim());
     }
 
     [Fact]

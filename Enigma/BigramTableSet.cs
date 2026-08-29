@@ -60,12 +60,22 @@ public sealed class BigramTableSet
     public static BigramTableSet Meer { get; } = new(
         "Meer", "Prüf-Nr. 3733", BigramTables.Meer, Tauschtafelplan.BrunoMeer);
 
+    /// <summary>
+    /// "Flußlauf", booklet Prüf-Nr. 3633. A fifteen-table set — A to P without I —
+    /// where the other two are nine, and the only one here whose plan is complete
+    /// while its tables are not. Every day of its calendar resolves or says which
+    /// table it wanted, which is the behaviour an incomplete set is for.
+    /// </summary>
+    public static BigramTableSet Flusslauf { get; } = new(
+        "Flußlauf", "Prüf-Nr. 3633", BigramTables.Flusslauf, Tauschtafelplan.BrunoFlusslauf);
+
     /// <summary>The sets that ship, by name.</summary>
     public static IReadOnlyDictionary<string, BigramTableSet> All { get; } =
         new Dictionary<string, BigramTableSet>(StringComparer.OrdinalIgnoreCase)
         {
             ["Quelle"] = Quelle,
             ["Meer"] = Meer,
+            ["Flusslauf"] = Flusslauf,
         };
 
     public override string ToString() => Name;

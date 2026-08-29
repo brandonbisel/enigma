@@ -1,3 +1,4 @@
+using Enigma.App;
 using Enigma.Extensions.DependencyInjection;
 using Enigma.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -249,7 +250,74 @@ public class NavalIndicatorTests
             letter => Assert.Contains(letter, "ABCDEFGHJ"));
     }
 
-    // -- Flußlauf: a plan without its tables ------------------------------------
+    // -- Flußlauf ----------------------------------------------------------------
+
+    [Theory]
+    [InlineData('A')]
+    public void EveryShippedTableOfFlusslaufIsWholeAndReciprocal(char tafel)
+    {
+        // The same check the other two sets get, at half their scan resolution. This
+        // one came through with nothing to adjudicate, which is the pipeline's doing
+        // and not the paper's: cut on the printed rules and magnified from native
+        // pixels rather than from an upsampled render.
+        var table = BigramTables.Flusslauf[tafel];
+        var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+        Assert.True(table.IsComplete);
+        Assert.Equal(676, table.Count);
+
+        Assert.All(
+            from first in alphabet from second in alphabet select $"{first}{second}",
+            bigram =>
+            {
+                Assert.Equal(bigram, table.Substitute(table.Substitute(bigram)));
+                Assert.NotEqual(bigram, table.Substitute(bigram));
+            });
+    }
+
+    [Fact]
+    public void FlusslaufTafelAIsNobodyElsesTafelA()
+    {
+        // Three booklets, three different tables under the same letter.
+        Assert.Equal(
+            3,
+            new[] { BigramTables.QuelleA, BigramTables.MeerA, BigramTables.FlusslaufA }
+                .Select(table => table.Substitute("AA"))
+                .Distinct()
+                .Count());
+    }
+
+    [Fact]
+    public void TheFlusslaufSetIsIncompleteAndSaysWhichTableIsWanted()
+    {
+        // A set whose calendar outruns its tables is the case BigramTableChoice was
+        // written for, and this is the first one where most of the set is missing.
+        Assert.False(BigramTableSet.Flusslauf.IsComplete);
+        Assert.Single(BigramTableSet.Flusslauf.Tables);
+
+        var chosen = BigramTableChoice.From(BigramTableSet.Flusslauf, kennziffer: 1, monatstag: 2, tafel: 'A');
+
+        Assert.Equal('L', chosen.Letter);
+        Assert.False(chosen.Found);
+        Assert.Contains("15 tables, A to P without I", chosen.Missing);
+        Assert.Contains("holds 1 of them", chosen.Missing);
+    }
+
+    [Fact]
+    public void TheOneFlusslaufDayThatWorksIsTheOneItsTableCovers()
+    {
+        // Tafel A is in force somewhere in the calendar, and those days resolve while
+        // the rest do not. If this ever found no day at all, the table and the plan
+        // would have come from different booklets.
+        var days =
+            from kennziffer in Enumerable.Range(1, BigramTableSet.Flusslauf.Plan.Columns)
+            from day in Enumerable.Range(1, 31)
+            select BigramTableChoice.From(BigramTableSet.Flusslauf, kennziffer, day, 'A');
+
+        Assert.Contains(days, chosen => chosen.Found);
+        Assert.All(days, chosen => Assert.Equal(chosen.Letter == 'A', chosen.Found));
+    }
+
 
     [Fact]
     public void TheFlusslaufCalendarCarriesTwelveColumns()

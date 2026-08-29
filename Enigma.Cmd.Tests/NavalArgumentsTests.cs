@@ -274,11 +274,33 @@ public class NavalArgumentsTests
     [Fact]
     public void AnUnknownSetIsRefusedAndListsTheKnownOnes()
     {
-        var read = Read(setName: "Flusslauf", tafel: "A", indicator: "FNHCGVET");
+        // "Aegir" is a Kriegsmarine cipher-net name, not one of the booklets here.
+        var read = Read(setName: "Aegir", tafel: "A", indicator: "FNHCGVET");
 
         Assert.Contains("Unknown set", read.Error);
         Assert.Contains("Quelle", read.Error);
         Assert.Contains("Meer", read.Error);
+        Assert.Contains("Flusslauf", read.Error);
+    }
+
+    [Fact]
+    public void TheFlusslaufSetIsOnOffer()
+    {
+        var read = Read(setName: "Flusslauf", tafel: "A", indicator: "FNHCGVET");
+
+        Assert.False(read.Failed);
+        Assert.Same(BigramTables.FlusslaufA, read.Table);
+    }
+
+    [Fact]
+    public void AFlusslaufDayWithoutItsTableIsRefusedRatherThanSubstituted()
+    {
+        // Fourteen of its fifteen tables are not transcribed yet. A day that wants one
+        // has to say so: quietly handing back Tafel A would decrypt to nonsense.
+        var read = Read(setName: "Flusslauf", kennziffer: 1, monatstag: 2, indicator: "FNHCGVET");
+
+        Assert.Contains("Tafel L", read.Error);
+        Assert.Contains("15 tables, A to P without I", read.Error);
     }
 
     [Fact]
