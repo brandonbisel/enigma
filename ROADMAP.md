@@ -310,12 +310,17 @@ each. That column was read cell by cell a second time and the irregularity is in
 print. It is recorded as a test rather than tidied away, so that a later pass cannot
 quietly "correct" the document into agreeing with a pattern.
 
-**Tafeln A to E are transcribed.** All 676 entries each, every mirror agreeing, no
-bigram enciphering to itself. Four of the five came through with nothing to
-adjudicate at all — from the *worst* scan of the three sets — which is the pipeline
-rather than the paper: the page is cut on its own printed rules and each cell
+**Tafeln A to F are transcribed** — nearly half the set. All 676 entries each, every
+mirror agreeing, no bigram enciphering to itself. Five of the six came through with
+nothing to adjudicate at all — from the *worst* scan of the three sets — which is the
+pipeline rather than the paper: the page is cut on its own printed rules and each cell
 magnified from native pixels, instead of being read out of an upsampled render.
-Ten tables remain.
+Nine tables remain.
+
+Tafel F is the densest page in the booklet for the dotted **İ** the typeface uses to
+keep I apart from J. Every one of them is confirmed by its own mirror rather than by
+the reading alone, and a mutation proves the point: changing that İ to an L — `I`/`L`
+being one of the eleven confusions on the list — is refused at construction.
 
 Tafel C needed the only adjudication so far, and it is a new confusion for this
 project — the eleventh distinct letter pair. `AT` read `WO`; but `WO` already pairs with `XG` both
