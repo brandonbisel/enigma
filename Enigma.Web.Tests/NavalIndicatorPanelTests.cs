@@ -234,7 +234,7 @@ public class NavalIndicatorPanelTests : BunitContext
     {
         var page = Naval("u534", IndicatorMode.NavalReceiving);
 
-        // Quelle has eight tables, Meer nine, Flußlauf seven so far.
+        // Quelle has eight tables, Meer nine, Flußlauf eight so far.
         Assert.Equal(8, page.FindAll("[data-testid=tafel] option").Count);
 
         page.Find("[data-testid=table-set]").Change("Meer");
@@ -243,7 +243,7 @@ public class NavalIndicatorPanelTests : BunitContext
 
         page.Find("[data-testid=table-set]").Change("Flusslauf");
 
-        Assert.Equal(7, page.FindAll("[data-testid=tafel] option").Count);
+        Assert.Equal(8, page.FindAll("[data-testid=tafel] option").Count);
     }
 
     [Fact]

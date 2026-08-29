@@ -222,7 +222,7 @@ The Crypto Museum publishes other booklets of the same kind, and **"Meer",
 Prüf-Nr. 3733, is a complete one**: cover, two copies of the Tauschtafelplan front and
 back, and **all nine tables, A to J**. It is the first set here to include a Tafel J
 at all. A third, "Flußlauf" Prüf-Nr. 3633, runs to fifteen tables, A to P; its
-calendar is transcribed and its tables are not.
+calendar is transcribed and eight of its tables with it.
 
 Its scan is markedly better than Quelle's: four passes a table rather than six, and
 almost every cell agrees with its own mirror on a first reading, where Quelle's poorer
@@ -284,8 +284,8 @@ never photographed at all. It remains the weakest evidence here.
 ### A third set: "Flußlauf" — the calendar first
 
 **"Flußlauf", Prüf-Nr. 3633, is a set of fifteen tables**, A to P without I, where
-Quelle and Meer are nine. Its Tauschtafelplan is transcribed and ships; its tables are
-not started. That order is deliberate — the plan is one sheet and stands on its own,
+Quelle and Meer are nine. Its Tauschtafelplan is transcribed and ships; its tables
+followed. That order is deliberate — the plan is one sheet and stands on its own,
 and it turned out to be the piece that corrected an assumption in the code.
 
 **A set is not always nine tables, and nothing may assume it is.** `TableChoice.Missing`
@@ -310,12 +310,20 @@ each. That column was read cell by cell a second time and the irregularity is in
 print. It is recorded as a test rather than tidied away, so that a later pass cannot
 quietly "correct" the document into agreeing with a pattern.
 
-**Tafeln A to G are transcribed** — nearly half the set. All 676 entries each, every
-mirror agreeing, no bigram enciphering to itself. Six of the seven came through with
+**Tafeln A to H are transcribed** — over half the set. All 676 entries each, every
+mirror agreeing, no bigram enciphering to itself. Six of the eight came through with
 nothing to adjudicate at all — from the *worst* scan of the three sets — which is the
 pipeline rather than the paper: the page is cut on its own printed rules and each cell
 magnified from native pixels, instead of being read out of an upsampled render.
-Eight tables remain.
+Seven tables remain.
+
+Tafel H is the second of the two that needed adjudicating, and it shows the involution
+doing the part a careful reading cannot. `EZ` read `BP` — but `BP` is already `XH`'s
+partner and `XH` is `BP`'s, so a third claim on `BP` leaves `EP` with none, and the
+checker names the cell without being told where to look. At magnification the middle
+arm of the E is plain: `EZ` is `EP`, which is `B`/`E` again, the first pair on the
+list. The mutation that restores the misreading is refused at construction with the
+same words that found it — *Bigram 'BP' is given as both 'XH' and 'EP'*.
 
 Tafel G is the faintest pair of pages in the booklet, and it found a fault in the
 cutter rather than in the paper. A comb is rigid — one pitch across the page — and the
@@ -331,7 +339,7 @@ keep I apart from J. Every one of them is confirmed by its own mirror rather tha
 the reading alone, and a mutation proves the point: changing that İ to an L — `I`/`L`
 being one of the eleven confusions on the list — is refused at construction.
 
-Tafel C needed the only adjudication so far, and it is a new confusion for this
+Tafel C needed the first adjudication, and it is a new confusion for this
 project — the eleventh distinct letter pair. `AT` read `WO`; but `WO` already pairs with `XG` both
 ways, and `WD` reads `AT`, so the value has to be `WD`. At magnification an ink blot
 where the D's stem meets its bowl closes the letter into an O. **`D`/`O`** joins
@@ -354,7 +362,7 @@ page already read by hand.
 The set ships incomplete, which is the case `BigramTableChoice` exists for. Ask
 Flußlauf for 2 May on Kennziffer one and it answers "Tafel L of "Flußlauf" is not
 published. Its Tauschtafelplan names 15 tables, A to P without I, and the scan that
-survives holds 1 of them" — rather than quietly handing back the one table it has.
+survives holds 8 of them" — rather than quietly handing back a table it does have.
 
 Adding a third set also caught a defect in the panel: the Tafel dropdown labelled
 every option "Quelle" whatever set was chosen, so Meer's Tafel A had been offered

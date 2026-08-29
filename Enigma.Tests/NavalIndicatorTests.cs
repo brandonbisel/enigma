@@ -260,12 +260,14 @@ public class NavalIndicatorTests
     [InlineData('E')]
     [InlineData('F')]
     [InlineData('G')]
+    [InlineData('H')]
     public void EveryShippedTableOfFlusslaufIsWholeAndReciprocal(char tafel)
     {
-        // The same check the other two sets get, at half their scan resolution. This
-        // one came through with nothing to adjudicate, which is the pipeline's doing
-        // and not the paper's: cut on the printed rules and magnified from native
-        // pixels rather than from an upsampled render.
+        // The same check the other two sets get, at half their scan resolution. Most
+        // of these came through with nothing to adjudicate, which is the pipeline's
+        // doing and not the paper's: cut on the printed rules and magnified from
+        // native pixels rather than from an upsampled render. Where one did not, it
+        // was this reciprocity that said so.
         var table = BigramTables.Flusslauf[tafel];
         var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -299,14 +301,14 @@ public class NavalIndicatorTests
         // A set whose calendar outruns its tables is the case BigramTableChoice was
         // written for, and this is the first one where most of the set is missing.
         Assert.False(BigramTableSet.Flusslauf.IsComplete);
-        Assert.Equal("ABCDEFG", string.Concat(BigramTableSet.Flusslauf.Tables.Keys));
+        Assert.Equal("ABCDEFGH", string.Concat(BigramTableSet.Flusslauf.Tables.Keys));
 
         var chosen = BigramTableChoice.From(BigramTableSet.Flusslauf, kennziffer: 1, monatstag: 2, tafel: 'A');
 
         Assert.Equal('L', chosen.Letter);
         Assert.False(chosen.Found);
         Assert.Contains("15 tables, A to P without I", chosen.Missing);
-        Assert.Contains("holds 7 of them", chosen.Missing);
+        Assert.Contains("holds 8 of them", chosen.Missing);
     }
 
     [Fact]
@@ -323,7 +325,7 @@ public class NavalIndicatorTests
 
         Assert.Contains(days, chosen => chosen.Found);
         Assert.Contains(days, chosen => !chosen.Found);
-        Assert.All(days, chosen => Assert.Equal("ABCDEFG".Contains(chosen.Letter), chosen.Found));
+        Assert.All(days, chosen => Assert.Equal("ABCDEFGH".Contains(chosen.Letter), chosen.Found));
     }
 
 
