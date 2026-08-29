@@ -310,12 +310,21 @@ each. That column was read cell by cell a second time and the irregularity is in
 print. It is recorded as a test rather than tidied away, so that a later pass cannot
 quietly "correct" the document into agreeing with a pattern.
 
-**Tafeln A to F are transcribed** — nearly half the set. All 676 entries each, every
-mirror agreeing, no bigram enciphering to itself. Five of the six came through with
+**Tafeln A to G are transcribed** — nearly half the set. All 676 entries each, every
+mirror agreeing, no bigram enciphering to itself. Six of the seven came through with
 nothing to adjudicate at all — from the *worst* scan of the three sets — which is the
 pipeline rather than the paper: the page is cut on its own printed rules and each cell
 magnified from native pixels, instead of being read out of an upsampled render.
-Nine tables remain.
+Eight tables remain.
+
+Tafel G is the faintest pair of pages in the booklet, and it found a fault in the
+cutter rather than in the paper. A comb is rigid — one pitch across the page — and the
+rules are not quite that even. On G's reverse the fit had drifted twelve pixels by the
+far side, which is enough to cut the last letter off every cell in column Z; `XO` read
+`ME` where it is `MB`. The involution would have caught it (`ME` already pairs with
+`UU`), but the cause was geometry, not reading. The cutter now snaps each column onto
+the rule it is nearest, and carries the table's unruled right-hand edge out at the
+pitch the printed rules actually measure. Pages already transcribed re-cut unchanged.
 
 Tafel F is the densest page in the booklet for the dotted **İ** the typeface uses to
 keep I apart from J. Every one of them is confirmed by its own mirror rather than by
