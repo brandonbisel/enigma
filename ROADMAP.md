@@ -310,12 +310,12 @@ each. That column was read cell by cell a second time and the irregularity is in
 print. It is recorded as a test rather than tidied away, so that a later pass cannot
 quietly "correct" the document into agreeing with a pattern.
 
-**Tafeln A to D are transcribed.** All 676 entries each, every mirror agreeing, no
-bigram enciphering to itself. Three of the four came through with nothing to
+**Tafeln A to E are transcribed.** All 676 entries each, every mirror agreeing, no
+bigram enciphering to itself. Four of the five came through with nothing to
 adjudicate at all — from the *worst* scan of the three sets — which is the pipeline
 rather than the paper: the page is cut on its own printed rules and each cell
 magnified from native pixels, instead of being read out of an upsampled render.
-Eleven tables remain.
+Ten tables remain.
 
 Tafel C needed the only adjudication so far, and it is a new confusion for this
 project — the eleventh distinct letter pair. `AT` read `WO`; but `WO` already pairs with `XG` both
