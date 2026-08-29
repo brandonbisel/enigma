@@ -254,6 +254,7 @@ public class NavalIndicatorTests
 
     [Theory]
     [InlineData('A')]
+    [InlineData('B')]
     public void EveryShippedTableOfFlusslaufIsWholeAndReciprocal(char tafel)
     {
         // The same check the other two sets get, at half their scan resolution. This
@@ -293,29 +294,31 @@ public class NavalIndicatorTests
         // A set whose calendar outruns its tables is the case BigramTableChoice was
         // written for, and this is the first one where most of the set is missing.
         Assert.False(BigramTableSet.Flusslauf.IsComplete);
-        Assert.Single(BigramTableSet.Flusslauf.Tables);
+        Assert.Equal("AB", string.Concat(BigramTableSet.Flusslauf.Tables.Keys));
 
         var chosen = BigramTableChoice.From(BigramTableSet.Flusslauf, kennziffer: 1, monatstag: 2, tafel: 'A');
 
         Assert.Equal('L', chosen.Letter);
         Assert.False(chosen.Found);
         Assert.Contains("15 tables, A to P without I", chosen.Missing);
-        Assert.Contains("holds 1 of them", chosen.Missing);
+        Assert.Contains("holds 2 of them", chosen.Missing);
     }
 
     [Fact]
-    public void TheOneFlusslaufDayThatWorksIsTheOneItsTableCovers()
+    public void TheFlusslaufDaysThatWorkAreTheOnesItsTablesCover()
     {
-        // Tafel A is in force somewhere in the calendar, and those days resolve while
-        // the rest do not. If this ever found no day at all, the table and the plan
-        // would have come from different booklets.
+        // The transcribed tables are in force on some days and not others, and the
+        // calendar decides which. If this ever found no day at all, the tables and the
+        // plan would have come from different booklets.
         var days =
-            from kennziffer in Enumerable.Range(1, BigramTableSet.Flusslauf.Plan.Columns)
-            from day in Enumerable.Range(1, 31)
-            select BigramTableChoice.From(BigramTableSet.Flusslauf, kennziffer, day, 'A');
+            (from kennziffer in Enumerable.Range(1, BigramTableSet.Flusslauf.Plan.Columns)
+             from day in Enumerable.Range(1, 31)
+             select BigramTableChoice.From(BigramTableSet.Flusslauf, kennziffer, day, 'A'))
+            .ToArray();
 
         Assert.Contains(days, chosen => chosen.Found);
-        Assert.All(days, chosen => Assert.Equal(chosen.Letter == 'A', chosen.Found));
+        Assert.Contains(days, chosen => !chosen.Found);
+        Assert.All(days, chosen => Assert.Equal("AB".Contains(chosen.Letter), chosen.Found));
     }
 
 

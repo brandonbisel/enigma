@@ -310,12 +310,24 @@ each. That column was read cell by cell a second time and the irregularity is in
 print. It is recorded as a test rather than tidied away, so that a later pass cannot
 quietly "correct" the document into agreeing with a pattern.
 
-**Tafel A is transcribed, and it came through clean.** All 676 entries, every mirror
-agreeing, no bigram enciphering to itself, and not one cell needing adjudication —
-from the *worst* scan of the three sets. That is the pipeline rather than the paper:
-the page is cut on its own printed column rules, and each cell is magnified from
-native pixels instead of being read out of an upsampled render. Fourteen tables
+**Tafeln A and B are transcribed, and both came through clean.** All 676 entries
+each, every mirror agreeing, no bigram enciphering to itself, and not one cell needing
+adjudication — from the *worst* scan of the three sets. That is the pipeline rather
+than the paper: the page is cut on its own printed rules and each cell is magnified
+from native pixels, instead of being read out of an upsampled render. Thirteen tables
 remain.
+
+Cutting the pages is now done by a script rather than by hand, and two things had to
+be right for it. The booklet **alternates white and pink stock** — Tafel B is red ink
+on pink, which barely separates in luminance but holds in the green channel, so every
+page is read from green whatever colour it is. And the grid is found by fitting a
+*comb* of evenly spaced teeth to the ink rather than by hunting for individual lines:
+the rows carry no printed rule at all, and on some pages one row's ink splits in two
+or two rows merge. The comb has to be anchored to the rule across the top of the
+table, because a fit one row out of step — riding the second row down and catching the
+edge of the rule beneath the last one — scores *higher* on ink than the truth does.
+The script was checked by re-cutting Tafel A with it and confirming it reproduced a
+page already read by hand.
 
 The set ships incomplete, which is the case `BigramTableChoice` exists for. Ask
 Flußlauf for 2 May on Kennziffer one and it answers "Tafel L of "Flußlauf" is not
