@@ -119,4 +119,25 @@ public class BigramTableChoiceTests
         Assert.Contains("Tafel J", missing);
         Assert.Contains("Quelle", missing);
     }
+
+    [Fact]
+    public void HowManyTablesASetShouldHaveComesFromItsPlan()
+    {
+        // Sets are not all one size: Quelle and Meer run to nine tables, Flußlauf to
+        // fifteen. A count written into this message would be right for some sets and
+        // wrong for others, so it is read off the calendar the set was issued with.
+        var missing = BigramTableChoice.From(BigramTableSet.Quelle, 2, 3, 'A').Missing;
+
+        Assert.Contains("9 tables, A to J without I", missing);
+        Assert.Contains("holds 8 of them", missing);
+    }
+
+    [Fact]
+    public void ASetThatNamesFifteenTablesWouldSaySo()
+    {
+        // Flußlauf's calendar is here before its tables are, so the phrasing it will
+        // need can be checked now rather than after the fact.
+        Assert.Equal("A to P without I", Tauschtafelplan.BrunoFlusslauf.TafelRange);
+        Assert.Equal(15, Tauschtafelplan.BrunoFlusslauf.Tafeln.Count);
+    }
 }

@@ -1,0 +1,53 @@
+# Tauschtafelplan "Bruno" zu den Doppelbuchstabentauschtafeln fuer Kenngruppen,
+# Kennwort: Flusslauf -- Pruef-Nr. 3633.
+#
+# Source: cryptomuseum.com/crypto/codebook/files/DoppelTafeln_Flusslauf_3633_992.pdf,
+# pages 2 (Kennziffer eins-sechs) and 3 (sieben-zwoelf).
+#
+# The sheet is headed "Vorsicht!  Wasserloeslicher Druck!" and "Tritt erst auf
+# besonderen Befehl in Kraft!", with the note that it is to be kept in the
+# perforated cover belonging to the tables themselves.
+#
+# Clean print, no pen corrections, both sides reproduced.  The scan is 150 ppi --
+# half the linear resolution of the Meer booklet -- so every cell here was read
+# from the native image rather than from an upsampled render.
+#
+# This plan names FIFTEEN tables, A to P without I, where Quelle and Meer name
+# nine.  Each column carries all fifteen letters, fourteen of them twice and one
+# three times, which is 31 days; the exception is Kennziffer four, where K appears
+# once and D and O three times each.  That column was read cell by cell twice and
+# is irregular in the print, not in the transcription.
+#
+# printed: day, then Kennziffer 1..12
+printed
+ 1  D M C J G E  E A O F C H
+ 2  L O A D N B  J P L O G A
+ 3  E H M O F J  B E P C J M
+ 4  B F D K C A  C H G B O E
+ 5  N D O A H F  H N A E D G
+ 6  P A F H K O  D B E J K P
+ 7  C N B E A G  O J D H F N
+ 8  F L K N M B  A D B L O J
+ 9  A G N L O D  L E K A H B
+10  D P L B E K  G M H D E C
+11  K B G P J L  M C G H A D
+12  P K A G F N  C O F G P J
+13  M E J C B F  N H C M L O
+14  E C D J P G  K F J C N P
+15  H G C M D P  F L N B K C
+16  O D H F L C  B K D A H L
+17  G L F O H J  D M B K F E
+18  C J L D O H  M G P N B K
+19  J B K P N M  H F M D G N
+20  L C P G B E  P N E J K H
+21  F M E H G N  J D H G M F
+22  K H A N J C  K L A N E B
+23  N F J C D M  F K O E L G
+24  B P O E A H  A G L K P D
+25  G A H L M P  N A D M J E
+26  H L M A E K  H O K L D M
+27  M J B O K D  E C J P M K
+28  E N G F B O  P H F O B A
+29  O E P M L A  L J M C N O
+30  J O N D P C  O P C F A L
+31  A K E B C L  G B N P C F

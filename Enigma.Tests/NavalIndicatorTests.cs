@@ -249,6 +249,96 @@ public class NavalIndicatorTests
             letter => Assert.Contains(letter, "ABCDEFGHJ"));
     }
 
+    // -- Flußlauf: a plan without its tables ------------------------------------
+
+    [Fact]
+    public void TheFlusslaufCalendarCarriesTwelveColumns()
+    {
+        Assert.Equal(12, Tauschtafelplan.BrunoFlusslauf.Columns);
+    }
+
+    [Fact]
+    public void TheFlusslaufCalendarNamesFifteenTables()
+    {
+        // The finding this sheet brings: a set was not always nine tables. Quelle and
+        // Meer run A to J; this one runs A to P, still skipping I.
+        Assert.Equal(15, Tauschtafelplan.BrunoFlusslauf.Tafeln.Count);
+        Assert.Equal("A to P without I", Tauschtafelplan.BrunoFlusslauf.TafelRange);
+    }
+
+    [Fact]
+    public void TheOlderPlansStillNameNine()
+    {
+        // The same property read off the sets that were here first, so that the
+        // generalisation is checked against what it replaced.
+        Assert.Equal(9, Tauschtafelplan.BrunoMeer.Tafeln.Count);
+        Assert.Equal("A to J without I", Tauschtafelplan.BrunoMeer.TafelRange);
+    }
+
+    [Fact]
+    public void EveryColumnOfTheFlusslaufCalendarUsesTheWholeSet()
+    {
+        Assert.All(
+            Enumerable.Range(1, Tauschtafelplan.BrunoFlusslauf.Columns),
+            kennziffer => Assert.Equal(
+                15,
+                Enumerable.Range(1, 31)
+                    .Select(day => Tauschtafelplan.BrunoFlusslauf.Tafel(kennziffer, day))
+                    .Distinct()
+                    .Count()));
+    }
+
+    [Fact]
+    public void TheFlusslaufCalendarNamesNoTableOutsideItsFifteen()
+    {
+        Assert.All(
+            from kennziffer in Enumerable.Range(1, Tauschtafelplan.BrunoFlusslauf.Columns)
+            from day in Enumerable.Range(1, 31)
+            select Tauschtafelplan.BrunoFlusslauf.Tafel(kennziffer, day),
+            letter => Assert.Contains(letter, "ABCDEFGHJKLMNOP"));
+    }
+
+    [Fact]
+    public void ElevenFlusslaufColumnsRepeatOneTableAndTheTwelfthDoesNot()
+    {
+        // Fifteen letters over 31 days is fourteen twice and one three times, and
+        // that is how eleven of the twelve columns are set. Kennziffer four is not:
+        // K appears once there and D and O three times each. It was read cell by cell
+        // twice, so the irregularity is recorded rather than corrected -- and this
+        // test is what would notice if a later pass quietly tidied it away.
+        var shapes = Enumerable
+            .Range(1, Tauschtafelplan.BrunoFlusslauf.Columns)
+            .Select(kennziffer => Enumerable
+                .Range(1, 31)
+                .Select(day => Tauschtafelplan.BrunoFlusslauf.Tafel(kennziffer, day))
+                .GroupBy(letter => letter)
+                .Select(group => group.Count())
+                .OrderDescending()
+                .ToArray())
+            .ToArray();
+
+        Assert.Equal(11, shapes.Count(shape => shape is [3, ..] && shape.Count(n => n == 3) == 1));
+
+        var odd = shapes[3];
+        Assert.Equal(2, odd.Count(n => n == 3));
+        Assert.Equal(1, odd.Count(n => n == 1));
+    }
+
+    [Fact]
+    public void TheFlusslaufSheetIsNotTheMeerSheet()
+    {
+        // Different booklets, so no cell-for-cell agreement is expected anywhere.
+        Assert.NotEqual(
+            string.Concat(
+                from kennziffer in Enumerable.Range(1, 12)
+                from day in Enumerable.Range(1, 31)
+                select Tauschtafelplan.BrunoMeer.Tafel(kennziffer, day)),
+            string.Concat(
+                from kennziffer in Enumerable.Range(1, 12)
+                from day in Enumerable.Range(1, 31)
+                select Tauschtafelplan.BrunoFlusslauf.Tafel(kennziffer, day)));
+    }
+
     private static BigramTable Tafel(string letter) => letter switch
     {
         "A" => BigramTables.QuelleA,

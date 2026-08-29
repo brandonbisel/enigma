@@ -21,12 +21,43 @@ public sealed class Tauschtafelplan
         Name = name;
         _printed = printed;
         _effective = effective;
+        Tafeln = effective.Cast<char>().Distinct().Order().ToArray();
     }
 
     public string Name { get; }
 
     /// <summary>How many Kennziffer columns this plan carries.</summary>
     public int Columns => _printed.GetLength(1);
+
+    /// <summary>
+    /// Every table letter this plan can name, in order.
+    ///
+    /// The size of a set was not fixed: Quelle and Meer run to nine tables, Flußlauf
+    /// to fifteen. Nothing should assume a count, so anything that needs to say how
+    /// many tables a set ought to have asks the plan rather than carrying a constant.
+    /// </summary>
+    public IReadOnlyList<char> Tafeln { get; }
+
+    /// <summary>
+    /// The letters this plan names, written the way the booklets do: a range with the
+    /// gaps called out, as "A to J without I". I is skipped throughout because it is
+    /// too easily confused with J in handwriting.
+    /// </summary>
+    public string TafelRange
+    {
+        get
+        {
+            var absent = Enumerable
+                .Range(Tafeln[0], Tafeln[^1] - Tafeln[0] + 1)
+                .Select(c => (char)c)
+                .Where(c => !Tafeln.Contains(c))
+                .ToArray();
+
+            return absent.Length == 0
+                ? $"{Tafeln[0]} to {Tafeln[^1]}"
+                : $"{Tafeln[0]} to {Tafeln[^1]} without {string.Join(" and ", absent)}";
+        }
+    }
 
     /// <summary>
     /// The table letter in force, with the sheet's pen corrections applied. This is
@@ -105,6 +136,34 @@ public sealed class Tauschtafelplan
     public static Tauschtafelplan BrunoMeer { get; } =
         Parse("Bruno / Meer", MeerPrinted, string.Empty);
 
+    /// <summary>
+    /// Tauschtafelplan "Bruno" for the set Kennwort "Flußlauf", Prüf-Nr. 3633, from
+    /// the Crypto Museum's scan of that booklet.
+    ///
+    /// The sheet that says out loud what the others only imply. It is headed
+    /// "Vorsicht! Wasserlöslicher Druck!" — caution, water-soluble print — above
+    /// "Tritt erst auf besonderen Befehl in Kraft!". The Kriegsmarine printed its
+    /// cipher documents in ink that dissolved, on paper that went with it, so that a
+    /// table aboard a sinking boat wiped itself. That is the reason so little of this
+    /// material survives to be transcribed at all.
+    ///
+    /// Where <see cref="BrunoQuelle"/> and <see cref="BrunoMeer"/> name nine tables,
+    /// this plan names **fifteen**, A to P without I. The size of a set was evidently
+    /// not fixed across issues, which is why nothing here assumes a count.
+    ///
+    /// Its scan is 150 ppi, half the linear resolution of the Meer booklet, and that
+    /// mattered: rendering it at 600 dpi produced a four-fold interpolation that read
+    /// convincingly and was wrong twice over. Every cell here was read from the native
+    /// image instead.
+    ///
+    /// The grid carries its own check. Fourteen letters twice and one three times is
+    /// 31 days, and eleven of the twelve columns are laid out exactly so. Kennziffer
+    /// four is not: K appears once there, D and O three times each. That column was
+    /// read cell by cell a second time and the irregularity is in the print.
+    /// </summary>
+    public static Tauschtafelplan BrunoFlusslauf { get; } =
+        Parse("Bruno / Flußlauf", FlusslaufPrinted, string.Empty);
+
     private static Tauschtafelplan Parse(string name, string printed, string corrections)
     {
         var rows = printed.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -169,4 +228,14 @@ public sealed class Tauschtafelplan
         "BJDFGHAEFDBC GDFHACFBAGHE JEHADFJGCBAH DBCFEJBJHEDA FAEDHBGCEJHB " +
         "HEJBFDCDJAEG EHBJCFEBFHJD HGFCJAHGDBCE BEAHFCDJBFGA FCHABJBCGAFH " +
         "AFBGDEEFADBC";
+
+    // Rows are Monatstag 1 to 31, characters are Kennziffer one to twelve.
+    private const string FlusslaufPrinted =
+        "DMCJGEEAOFCH LOADNBJPLOGA EHMOFJBEPCJM BFDKCACHGBOE NDOAHFHNAEDG " +
+        "PAFHKODBEJKP CNBEAGOJDHFN FLKNMBADBLOJ AGNLODLEKAHB DPLBEKGMHDEC " +
+        "KBGPJLMCGHAD PKAGFNCOFGPJ MEJCBFNHCMLO ECDJPGKFJCNP HGCMDPFLNBKC " +
+        "ODHFLCBKDAHL GLFOHJDMBKFE CJLDOHMGPNBK JBKPNMHFMDGN LCPGBEPNEJKH " +
+        "FMEHGNJDHGMF KHANJCKLANEB NFJCDMFKOELG BPOEAHAGLKPD GAHLMPNADMJE " +
+        "HLMAEKHOKLDM MJBOKDECJPMK ENGFBOPHFOBA OEPMLALJMCNO JONDPCOPCFAL " +
+        "AKEBCLGBNPCF";
 }

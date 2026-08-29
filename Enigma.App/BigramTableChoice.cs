@@ -42,7 +42,15 @@ public sealed record TableChoice(BigramTableSet Set, char Letter, BigramTable? T
     public bool Found => Table is not null;
 
     /// <summary>Why there is no table, in words fit to show an operator.</summary>
+    ///
+    /// <remarks>
+    /// The count comes from the set's own Tauschtafelplan rather than a constant. Sets
+    /// were not all the same size — Quelle and Meer run to nine tables, Flußlauf to
+    /// fifteen — so a number written in here would be right for some sets and a lie
+    /// for others.
+    /// </remarks>
     public string Missing =>
-        $"Tafel {Letter} of \"{Set.Name}\" is not published. The set ran to nine tables, " +
-        $"A to J without I, and the scan that survives holds {Set.Tables.Count} of them.";
+        $"Tafel {Letter} of \"{Set.Name}\" is not published. Its Tauschtafelplan names " +
+        $"{Set.Plan.Tafeln.Count} tables, {Set.Plan.TafelRange}, and the scan that " +
+        $"survives holds {Set.Tables.Count} of them.";
 }

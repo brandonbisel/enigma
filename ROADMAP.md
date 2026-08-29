@@ -88,6 +88,11 @@ is why the daily key sheets are gone entirely — U-534's is reconstructed rathe
 transcribed — and why a complete bigram set is a rarer thing than a rotor wiring. What
 Bletchley mostly had was not captured tables but tables rebuilt from traffic.
 
+The Flußlauf Tauschtafelplan says so on its own face. Above the title it is headed
+**"Vorsicht! Wasserlöslicher Druck!"** — caution, water-soluble print — and below that
+"Tritt erst auf besonderen Befehl in Kraft!". This is not an inference from the
+survival rate; it is printed on the document.
+
 **The source has been found and checked.** The Crypto Museum publishes a scan of the
 "Quelle" booklet — *Doppelbuchstabentauschtafeln für Kenngruppen*, serial 2499 — the
 same set U-534 was using. All four of the entries that message needed read off the
@@ -216,8 +221,8 @@ outright would be. That closes the gap the previous commit had to record as open
 The Crypto Museum publishes other booklets of the same kind, and **"Meer",
 Prüf-Nr. 3733, is a complete one**: cover, two copies of the Tauschtafelplan front and
 back, and **all nine tables, A to J**. It is the first set here to include a Tafel J
-at all. A third, "Flußlauf" Prüf-Nr. 3633, runs to fifteen tables, A to P — not
-started.
+at all. A third, "Flußlauf" Prüf-Nr. 3633, runs to fifteen tables, A to P; its
+calendar is transcribed and its tables are not.
 
 Its scan is markedly better than Quelle's: four passes a table rather than six, and
 almost every cell agrees with its own mirror on a first reading, where Quelle's poorer
@@ -275,6 +280,35 @@ in the printing would appear in both copies — and would anyway be what the ope
 worked from. And **`BrunoQuelle` has had no such check**: there is only one photograph
 of that sheet, its pen corrections add a second layer to read, and half of it was
 never photographed at all. It remains the weakest evidence here.
+
+### A third set: "Flußlauf" — the calendar first
+
+**"Flußlauf", Prüf-Nr. 3633, is a set of fifteen tables**, A to P without I, where
+Quelle and Meer are nine. Its Tauschtafelplan is transcribed and ships; its tables are
+not started. That order is deliberate — the plan is one sheet and stands on its own,
+and it turned out to be the piece that corrected an assumption in the code.
+
+**A set is not always nine tables, and nothing may assume it is.** `TableChoice.Missing`
+used to tell an operator that "the set ran to nine tables, A to J without I" — true of
+both sets that then existed and false of this one. The count and the range are now read
+off the set's own calendar, which is the only thing that knows them.
+
+**Its scan is 150 ppi, half the linear resolution of the Meer booklet**, and that
+changed how it had to be read. The pipeline that worked before — render the page at 600
+dpi, separate the green channel, stretch the contrast — is a four-fold interpolation of
+a 150 ppi original, and it invented detail: two cells read confidently and wrongly from
+it, `B` for `E` in both cases, and were caught only by going back to the native image.
+Every one of the 372 cells here was read from the native scan.
+
+**The grid carries a check the Meer one did not.** Fifteen letters over thirty-one days
+is fourteen letters twice and one three times, and eleven of the twelve columns are set
+exactly so. That is a much tighter constraint than "every column uses all nine letters",
+and it earned its keep: it flagged both misreadings before anything shipped.
+
+Kennziffer four does not conform — `K` appears once there, `D` and `O` three times
+each. That column was read cell by cell a second time and the irregularity is in the
+print. It is recorded as a test rather than tidied away, so that a later pass cannot
+quietly "correct" the document into agreeing with a pattern.
 
 ## Future
 
