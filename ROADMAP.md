@@ -222,7 +222,7 @@ The Crypto Museum publishes other booklets of the same kind, and **"Meer",
 Prüf-Nr. 3733, is a complete one**: cover, two copies of the Tauschtafelplan front and
 back, and **all nine tables, A to J**. It is the first set here to include a Tafel J
 at all. A third, "Flußlauf" Prüf-Nr. 3633, runs to fifteen tables, A to P; its
-calendar is transcribed and eight of its tables with it.
+calendar is transcribed and nine of its tables with it.
 
 Its scan is markedly better than Quelle's: four passes a table rather than six, and
 almost every cell agrees with its own mirror on a first reading, where Quelle's poorer
@@ -310,12 +310,12 @@ each. That column was read cell by cell a second time and the irregularity is in
 print. It is recorded as a test rather than tidied away, so that a later pass cannot
 quietly "correct" the document into agreeing with a pattern.
 
-**Tafeln A to H are transcribed** — over half the set. All 676 entries each, every
-mirror agreeing, no bigram enciphering to itself. Six of the eight came through with
-nothing to adjudicate at all — from the *worst* scan of the three sets — which is the
-pipeline rather than the paper: the page is cut on its own printed rules and each cell
-magnified from native pixels, instead of being read out of an upsampled render.
-Seven tables remain.
+**Tafeln A to J are transcribed** — nine of the fifteen, the set skipping I as these
+booklets do throughout. All 676 entries each, every mirror agreeing, no bigram
+enciphering to itself. Seven of the nine came through with nothing to adjudicate at
+all — from the *worst* scan of the three sets — which is the pipeline rather than the
+paper: the page is cut on its own printed rules and each cell magnified from native
+pixels, instead of being read out of an upsampled render. Six tables remain.
 
 Tafel H is the second of the two that needed adjudicating, and it shows the involution
 doing the part a careful reading cannot. `EZ` read `BP` — but `BP` is already `XH`'s
@@ -362,7 +362,7 @@ page already read by hand.
 The set ships incomplete, which is the case `BigramTableChoice` exists for. Ask
 Flußlauf for 2 May on Kennziffer one and it answers "Tafel L of "Flußlauf" is not
 published. Its Tauschtafelplan names 15 tables, A to P without I, and the scan that
-survives holds 8 of them" — rather than quietly handing back a table it does have.
+survives holds 9 of them" — rather than quietly handing back a table it does have.
 
 Adding a third set also caught a defect in the panel: the Tafel dropdown labelled
 every option "Quelle" whatever set was chosen, so Meer's Tafel A had been offered
