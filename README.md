@@ -312,7 +312,7 @@ The table is reciprocal: if `AK` is written as `BD` then `BD` is written as `AK`
 one table serves both stations without being reversed. It is an involution on pairs
 of letters, exactly as a reflector is on single ones.
 
-**Two whole sets ship, seventeen tables in all.**
+**Three sets ship, twenty-seven tables in all.**
 
 `BigramTables.Quelle` holds Tafels A to H of the set "Quelle", booklet Prüf-Nr. 2499 —
 the set U-534 was using on 1 May 1945, and every table its scan contains. The cover
@@ -323,11 +323,19 @@ without I. It is the complete edition: nine tables and both sides of its
 Tauschtafelplan, so every day of its calendar leads to a table that is actually
 here.
 
+`BigramTables.Flusslauf` holds ten of the set "Flußlauf", booklet Prüf-Nr. 3633,
+which is a *fifteen* table edition — A to P without I — and not a nine table one.
+Its calendar has twelve Kennziffer columns and is transcribed in full; Tafeln A to K
+are here and five remain. Its scan is the poorest of the three at 150 ppi, half the
+linear resolution of Meer's, which is why the pages are cut on their own printed
+rules and each cell magnified from native pixels rather than read out of an enlarged
+render. `tools/transcribe` holds that pipeline.
+
 A transcription of a table is worth more than a transcription of a wiring, because it
 can be checked. All 676 entries are present, every one pairs with its mirror, and no
 bigram enciphers to itself — a single mistyped cell would break a pair and show up.
-Eighteen cells did, across the eight tables, and each time the rest of the table said
-what the cell had to be — then the glyph at magnification agreed. `B`/`E` is the
+Eighteen cells did, across Quelle's eight tables, and each time the rest of the table
+said what the cell had to be — then the glyph at magnification agreed. `B`/`E` is the
 commonest slip and `F`/`P` the next. Eight of the eighteen are in Tafel G alone, whose
 two pages are the poorest scan in the booklet. Six further cells of Tafel E are
 covered by later hand-written ink and could not be read at all; they were rebuilt from
@@ -348,6 +356,19 @@ on 1 May 1945, and the column pencilled "Mai 45" reads `A` on the first.
 ```csharp
 var tafel = Tauschtafelplan.BrunoQuelle.Tafel(kennziffer: 6, dayOfMonth: 1);  // 'A'
 ```
+
+Each set carries its own, and the other two are better sheets. `BrunoMeer` and
+`BrunoFlusslauf` are clean print with no pen corrections, and both sides of the Meer
+one are reproduced — which is what shows that a full plan has **twelve** Kennziffer
+columns, not six. The Quelle photograph stops at six and is footed "Fortsetzung
+Rückseite!"; `BrunoQuelle` is half a plan, and remains the weakest evidence here.
+
+A calendar cannot be checked the way a table can. It is 372 independent letters with
+no involution to break, so a mistyped cell leaves no trace — a mutation test confirmed
+that, changing one cell and leaving the suite green. The Meer plan was therefore read
+a second time from a *different physical booklet* of the same edition, Prüf-Nr. 4002,
+separately photographed, and all 372 cells agreed. It is the only cipher data here
+with a check of that kind.
 
 **The command line offers the procedure too.** A table is what makes it naval — the
 Navy's indicator cannot be worked without one, and the Army's never wants one — so
@@ -376,8 +397,8 @@ A day that falls on Tafel J stops and says so rather than substituting a table t
 would decipher to plausible nonsense.
 
 Quelle's Tafel J is in neither source and is not shipped, so some days of its calendar
-have no table to offer and say so. Meer has no such day. Supply your own table and it
-will be used:
+have no table to offer and say so, and Flußlauf has five tables still to transcribe.
+Meer has no such day. Supply your own table and it will be used:
 
 ```csharp
 var table = BigramTable.Parse("AK=BD HQ=BJ LK=EM GZ=EJ");
