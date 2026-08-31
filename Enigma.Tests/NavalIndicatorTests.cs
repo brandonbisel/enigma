@@ -264,6 +264,7 @@ public class NavalIndicatorTests
     [InlineData('J')]
     [InlineData('K')]
     [InlineData('L')]
+    [InlineData('M')]
     public void EveryShippedTableOfFlusslaufIsWholeAndReciprocal(char tafel)
     {
         // The same check the other two sets get, at half their scan resolution. Most
@@ -306,14 +307,14 @@ public class NavalIndicatorTests
         // asked for because it calls for P, the last table the booklet holds and so
         // the last one that can go missing.
         Assert.False(BigramTableSet.Flusslauf.IsComplete);
-        Assert.Equal("ABCDEFGHJKL", string.Concat(BigramTableSet.Flusslauf.Tables.Keys));
+        Assert.Equal("ABCDEFGHJKLM", string.Concat(BigramTableSet.Flusslauf.Tables.Keys));
 
         var chosen = BigramTableChoice.From(BigramTableSet.Flusslauf, kennziffer: 1, monatstag: 6, tafel: 'A');
 
         Assert.Equal('P', chosen.Letter);
         Assert.False(chosen.Found);
         Assert.Contains("15 tables, A to P without I", chosen.Missing);
-        Assert.Contains("holds 11 of them", chosen.Missing);
+        Assert.Contains("holds 12 of them", chosen.Missing);
     }
 
     [Fact]
@@ -330,7 +331,7 @@ public class NavalIndicatorTests
 
         Assert.Contains(days, chosen => chosen.Found);
         Assert.Contains(days, chosen => !chosen.Found);
-        Assert.All(days, chosen => Assert.Equal("ABCDEFGHJKL".Contains(chosen.Letter), chosen.Found));
+        Assert.All(days, chosen => Assert.Equal("ABCDEFGHJKLM".Contains(chosen.Letter), chosen.Found));
     }
 
 
