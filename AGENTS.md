@@ -8,7 +8,7 @@ what is a future goal, and what is deliberately not scheduled.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 666 tests
+dotnet test               # whole suite, currently 693 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Web    # the panel, on http://localhost:5298
@@ -35,6 +35,7 @@ Enigma.Tests/           xUnit tests
   Reference/            An independent implementation used as a test oracle
 Enigma.Web.Tests/       Component tests, on bUnit
 Enigma.Cmd.Tests/       Console app tests: argument handling and the whole path
+tools/transcribe/       Reading a bigram booklet off its scan; Python, not built
 ```
 
 Folders do not always map to namespaces: `Abstractions/` is `namespace Enigma`,
@@ -77,6 +78,17 @@ whichever the neighbouring files use.
   *formatted from* that structure rather than assembled beside it, so anything that
   wants to watch the machine — a log, a display — sees the same thing. Do not grow
   a second path description.
+
+## Transcribing a bigram table
+
+`tools/transcribe` holds the pipeline that turns a scanned Doppelbuchstabentausch-
+tafel into a data file and a C# constant. It has a README of its own; the two rules
+that matter most are that **nothing resamples the page** — the scans are 150 ppi and
+enlarging them has invented detail that read confidently and wrongly — and that the
+cutter is **verified against a table already read by hand** before it is used on a
+page nobody has read. Run `check.py` on any reading: a table is an involution with
+no fixed point, so 676 independently read cells have to pair up, and one wrong
+letter is named rather than shipped.
 
 ## Key sheets
 
