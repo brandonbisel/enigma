@@ -41,7 +41,7 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard, both indicator procedures |
 
-666 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
+698 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
 the 1930 instruction manual — each verified against its published ciphertext, and a
 differential suite comparing against an independently written oracle.
 
@@ -144,8 +144,8 @@ sheet is footed *"Fortsetzung Rückseite!"* and the reverse is not. And **Tafel 
 still missing** — it is in no source found so far.
 
 That self-checking property is what makes this worth doing by hand. The tables are
-involutions, so a mistyped cell breaks its pair and is caught; eighteen cells have needed
-adjudicating so far and each time the table itself said what the answer was:
+involutions, so a mistyped cell breaks its pair and is caught; eighteen cells of this
+booklet have needed adjudicating and each time the table itself said what the answer was:
 
 | Tafel | cell | misread as | what settled it |
 |---|---|---|---|
@@ -228,14 +228,14 @@ Its scan is markedly better than Quelle's: four passes a table rather than six, 
 almost every cell agrees with its own mirror on a first reading, where Quelle's poorer
 pages needed the involution to arbitrate.
 
-**All nine tables are transcribed and shipped — the set is complete.** Three cells have needed adjudicating,
-each settled by a pair the table already agreed on: `A/SF` read `ZK` where `ZK` pairs
-with `CR` and column Z reads `ZX=SF`; `B/HR` read `BB` where `BB` pairs with `KM` and
-`BE=HR`; `B/YZ` read `ME` where `ME` pairs with `LP` and `HE=YZ`. `B`/`E` again, and a
-first `M`/`H`. Five of the nine came through clean on the first pass, needing no adjudication at
-all; five cells across the other four were settled the usual way, by a pair the table
-already agreed on. Tafel H's was a new confusion — `AS` read `VJ`, where an ink flaw
-at the foot of a T's stem mimics a J's hook, and `VT=AS` in column V settles it.
+**All nine tables are transcribed and shipped — the set is complete.** Six of the nine
+came through clean on the first pass, needing no adjudication at all. Four cells across
+the other three were settled the usual way, by a pair the table already agreed on:
+`A/SF` read `ZK` where `ZK` pairs with `CR` and column Z reads `ZX=SF`; `B/HR` read
+`BB` where `BB` pairs with `KM` and `BE=HR`; `B/YZ` read `ME` where `ME` pairs with
+`LP` and `HE=YZ`; and `H/AS` read `VJ`, where an ink flaw at the foot of a T's stem
+mimics a J's hook and `VT=AS` in column V settles it. `B`/`E` again, a first `M`/`H`,
+and a first `J`/`T`.
 
 **This is the first complete set in the library, and the first Tafel J of any set.**
 It changes what the naval data is good for. "Quelle" is eight tables and half a
@@ -281,12 +281,13 @@ worked from. And **`BrunoQuelle` has had no such check**: there is only one phot
 of that sheet, its pen corrections add a second layer to read, and half of it was
 never photographed at all. It remains the weakest evidence here.
 
-### A third set: "Flußlauf" — the calendar first
+### A third set: "Flußlauf"
 
 **"Flußlauf", Prüf-Nr. 3633, is a set of fifteen tables**, A to P without I, where
-Quelle and Meer are nine. Its Tauschtafelplan is transcribed and ships; its tables
-followed. That order is deliberate — the plan is one sheet and stands on its own,
-and it turned out to be the piece that corrected an assumption in the code.
+Quelle and Meer are nine. It ships complete: the Tauschtafelplan and every table that
+plan names. The calendar was transcribed first and the tables followed, which was
+deliberate — the plan is one sheet, it stands on its own, and it turned out to be the
+piece that corrected an assumption in the code.
 
 **A set is not always nine tables, and nothing may assume it is.** `TableChoice.Missing`
 used to tell an operator that "the set ran to nine tables, A to J without I" — true of
@@ -296,9 +297,10 @@ off the set's own calendar, which is the only thing that knows them.
 **Its scan is 150 ppi, half the linear resolution of the Meer booklet**, and that
 changed how it had to be read. The pipeline that worked before — render the page at 600
 dpi, separate the green channel, stretch the contrast — is a four-fold interpolation of
-a 150 ppi original, and it invented detail: two cells read confidently and wrongly from
-it, `B` for `E` in both cases, and were caught only by going back to the native image.
-Every one of the 372 cells here was read from the native scan.
+a 150 ppi original, and it invented detail: two cells of the calendar read confidently
+and wrongly from it, `B` for `E` in both cases, and were caught only by going back to
+the native image. Every one of its 372 cells was read from the native scan, and so was
+every cell of every table.
 
 **The grid carries a check the Meer one did not.** Fifteen letters over thirty-one days
 is fourteen letters twice and one three times, and eleven of the twelve columns are set
@@ -310,26 +312,90 @@ each. That column was read cell by cell a second time and the irregularity is in
 print. It is recorded as a test rather than tidied away, so that a later pass cannot
 quietly "correct" the document into agreeing with a pattern.
 
-**All fifteen tables are transcribed and the set is complete** — A to P, the set
-skipping I as these booklets do throughout. All 676 entries each, every mirror agreeing,
-no bigram enciphering to itself. Eleven of the fifteen came through with nothing to
-adjudicate at all — from the *worst* scan of the three sets — which is the pipeline
-rather than the paper: the page is cut on its own printed rules and each cell magnified
-from native pixels, instead of being read out of an upsampled render.
+**All fifteen tables are transcribed and shipped** — A to P, the set skipping I as these
+booklets do throughout. All 676 entries each, every mirror agreeing, no bigram
+enciphering to itself. Eleven of the fifteen came through with nothing to adjudicate at
+all — from the *worst* scan of the three sets — which is the pipeline rather than the
+paper: the page is cut on its own printed rules and each cell magnified from native
+pixels, instead of being read out of an upsampled render.
 
-Tafel K's pages arrived with a skew of about half a degree, which over the width of a
-table is a twelve pixel drift — the same amount that had cut the last letter off
-column Z on Tafel G. It is corrected without resampling anything: the grid is fitted
-in *sheared* coordinates, so a cell is still a plain crop of original pixels and the
-page is never rotated. The cutter was checked the way it was the first time, by
-re-cutting a page already read by hand and confirming it reproduced it cell for cell —
-both leaves of Tafel A, both extreme columns, all fifty-two entries.
+Five cells across the other four tables were settled the way they are always settled
+here, by the rest of the table first and the glyph at magnification second:
+
+| Tafel | cell | read as | what settled it |
+|---|---|---|---|
+| C | `AT` | `WO` | `WO` pairs with `XG` both ways; `WD` reads `AT`, so the value is `WD` |
+| H | `EZ` | `BP` | `BP` pairs with `XH` both ways, which leaves `EP` unclaimed |
+| O | `AT` | blotted | `QI` reads `AT`, and is the one value nothing else claims |
+| P | `JV` | `IX` | `LX` is unclaimed and `LX` reads `JV` |
+| P | `ZY` | `AB` | `AE` is unclaimed and `AE` reads `ZY` |
+
+Tafel C's is a new confusion for this project — the eleventh distinct letter pair. At
+magnification an ink blot where the D's stem meets its bowl closes the letter into an
+O, so **`D`/`O`** joins `B`/`E`, `F`/`P`, `G`/`C`, `K`/`X`, `I`/`L`, `M`/`H`, `S`/`B`,
+`B`/`D`, `Y`/`V` and `J`/`T`. The involution found it, named the cell, and supplied the
+answer from the mirror — which is the whole reason a table can be trusted where a
+calendar cannot.
+
+Tafel H shows the involution doing the part a careful reading cannot. `BP` was already
+`XH`'s partner and `XH` was `BP`'s, so a third claim on `BP` left `EP` with none, and
+the checker named the cell without being told where to look. At magnification the
+middle arm of the E is plain: `EZ` is `EP`, which is `B`/`E` again, the first pair on
+the list. The mutation that restores the misreading is refused at construction with the
+same words that found it — *Bigram 'BP' is given as both 'XH' and 'EP'*.
+
+Tafel O's was the cheapest of the five to settle, because nothing was read there at
+all: an ink blot in the cell at `AT` had closed the gap between its two letters, leaving
+a legible `Q` and a stroke beneath the blot. Once the other 675 entries are laid down,
+`QI` is the only one of the 676 values nothing claims. The stroke under the blot carries
+the dot of this face's **İ**, which agrees. That is the redundancy doing what a second
+reader would have done, and doing it from the page rather than from a guess.
+
+Tafel P is the only table of the set to need two cells. `JV`'s `X` is blotted and the
+same ink took the foot off the letter before it, leaving a bare stroke; `ZY`'s second
+letter has had its arms ink together into a bowl. Neither was guessed at. Once the other
+674 entries are laid down, exactly two of the 676 values are left unclaimed — `LX` and
+`AE` — and both of their mirrors are legible on the page. `B`/`E` and `I`/`L` are the
+first and the fifth of the eleven confusions listed, both of them in the reader rather
+than in the crop.
+
+Tafel F needed nothing adjudicated but is worth recording all the same: it is the
+densest page in the booklet for the dotted **İ** the typeface uses to keep I apart from
+J. Every one of them is confirmed by its own mirror rather than by the reading alone,
+and a mutation proves the point — changing that İ to an L, `I`/`L` being one of the
+eleven confusions on the list, is refused at construction.
+
+**Cutting the pages is done by a script rather than by hand**, and two things had to be
+right before it could be trusted at all. The booklet **alternates white and pink
+stock** — Tafel B is red ink on pink, which barely separates in luminance but holds in
+the green channel, so every page is read from green whatever colour it is. And the grid
+is found by fitting a *comb* of evenly spaced teeth to the ink rather than by hunting
+for individual lines: the rows carry no printed rule at all, and on some pages one row's
+ink splits in two or two rows merge. The comb has to be anchored to the rule across the
+top of the table, because a fit one row out of step — riding the second row down and
+catching the edge of the rule beneath the last one — scores *higher* on ink than the
+truth does.
 
 Which way up a leaf is cannot be told from its header. A reverse prints its Kennwort
 *below* the table rather than above, and half the scans come out inverted, so the
-obvious test picks the wrong rotation on exactly the pages that matter. What settles
-it is inside the table: every row names one letter and gives two, so a cell carries
-more ink on its right than on its left, and a page upside down reverses that.
+obvious test picks the wrong rotation on exactly the pages that matter. What settles it
+is inside the table: every row names one letter and gives two, so a cell carries more
+ink on its right than on its left, and a page upside down reverses that.
+
+**Then the pages took the cutter's assumptions away one at a time.** Tafel G is the
+faintest pair in the booklet, and it found a fault in the cutter rather than in the
+paper. A comb is rigid — one pitch across the page — and the rules are not quite that
+even. On G's reverse the fit had drifted twelve pixels by the far side, which is enough
+to cut the last letter off every cell in column Z; `XO` read `ME` where it is `MB`. The
+involution would have caught it (`ME` already pairs with `UU`), but the cause was
+geometry, not reading. The cutter now snaps each column onto the rule it is nearest, and
+carries the table's unruled right-hand edge out at the pitch the printed rules actually
+measure. Pages already transcribed re-cut unchanged.
+
+Tafel K's pages arrived with a skew of about half a degree, which over the width of a
+table is that same twelve pixel drift. It is corrected without resampling anything: the
+grid is fitted in *sheared* coordinates, so a cell is still a plain crop of original
+pixels and the page is never rotated.
 
 Tafel L's reverse is not skewed but *bowed*, and it retired the last assumption the
 cutter was making — that a leaf lies flat enough to be one plane. Its rules lean left
@@ -346,107 +412,37 @@ row sits eleven pixels lower under the middle columns than under the outer ones,
 third of the row pitch. What separates a rule from a column of letters is no longer
 how much ink it carries — down a faded edge a rule is no darker than the letters
 beside it — but how continuously: a rule has ink on every scanline it crosses and
-letters have gaps between the rows.
+letters have gaps between the rows. On Tafel L's *front* leaf, which is skewed rather
+than bowed and which the old fit could read, the two cutters agree to within three
+pixels on all 338 cells; it is only the reverse that the plane could not hold.
 
 None of this resamples anything, which is the whole point of reading this booklet
 natively: a cell is still a plain crop of original pixels, taken where that column's
-grid actually runs. The cutter was checked before use the way it has been each time,
-by re-cutting a page already read by hand — both leaves of Tafel A, both extreme
-columns, all fifty-two entries reproduced cell for cell. On Tafel L's *front* leaf,
-which is skewed rather than bowed and which the old fit could read, the two cutters
-agree to within three pixels on all 338 cells; it is only the reverse that the plane
-could not hold.
+grid actually runs.
 
-Tafel M is the first leaf pair the pipeline read without being changed for it. Both
-its leaves are slightly out of true and neither badly — the rules lean six pixels over
-the height of the table, the first row under nine pixels out of level across the page
-— and the per-column cutter that Tafel L's bowed reverse forced took them without
-noticing. The check before use was the same as every time: Tafel A re-cut, all four
-extreme columns, 104 entries reproduced cell for cell against the shipped file.
+**Tafels M to P are the pages the pipeline read without being changed for them.** M's
+leaves are both slightly out of true and neither badly — the rules lean six pixels over
+the height of the table, the first row under nine pixels out of level across the page —
+and the per-column cutter that L's bowed reverse forced took them without noticing. N is
+the squarest pair the booklet offered, under five pixels of each, half of what M
+carried. O and P are ordinary again: nine pixels of lean, and seven and eight out of
+level. Nothing in `cut.py` moved for any of them.
 
-Tafel N is the second such pair, and the squarest the booklet has offered: its rules lean
-under five pixels over the height of the table and its first row sits under five out
-of level across the page, half of what M's leaves carried. The cutter read both
-straight through with nothing to adjudicate. Doing the pre-use check on an unchanged
-cutter is not redundant — what a clean Tafel A rules out is the *page*, not the code,
-and it is the page that is different every time.
+**The pre-use check was run every time all the same**, and on an unchanged cutter it is
+not redundant: what a clean Tafel A rules out is the *page*, not the code, and it is the
+page that is different every time. It was the same check each time — re-cut a page
+already read by hand and confirm it reproduces it cell for cell — on both leaves of
+Tafel A, their extreme columns, and never fewer than fifty-two entries against the file
+that ships.
 
-Tafel P is the last table of the set and the fourth that needed adjudicating, and it is
-the first to need two cells rather than one. Its leaves are ordinary — the rules lean
-nine pixels over the height of the table, the first row eight out of level — and 674 of
-its cells read straight through. The two that did not are the two confusions that head
-the list. `JV` read `IX`: the `X` beside it is blotted and the same ink took the foot
-off the letter before it, leaving a bare stroke. `ZY` read `AB`: the second letter's
-arms have inked together into a bowl. Neither was guessed at. Once the other 674 entries
-are laid down, exactly two of the 676 values are left unclaimed — `LX` and `AE` — and
-their mirrors are both legible on the page: `LX` reads `JV` and `AE` reads `ZY`. So `JV`
-is `LX` and `ZY` is `AE`, and neither can be anything else. `B`/`E` and `I`/`L` are the
-first and the fifth of the eleven confusions listed, both of them in the reader rather
-than in the crop.
-
-With it the set is whole: fifteen tables against a calendar of fifteen, so every
-Kennziffer and every day of Flußlauf now leads to a table that is actually here. Quelle
-is the only set left with a day it cannot serve.
-
-Tafel O is the third table that needed adjudicating, and the cheapest of the three to
-settle. Its leaves are ordinary — the rules lean nine pixels over the height of the
-table, the first row seven out of level — and 675 of its cells read straight through.
-The last did not: an ink blot had closed the gap between the two letters of `AT`,
-leaving a legible `Q` and a stroke beneath the blot. Nothing had to be guessed. `QI`
-reads `AT`, and once the other 675 entries are laid down `QI` is the only one of the
-676 values nothing claims, so `AT` is `QI` and can be nothing else — the checker named
-the single missing cell and the involution named its value. The stroke under the blot
-carries the dot of this face's **İ**, which agrees. That is the redundancy doing what
-a second reader would have done, and doing it from the page rather than from a guess.
-
-Tafel H is the second of the three that needed adjudicating, and it shows the involution
-doing the part a careful reading cannot. `EZ` read `BP` — but `BP` is already `XH`'s
-partner and `XH` is `BP`'s, so a third claim on `BP` leaves `EP` with none, and the
-checker names the cell without being told where to look. At magnification the middle
-arm of the E is plain: `EZ` is `EP`, which is `B`/`E` again, the first pair on the
-list. The mutation that restores the misreading is refused at construction with the
-same words that found it — *Bigram 'BP' is given as both 'XH' and 'EP'*.
-
-Tafel G is the faintest pair of pages in the booklet, and it found a fault in the
-cutter rather than in the paper. A comb is rigid — one pitch across the page — and the
-rules are not quite that even. On G's reverse the fit had drifted twelve pixels by the
-far side, which is enough to cut the last letter off every cell in column Z; `XO` read
-`ME` where it is `MB`. The involution would have caught it (`ME` already pairs with
-`UU`), but the cause was geometry, not reading. The cutter now snaps each column onto
-the rule it is nearest, and carries the table's unruled right-hand edge out at the
-pitch the printed rules actually measure. Pages already transcribed re-cut unchanged.
-
-Tafel F is the densest page in the booklet for the dotted **İ** the typeface uses to
-keep I apart from J. Every one of them is confirmed by its own mirror rather than by
-the reading alone, and a mutation proves the point: changing that İ to an L — `I`/`L`
-being one of the eleven confusions on the list — is refused at construction.
-
-Tafel C needed the first adjudication, and it is a new confusion for this
-project — the eleventh distinct letter pair. `AT` read `WO`; but `WO` already pairs with `XG` both
-ways, and `WD` reads `AT`, so the value has to be `WD`. At magnification an ink blot
-where the D's stem meets its bowl closes the letter into an O. **`D`/`O`** joins
-`B`/`E`, `F`/`P`, `G`/`C`, `K`/`X`, `I`/`L`, `M`/`H`, `S`/`B`, `B`/`D`, `Y`/`V` and
-`J`/`T`. The involution found it, named the cell, and supplied the answer from the
-mirror — which is the whole reason a table can be trusted where a calendar cannot.
-
-Cutting the pages is now done by a script rather than by hand, and two things had to
-be right for it. The booklet **alternates white and pink stock** — Tafel B is red ink
-on pink, which barely separates in luminance but holds in the green channel, so every
-page is read from green whatever colour it is. And the grid is found by fitting a
-*comb* of evenly spaced teeth to the ink rather than by hunting for individual lines:
-the rows carry no printed rule at all, and on some pages one row's ink splits in two
-or two rows merge. The comb has to be anchored to the rule across the top of the
-table, because a fit one row out of step — riding the second row down and catching the
-edge of the rule beneath the last one — scores *higher* on ink than the truth does.
-The script was checked by re-cutting Tafel A with it and confirming it reproduced a
-page already read by hand.
-
-The set shipped incomplete for as long as it took to read, which is the case
-`BigramTableChoice` exists for. Asked for 6 May on Kennziffer one it used to answer
-"Tafel P of "Flußlauf" is not published. Its Tauschtafelplan names 15 tables, A to P
-without I, and the scan that survives holds 14 of them" — rather than quietly handing
-back a table it did have. That day now reaches Tafel P, and the refusal is still under
-test on Quelle, whose Tafel J no source reproduces.
+**The set shipped incomplete for as long as it took to read**, which is the case
+`BigramTableChoice` exists for. Asked for 6 May on Kennziffer one it answered "Tafel P
+of "Flußlauf" is not published. Its Tauschtafelplan names 15 tables, A to P without I,
+and the scan that survives holds 14 of them" — rather than quietly handing back a table
+it did have. That day now reaches Tafel P, and every Kennziffer and every day of
+Flußlauf leads to a table that is actually here. Quelle, whose Tafel J no source
+reproduces, is the only set left with a day it cannot serve, and it is where that
+refusal stays under test.
 
 Adding a third set also caught a defect in the panel: the Tafel dropdown labelled
 every option "Quelle" whatever set was chosen, so Meer's Tafel A had been offered

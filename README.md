@@ -64,13 +64,13 @@ when receiving, and both hidden under a Doppelbuchstabentauschtafel.
 Which **Satz** — which booklet you are holding — comes first, because a set of tables
 and the calendar issued with it are useless apart. Choosing one changes what the rest
 of the panel offers: Quelle has eight Tafeln and six Kennziffer columns, Meer nine and
-twelve.
+twelve, Flußlauf fifteen and twelve.
 
 Which table is then a choice the operator did not make. Give the panel a Kennziffer column
 — the one his cipher net was allotted — and a day of the month, and the
 Tauschtafelplan names the table, exactly as it did aboard. Pick nothing and any of the
-eight shipped tables can be chosen by hand instead. A day that falls on Tafel J, the
-one never recovered, says so rather than failing quietly.
+set's shipped tables can be chosen by hand instead. A day that falls on Quelle's Tafel
+J, the one never recovered, says so rather than failing quietly.
 
 U-534's real message runs through it: load the *U-534, 1 May 1945* key sheet, choose
 Kriegsmarine receiving, Kennziffer six on the first of the month, and type the
@@ -312,7 +312,7 @@ The table is reciprocal: if `AK` is written as `BD` then `BD` is written as `AK`
 one table serves both stations without being reversed. It is an involution on pairs
 of letters, exactly as a reflector is on single ones.
 
-**Three sets ship, twenty-eight tables in all.**
+**Three sets ship, thirty-two tables in all.**
 
 `BigramTables.Quelle` holds Tafels A to H of the set "Quelle", booklet Prüf-Nr. 2499 —
 the set U-534 was using on 1 May 1945, and every table its scan contains. The cover
@@ -338,7 +338,10 @@ bigram enciphers to itself — a single mistyped cell would break a pair and sho
 Eighteen cells did, across Quelle's eight tables, and each time the rest of the table
 said what the cell had to be — then the glyph at magnification agreed. `B`/`E` is the
 commonest slip and `F`/`P` the next. Eight of the eighteen are in Tafel G alone, whose
-two pages are the poorest scan in the booklet. Six further cells of Tafel E are
+two pages are the poorest scan in the booklet. Meer's nine tables needed four such
+cells and Flußlauf's fifteen needed five, which is twenty-seven over the three sets and
+not one of them guessed at: the mirror said what each had to be, and only then was the
+glyph looked at again. Six further cells of Quelle's Tafel E are
 covered by later hand-written ink and could not be read at all; they were rebuilt from
 their mirrors, which on an involution is the same fact written twice. On top of all
 that, the four cells the U-534 message needed were published separately with the
@@ -394,8 +397,8 @@ $ echo "..." | dotnet run --project Enigma.Cmd -- \
 Ground setting IBFK, Schlüsselkenngruppe DUZ, Verfahrenkenngruppe YMU, indicator FNHCGVET, rotors ODFF
 ```
 
-A day that falls on Tafel J stops and says so rather than substituting a table that
-would decipher to plausible nonsense.
+A day the calendar sends to a table the set does not have stops and says so rather than
+substituting one that would decipher to plausible nonsense.
 
 Quelle's Tafel J is in neither source and is not shipped, so some days of its calendar
 have no table to offer and say so. Meer and Flußlauf have no such day. Supply your own
