@@ -41,9 +41,10 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard, both indicator procedures |
 
-698 tests, including four historical messages — Barbarossa, Scharnhorst, U-264 and
-the 1930 instruction manual — each verified against its published ciphertext, and a
-differential suite comparing against an independently written oracle.
+701 tests, including five historical messages — Barbarossa, Scharnhorst, U-264,
+U-106 and the 1930 instruction manual — each verified against its published
+ciphertext, and a differential suite comparing against an independently written
+oracle.
 
 The web front end is complete. It is a Blazor WebAssembly page with the verified
 library running unchanged in the browser: no server, so nothing typed into it is

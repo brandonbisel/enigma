@@ -242,6 +242,7 @@ dotnet run --project Enigma.Cmd -- --list-presets
 | `scharnhorst` | Scharnhorst, 26 December 1943 |
 | `instruction-manual` | Enigma Instruction Manual, 1930 |
 | `u264` | U-264 (Looks), 19 November 1942 — four-rotor M4 |
+| `rasch` | U-106 (Rasch), 19 November 1942 — four-rotor M4 |
 
 Decrypting the Barbarossa intercept:
 
@@ -938,14 +939,23 @@ rather than reconstructed, and each is pinned by a test.
   `ODFF` that comes out. The naval procedure here is pinned by that, and it is what
   showed the M4's fourth wheel is set by the filler.
 - **[Crypto Museum, *Bigram tables*](https://www.cryptomuseum.com/crypto/codebook/bigram.htm)**
-  — what the tables were and how they were used. The recovered ones are reproduced
-  there as photographs of the originals, which is why none is transcribed here.
+  — what the tables were and how they were used. The recovered ones are published
+  there as photographs of the originals rather than as data, which is what the
+  transcription pipeline in `tools/transcribe` exists for: "Quelle", "Meer" and
+  "Flußlauf" are read off those scans.
+- **[Dan Girard, *Solution of the last of the "H.M.S. Hurricane" intercepts*](https://enigma.hoerenberg.com/index.php?cat=M4%20Project%202006&page=Rasch%20Message)**
+  (with Michael Hörenberg) — the break of the first of the three signals Ralph
+  Erskine published in *Cryptologia* in 1996 as a challenge, unbroken for twenty
+  years after the M4 Project took the other two. It gives the settings, the corrected
+  ciphertext and the plaintext, which is the whole of what the `rasch` key sheet and
+  its test need. A second Ringstellung and Grundstellung are published with it; they
+  read this message identically and are not the same machine.
 - **Reuvers & Simons, *Enigma G-111: A rare version of Zählwerk Enigma G31***
   (Crypto Museum, 2013) — the mechanism in the machine's own terms: cogwheels rather
   than pawls and levers, no double stepping anomaly, notches attached to the letter
   ring, and the statement that the UKW "can be moved by wheel 3", which is what puts
   the reflector at the end of the carry chain.
 
-The historical messages — Barbarossa, Scharnhorst, U-264 and the 1930 instruction
-manual — are widely published intercepts, and each is decrypted in the test suite
-with its own key sheet.
+The historical messages — Barbarossa, Scharnhorst, U-264, U-106 and the 1930
+instruction manual — are published intercepts, and each is decrypted in the test
+suite with its own key sheet.

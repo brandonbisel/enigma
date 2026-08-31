@@ -13,6 +13,19 @@ public class HistoricalMessageTests
 {
     private static readonly ICharacterMap CharacterMap = new DefaultCharacterMap();
 
+    private const string RaschCiphertext =
+        "HCEYZTCSOPUPPZDICQRDLWXXFACTTJMBRDVCJJMMZRPYIKHZAWGLYXWTMJPQUEFSZBOTVRLALZXWVXTSLFFFAUDQFBW" +
+        "RRYAPSBOWJMKLDUYUPFUQDOWVHAHCDWAUARSWTKOFVOYFPUFHVZFDGGPOOVGRMBPXXZCANKMONFHXPCKHJZBUMXJWXK" +
+        "AUODXZUCVCXPFT";
+
+    private const string RaschPlaintext =
+        "BOOTKLARXBEIJSCHNOORBETWAZWOSIBENXNOVXSECHSNULCBMXPROVIANTBISZWONULXDEZXBENOETIGEGLMESERYNO" +
+        "CHVIEFKLHRXSTEHEMARQUBRUNOBRUNFZWOFUHFXLAGWWIEJKCHAEFERJXNNTWWWFUNFYEINSFUNFMBSTEIGENDYGUTE" +
+        "SIWXDVVVJRASCH";
+
+    /// <summary>Long enough for two settings that differ at all to show that they do.</summary>
+    private static readonly string LongRun = new('A', 250);
+
     [Fact]
     public void Barbarossa_DecryptsToTheKnownPlaintext()
     {
@@ -69,6 +82,33 @@ public class HistoricalMessageTests
     }
 
     [Fact]
+    public void Rasch_DecryptsToTheKnownPlaintext()
+    {
+        // The last of Erskine's three challenge signals to be broken. Its ciphertext
+        // is a corrected reading: the HF/DF operator took the signal down with
+        // garbles, and the letters that would not decipher were recovered with the
+        // break. The plaintext keeps the garbles that are the sender's own.
+        Assert.Equal(RaschPlaintext, Decrypt("rasch", RaschCiphertext));
+    }
+
+    [Fact]
+    public void TheAlternateRaschSettingReadsTheMessageWithoutBeingTheSameMachine()
+    {
+        // A second Ringstellung and Grundstellung are published with the break. They
+        // are not an equivalent setting: they agree with the first for 219 letters
+        // and then part. The message is 196, so nothing in it can tell the two
+        // apart -- which is what a break recovers, the settings the traffic pins.
+        Assert.True(KeySheets.TryGet("rasch", out var sheet));
+
+        var alternate = sheet.Copy();
+        alternate.RingSettings = "ZZTG";
+        alternate.Positions = "NBHL";
+
+        Assert.Equal(RaschPlaintext, Decrypt(alternate, RaschCiphertext));
+        Assert.NotEqual(Decrypt(sheet, LongRun), Decrypt(alternate, LongRun));
+    }
+
+    [Fact]
     public void TheThinRotorNeverMoves()
     {
         // It has no ratchet, so nothing can drive it however long the message runs.
@@ -92,6 +132,7 @@ public class HistoricalMessageTests
     [InlineData("scharnhorst")]
     [InlineData("instruction-manual")]
     [InlineData("u264")]
+    [InlineData("rasch")]
     [InlineData("default")]
     public void EveryPackagedKeySheetBuildsAMachine(string name)
     {
@@ -106,6 +147,11 @@ public class HistoricalMessageTests
     {
         Assert.True(KeySheets.TryGet(keySheet, out var sheet));
 
+        return Decrypt(sheet, cipher);
+    }
+
+    private static string Decrypt(KeySheet sheet, string cipher)
+    {
         var machine = BuildFactory().Create(sheet);
         var input = cipher.Select(CharacterMap.GetIndex);
 

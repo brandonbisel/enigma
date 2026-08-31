@@ -61,6 +61,21 @@ public static class KeySheets
                 Positions = "IBFK",
                 Plugboard = "CH EJ NV OU TY LG SZ PK DI QB"
             },
+            ["rasch"] = new()
+            {
+                // The first of three signals H.M.S. Hurricane's HF/DF operator
+                // intercepted escorting convoy HX 215, published by Ralph Erskine in
+                // Cryptologia in 1996 as a challenge and unbroken for twenty years
+                // after it. Broken by Dan Girard with Michael Hoerenberg; the second
+                // of the three is the U-264 message above. Ringstellung ZZTG with the
+                // Grundstellung NBHL is an equivalent setting and decrypts identically.
+                Name = "U-106 (Rasch), 19 November 1942",
+                Reflector = "B-Thin",
+                Rotors = "Beta VI I III",
+                RingSettings = "ZZDG",
+                Positions = "NAQL",
+                Plugboard = "BQ CR DI EJ KW MT OS PX UZ GH"
+            },
             ["enigma-d"] = new()
             {
                 Name = "Enigma D, commercial",
