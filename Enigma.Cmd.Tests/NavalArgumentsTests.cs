@@ -295,11 +295,12 @@ public class NavalArgumentsTests
     [Fact]
     public void AFlusslaufDayWithoutItsTableIsRefusedRatherThanSubstituted()
     {
-        // Five of its fifteen tables are not transcribed yet. A day that wants one
-        // has to say so: quietly handing back Tafel A would decrypt to nonsense.
-        var read = Read(setName: "Flusslauf", kennziffer: 1, monatstag: 2, indicator: "FNHCGVET");
+        // Four of its fifteen tables are not transcribed yet, and Monatstag 6 calls
+        // for one of them. A day that wants a missing table has to say so: quietly
+        // handing back Tafel A would decrypt to nonsense.
+        var read = Read(setName: "Flusslauf", kennziffer: 1, monatstag: 6, indicator: "FNHCGVET");
 
-        Assert.Contains("Tafel L", read.Error);
+        Assert.Contains("Tafel P", read.Error);
         Assert.Contains("15 tables, A to P without I", read.Error);
     }
 

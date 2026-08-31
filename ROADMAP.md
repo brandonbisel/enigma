@@ -222,7 +222,7 @@ The Crypto Museum publishes other booklets of the same kind, and **"Meer",
 Prüf-Nr. 3733, is a complete one**: cover, two copies of the Tauschtafelplan front and
 back, and **all nine tables, A to J**. It is the first set here to include a Tafel J
 at all. A third, "Flußlauf" Prüf-Nr. 3633, runs to fifteen tables, A to P; its
-calendar is transcribed and ten of its tables with it.
+calendar is transcribed and eleven of its tables with it.
 
 Its scan is markedly better than Quelle's: four passes a table rather than six, and
 almost every cell agrees with its own mirror on a first reading, where Quelle's poorer
@@ -310,12 +310,12 @@ each. That column was read cell by cell a second time and the irregularity is in
 print. It is recorded as a test rather than tidied away, so that a later pass cannot
 quietly "correct" the document into agreeing with a pattern.
 
-**Tafeln A to K are transcribed** — ten of the fifteen, the set skipping I as these
+**Tafeln A to L are transcribed** — eleven of the fifteen, the set skipping I as these
 booklets do throughout. All 676 entries each, every mirror agreeing, no bigram
-enciphering to itself. Eight of the ten came through with nothing to adjudicate at
+enciphering to itself. Nine of the eleven came through with nothing to adjudicate at
 all — from the *worst* scan of the three sets — which is the pipeline rather than the
 paper: the page is cut on its own printed rules and each cell magnified from native
-pixels, instead of being read out of an upsampled render. Five tables remain.
+pixels, instead of being read out of an upsampled render. Four tables remain.
 
 Tafel K's pages arrived with a skew of about half a degree, which over the width of a
 table is a twelve pixel drift — the same amount that had cut the last letter off
@@ -330,6 +330,32 @@ Which way up a leaf is cannot be told from its header. A reverse prints its Kenn
 obvious test picks the wrong rotation on exactly the pages that matter. What settles
 it is inside the table: every row names one letter and gives two, so a cell carries
 more ink on its right than on its left, and a page upside down reverses that.
+
+Tafel L's reverse is not skewed but *bowed*, and it retired the last assumption the
+cutter was making — that a leaf lies flat enough to be one plane. Its rules lean left
+down one side of the page and right down the other, and its top rule arcs ten pixels
+over the width while its bottom rule lies flat. No single shear straightens both, and
+under one the projection smears every rule until the faintest of them — the outer ones,
+always — no longer stands above a column of letters. The page came back with ten
+columns where a leaf has thirteen, and the reading would have been cut from the wrong
+cells if the count had happened to come out right.
+
+So nothing global is fitted any more. Each rule is followed band by band and given its
+own line, and each column of cells is given its own row comb; on that page the first
+row sits eleven pixels lower under the middle columns than under the outer ones, a
+third of the row pitch. What separates a rule from a column of letters is no longer
+how much ink it carries — down a faded edge a rule is no darker than the letters
+beside it — but how continuously: a rule has ink on every scanline it crosses and
+letters have gaps between the rows.
+
+None of this resamples anything, which is the whole point of reading this booklet
+natively: a cell is still a plain crop of original pixels, taken where that column's
+grid actually runs. The cutter was checked before use the way it has been each time,
+by re-cutting a page already read by hand — both leaves of Tafel A, both extreme
+columns, all fifty-two entries reproduced cell for cell. On Tafel L's *front* leaf,
+which is skewed rather than bowed and which the old fit could read, the two cutters
+agree to within three pixels on all 338 cells; it is only the reverse that the plane
+could not hold.
 
 Tafel H is the second of the two that needed adjudicating, and it shows the involution
 doing the part a careful reading cannot. `EZ` read `BP` — but `BP` is already `XH`'s
@@ -374,9 +400,9 @@ The script was checked by re-cutting Tafel A with it and confirming it reproduce
 page already read by hand.
 
 The set ships incomplete, which is the case `BigramTableChoice` exists for. Ask
-Flußlauf for 2 May on Kennziffer one and it answers "Tafel L of "Flußlauf" is not
+Flußlauf for 6 May on Kennziffer one and it answers "Tafel P of "Flußlauf" is not
 published. Its Tauschtafelplan names 15 tables, A to P without I, and the scan that
-survives holds 10 of them" — rather than quietly handing back a table it does have.
+survives holds 11 of them" — rather than quietly handing back a table it does have.
 
 Adding a third set also caught a defect in the panel: the Tafel dropdown labelled
 every option "Quelle" whatever set was chosen, so Meer's Tafel A had been offered

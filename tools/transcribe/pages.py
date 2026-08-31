@@ -44,9 +44,14 @@ def upright(image, workdir):
     best = None
     for angle in (90, 270):
         turned = image.rotate(angle, expand=True)
-        score = _right_heavy(turned, workdir)
+        try:
+            score = _right_heavy(turned, workdir)
+        except cut.Unreadable:
+            continue          # a leaf may only give up its grid one way round
         if best is None or score > best[0]:
             best = (score, turned)
+    if best is None:
+        raise cut.Unreadable("no grid either way up")
     return best[1]
 
 

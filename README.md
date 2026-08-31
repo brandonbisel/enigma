@@ -323,10 +323,10 @@ without I. It is the complete edition: nine tables and both sides of its
 Tauschtafelplan, so every day of its calendar leads to a table that is actually
 here.
 
-`BigramTables.Flusslauf` holds ten of the set "Flußlauf", booklet Prüf-Nr. 3633,
+`BigramTables.Flusslauf` holds eleven of the set "Flußlauf", booklet Prüf-Nr. 3633,
 which is a *fifteen* table edition — A to P without I — and not a nine table one.
-Its calendar has twelve Kennziffer columns and is transcribed in full; Tafeln A to K
-are here and five remain. Its scan is the poorest of the three at 150 ppi, half the
+Its calendar has twelve Kennziffer columns and is transcribed in full; Tafeln A to L
+are here and four remain. Its scan is the poorest of the three at 150 ppi, half the
 linear resolution of Meer's, which is why the pages are cut on their own printed
 rules and each cell magnified from native pixels rather than read out of an enlarged
 render. `tools/transcribe` holds that pipeline.
@@ -397,7 +397,7 @@ A day that falls on Tafel J stops and says so rather than substituting a table t
 would decipher to plausible nonsense.
 
 Quelle's Tafel J is in neither source and is not shipped, so some days of its calendar
-have no table to offer and say so, and Flußlauf has five tables still to transcribe.
+have no table to offer and say so, and Flußlauf has four tables still to transcribe.
 Meer has no such day. Supply your own table and it will be used:
 
 ```csharp

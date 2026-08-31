@@ -263,6 +263,7 @@ public class NavalIndicatorTests
     [InlineData('H')]
     [InlineData('J')]
     [InlineData('K')]
+    [InlineData('L')]
     public void EveryShippedTableOfFlusslaufIsWholeAndReciprocal(char tafel)
     {
         // The same check the other two sets get, at half their scan resolution. Most
@@ -301,16 +302,18 @@ public class NavalIndicatorTests
     public void TheFlusslaufSetIsIncompleteAndSaysWhichTableIsWanted()
     {
         // A set whose calendar outruns its tables is the case BigramTableChoice was
-        // written for, and this is the first one where most of the set is missing.
+        // written for, and this is the set it was written against. Monatstag 6 is
+        // asked for because it calls for P, the last table the booklet holds and so
+        // the last one that can go missing.
         Assert.False(BigramTableSet.Flusslauf.IsComplete);
-        Assert.Equal("ABCDEFGHJK", string.Concat(BigramTableSet.Flusslauf.Tables.Keys));
+        Assert.Equal("ABCDEFGHJKL", string.Concat(BigramTableSet.Flusslauf.Tables.Keys));
 
-        var chosen = BigramTableChoice.From(BigramTableSet.Flusslauf, kennziffer: 1, monatstag: 2, tafel: 'A');
+        var chosen = BigramTableChoice.From(BigramTableSet.Flusslauf, kennziffer: 1, monatstag: 6, tafel: 'A');
 
-        Assert.Equal('L', chosen.Letter);
+        Assert.Equal('P', chosen.Letter);
         Assert.False(chosen.Found);
         Assert.Contains("15 tables, A to P without I", chosen.Missing);
-        Assert.Contains("holds 10 of them", chosen.Missing);
+        Assert.Contains("holds 11 of them", chosen.Missing);
     }
 
     [Fact]
@@ -327,7 +330,7 @@ public class NavalIndicatorTests
 
         Assert.Contains(days, chosen => chosen.Found);
         Assert.Contains(days, chosen => !chosen.Found);
-        Assert.All(days, chosen => Assert.Equal("ABCDEFGHJK".Contains(chosen.Letter), chosen.Found));
+        Assert.All(days, chosen => Assert.Equal("ABCDEFGHJKL".Contains(chosen.Letter), chosen.Found));
     }
 
 
