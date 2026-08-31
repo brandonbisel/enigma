@@ -62,9 +62,10 @@ public sealed class BigramTableSet
 
     /// <summary>
     /// "Flußlauf", booklet Prüf-Nr. 3633. A fifteen-table set — A to P without I —
-    /// where the other two are nine, and the only one here whose plan is complete
-    /// while its tables are not. Every day of its calendar resolves or says which
-    /// table it wanted, which is the behaviour an incomplete set is for.
+    /// where the other two are nine. All fifteen and both sides of its plan are here,
+    /// so every day of its twelve columns leads to a table. It was incomplete while it
+    /// was being read, which is the case BigramTableChoice was written against; Quelle
+    /// is the set that still exercises it.
     /// </summary>
     public static BigramTableSet Flusslauf { get; } = new(
         "Flußlauf", "Prüf-Nr. 3633", BigramTables.Flusslauf, Tauschtafelplan.BrunoFlusslauf);

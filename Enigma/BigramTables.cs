@@ -179,6 +179,14 @@ public static class BigramTables
     public static BigramTable FlusslaufO { get; } = BigramTable.Parse(FlusslaufOEntries);
 
     /// <summary>
+    /// Tafel P of "Flußlauf". The set skips I, so this is the fifteenth table and the
+    /// last of the set. Two cells, JV and ZY, were settled by the involution rather
+    /// than read: a blot took the foot off JV's first letter and ZY's second inked
+    /// closed, and LX and AE were the only two values left unclaimed.
+    /// </summary>
+    public static BigramTable FlusslaufP { get; } = BigramTable.Parse(FlusslaufPEntries);
+
+    /// <summary>
     /// The tables of "Meer" by their letter: all nine, A to J without I. Unlike
     /// "Quelle", whose scan stops at H, this set is complete — every day of its
     /// Tauschtafelplan leads to a table that is actually here.
@@ -199,7 +207,7 @@ public static class BigramTables
 
     /// <summary>
     /// The tables of "Flußlauf" by the letter its Tauschtafelplan names them by. The
-    /// plan names fifteen, A to P without I; fourteen are transcribed so far.
+    /// plan names fifteen, A to P without I, and all fifteen are transcribed.
     /// </summary>
     public static IReadOnlyDictionary<char, BigramTable> Flusslauf { get; } =
         new Dictionary<char, BigramTable>
@@ -218,6 +226,7 @@ public static class BigramTables
             ['M'] = FlusslaufM,
             ['N'] = FlusslaufN,
             ['O'] = FlusslaufO,
+            ['P'] = FlusslaufP,
         };
 
     /// <summary>
@@ -1080,4 +1089,30 @@ public static class BigramTables
         "SH=WD SK=YQ SO=XC SV=UV TE=XP TG=US TK=WB TL=VG TR=YK TT=XS TV=YA TW=YU TY=YG UK=VV " +
         "UR=YH UZ=WV VD=YC VE=ZA VH=ZG VO=ZD VZ=YW WA=ZS WG=ZQ WK=ZE WO=XD WX=ZR XA=XN XF=XH " +
         "XG=ZL XT=YX";
+    private const string FlusslaufPEntries =
+        "AA=KI AB=HZ AC=FX AD=JF AE=ZY AF=PQ AG=UB AH=FO AI=XW AJ=LL AK=GB AL=ZX AM=HB AN=EP " +
+        "AO=RN AP=WB AQ=BV AR=ZP AS=ES AT=JA AU=EJ AV=LK AW=SZ AX=XB AY=HN AZ=SV BA=RB BB=ST " +
+        "BC=SH BD=MR BE=NP BF=VQ BG=HJ BH=ZA BI=RP BJ=OU BK=PT BL=LH BM=VL BN=PF BO=YM BP=DR " +
+        "BQ=OT BR=ZB BS=OR BT=XU BU=VE BW=DT BX=GL BY=OS BZ=FY CA=HO CB=HV CC=IH CD=YF CE=HK " +
+        "CF=IJ CG=YY CH=ZU CI=IT CJ=UQ CK=NA CL=MC CM=PR CN=TD CO=WD CP=OW CQ=LJ CR=EG CS=IA " +
+        "CT=UE CU=ZV CV=KO CW=UG CX=KW CY=ZJ CZ=XO DA=UZ DB=RM DC=RQ DD=VS DE=NW DF=YJ DG=SC " +
+        "DH=FB DI=KX DJ=MG DK=RS DL=OH DM=FD DN=SN DO=XZ DP=WA DQ=IU DS=MS DU=UI DV=PM DW=KQ " +
+        "DX=KS DY=QC DZ=HW EA=XR EB=YG EC=WU ED=JS EE=LY EF=KH EH=NZ EI=RZ EK=KD EL=ZI EM=TX " +
+        "EN=FG EO=UN EQ=NJ ER=LT ET=VM EU=RL EV=EY EW=WG EX=MY EZ=ID FA=IC FC=HX FE=RF FF=QM " +
+        "FH=LS FI=FM FJ=WJ FK=WZ FL=GW FN=VC FP=SL FQ=OE FR=NO FS=MZ FT=RI FU=OC FV=WK FW=ZO " +
+        "FZ=KL GA=JB GC=JW GD=QF GE=HM GF=LF GG=HA GH=TU GI=YR GJ=IB GK=NB GM=OI GN=SY GO=XQ " +
+        "GP=JQ GQ=NS GR=WQ GS=PW GT=JO GU=LG GV=SD GX=PO GY=YA GZ=RY HC=RC HD=WR HE=YI HF=YV " +
+        "HG=KY HH=XM HI=TA HL=MX HP=JR HQ=IF HR=YE HS=LP HT=ZM HU=MK HY=UF IE=VY IG=LI II=NI " +
+        "IK=YW IL=OO IM=YH IN=YU IO=VK IP=QR IQ=XV IR=MP IS=TZ IV=KB IW=QT IX=PI IY=WO IZ=SK " +
+        "JC=ZH JD=QU JE=PE JG=YT JH=SA JI=QK JJ=MW JK=OA JL=LC JM=LN JN=UD JP=JX JT=SO JU=PN " +
+        "JV=LX JY=YN JZ=TW KA=UA KC=QH KE=SX KF=VA KG=MF KJ=VN KK=LW KM=OV KN=WP KP=PZ KR=SG " +
+        "KT=VP KU=OB KV=YL KZ=UP LA=LD LB=QL LE=XI LM=LO LQ=MN LR=RO LU=WW LV=TK LZ=XJ MA=TY " +
+        "MB=QD MD=NK ME=UY MH=TL MI=US MJ=WY ML=PC MM=YB MO=VT MQ=SP MT=XG MU=SJ MV=RG NC=TM " +
+        "ND=TV NE=QX NF=UR NG=UH NH=UK NL=SF NM=TJ NN=UM NQ=UU NR=QZ NT=WX NU=OM NV=QW NX=SS " +
+        "NY=ON OD=UO OF=VI OG=PU OJ=XN OK=XA OL=OP OQ=TT OX=TR OY=ZQ OZ=TQ PA=XD PB=XH PD=VH " +
+        "PG=PS PH=QY PJ=YC PK=YS PL=RU PP=ZZ PV=PX PY=TC QA=QJ QB=QS QE=VJ QG=VX QI=WV QN=RX " +
+        "QO=YK QP=WF QQ=XF QV=XX RA=SM RD=VO RE=ZN RH=ZS RJ=VF RK=WE RR=YX RT=ZW RV=UJ RW=VG " +
+        "SB=XL SE=TI SI=VB SQ=TS SR=UW SU=YD SW=ZD TB=WN TE=YO TF=UC TG=VZ TH=ZG TN=ZT TO=UL " +
+        "TP=ZF UT=WI UV=ZC UX=XP VD=YP VR=WM VU=XE VV=XK VW=WT WC=WH WL=XT WS=ZR XC=XS XY=ZL " +
+        "YQ=YZ ZE=ZK";
 }

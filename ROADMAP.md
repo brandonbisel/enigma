@@ -222,7 +222,7 @@ The Crypto Museum publishes other booklets of the same kind, and **"Meer",
 Prüf-Nr. 3733, is a complete one**: cover, two copies of the Tauschtafelplan front and
 back, and **all nine tables, A to J**. It is the first set here to include a Tafel J
 at all. A third, "Flußlauf" Prüf-Nr. 3633, runs to fifteen tables, A to P; its
-calendar is transcribed and fourteen of its tables with it.
+calendar is transcribed and all fifteen of its tables with it, so it is complete too.
 
 Its scan is markedly better than Quelle's: four passes a table rather than six, and
 almost every cell agrees with its own mirror on a first reading, where Quelle's poorer
@@ -310,12 +310,12 @@ each. That column was read cell by cell a second time and the irregularity is in
 print. It is recorded as a test rather than tidied away, so that a later pass cannot
 quietly "correct" the document into agreeing with a pattern.
 
-**Tafeln A to O are transcribed** — fourteen of the fifteen, the set skipping I as these
-booklets do throughout. All 676 entries each, every mirror agreeing, no bigram
-enciphering to itself. Eleven of the fourteen came through with nothing to adjudicate at
-all — from the *worst* scan of the three sets — which is the pipeline rather than the
-paper: the page is cut on its own printed rules and each cell magnified from native
-pixels, instead of being read out of an upsampled render. One table remains.
+**All fifteen tables are transcribed and the set is complete** — A to P, the set
+skipping I as these booklets do throughout. All 676 entries each, every mirror agreeing,
+no bigram enciphering to itself. Eleven of the fifteen came through with nothing to
+adjudicate at all — from the *worst* scan of the three sets — which is the pipeline
+rather than the paper: the page is cut on its own printed rules and each cell magnified
+from native pixels, instead of being read out of an upsampled render.
 
 Tafel K's pages arrived with a skew of about half a degree, which over the width of a
 table is a twelve pixel drift — the same amount that had cut the last letter off
@@ -371,6 +371,23 @@ straight through with nothing to adjudicate. Doing the pre-use check on an uncha
 cutter is not redundant — what a clean Tafel A rules out is the *page*, not the code,
 and it is the page that is different every time.
 
+Tafel P is the last table of the set and the fourth that needed adjudicating, and it is
+the first to need two cells rather than one. Its leaves are ordinary — the rules lean
+nine pixels over the height of the table, the first row eight out of level — and 674 of
+its cells read straight through. The two that did not are the two confusions that head
+the list. `JV` read `IX`: the `X` beside it is blotted and the same ink took the foot
+off the letter before it, leaving a bare stroke. `ZY` read `AB`: the second letter's
+arms have inked together into a bowl. Neither was guessed at. Once the other 674 entries
+are laid down, exactly two of the 676 values are left unclaimed — `LX` and `AE` — and
+their mirrors are both legible on the page: `LX` reads `JV` and `AE` reads `ZY`. So `JV`
+is `LX` and `ZY` is `AE`, and neither can be anything else. `B`/`E` and `I`/`L` are the
+first and the fifth of the eleven confusions listed, both of them in the reader rather
+than in the crop.
+
+With it the set is whole: fifteen tables against a calendar of fifteen, so every
+Kennziffer and every day of Flußlauf now leads to a table that is actually here. Quelle
+is the only set left with a day it cannot serve.
+
 Tafel O is the third table that needed adjudicating, and the cheapest of the three to
 settle. Its leaves are ordinary — the rules lean nine pixels over the height of the
 table, the first row seven out of level — and 675 of its cells read straight through.
@@ -424,10 +441,12 @@ edge of the rule beneath the last one — scores *higher* on ink than the truth 
 The script was checked by re-cutting Tafel A with it and confirming it reproduced a
 page already read by hand.
 
-The set ships incomplete, which is the case `BigramTableChoice` exists for. Ask
-Flußlauf for 6 May on Kennziffer one and it answers "Tafel P of "Flußlauf" is not
-published. Its Tauschtafelplan names 15 tables, A to P without I, and the scan that
-survives holds 14 of them" — rather than quietly handing back a table it does have.
+The set shipped incomplete for as long as it took to read, which is the case
+`BigramTableChoice` exists for. Asked for 6 May on Kennziffer one it used to answer
+"Tafel P of "Flußlauf" is not published. Its Tauschtafelplan names 15 tables, A to P
+without I, and the scan that survives holds 14 of them" — rather than quietly handing
+back a table it did have. That day now reaches Tafel P, and the refusal is still under
+test on Quelle, whose Tafel J no source reproduces.
 
 Adding a third set also caught a defect in the panel: the Tafel dropdown labelled
 every option "Quelle" whatever set was chosen, so Meer's Tafel A had been offered

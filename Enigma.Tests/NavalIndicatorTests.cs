@@ -267,6 +267,7 @@ public class NavalIndicatorTests
     [InlineData('M')]
     [InlineData('N')]
     [InlineData('O')]
+    [InlineData('P')]
     public void EveryShippedTableOfFlusslaufIsWholeAndReciprocal(char tafel)
     {
         // The same check the other two sets get, at half their scan resolution. Most
@@ -302,38 +303,35 @@ public class NavalIndicatorTests
     }
 
     [Fact]
-    public void TheFlusslaufSetIsIncompleteAndSaysWhichTableIsWanted()
+    public void TheFlusslaufSetIsCompleteAndItsLastTableIsTheOneItWaitedOn()
     {
-        // A set whose calendar outruns its tables is the case BigramTableChoice was
-        // written for, and this is the set it was written against. Monatstag 6 is
-        // asked for because it calls for P, the last table the booklet holds and so
-        // the last one that can go missing.
-        Assert.False(BigramTableSet.Flusslauf.IsComplete);
-        Assert.Equal("ABCDEFGHJKLMNO", string.Concat(BigramTableSet.Flusslauf.Tables.Keys));
+        // This set was the case BigramTableChoice was written against, and Monatstag 6
+        // was the day that had nothing to give: it calls for P, the last table of the
+        // booklet and so the last one that could be missing. It is here now.
+        Assert.True(BigramTableSet.Flusslauf.IsComplete);
+        Assert.Equal("ABCDEFGHJKLMNOP", string.Concat(BigramTableSet.Flusslauf.Tables.Keys));
 
         var chosen = BigramTableChoice.From(BigramTableSet.Flusslauf, kennziffer: 1, monatstag: 6, tafel: 'A');
 
         Assert.Equal('P', chosen.Letter);
-        Assert.False(chosen.Found);
-        Assert.Contains("15 tables, A to P without I", chosen.Missing);
-        Assert.Contains("holds 14 of them", chosen.Missing);
+        Assert.True(chosen.Found);
+        Assert.Same(BigramTables.FlusslaufP, chosen.Table);
     }
 
     [Fact]
-    public void TheFlusslaufDaysThatWorkAreTheOnesItsTablesCover()
+    public void EveryDayOfTheFlusslaufCalendarComesToATable()
     {
-        // The transcribed tables are in force on some days and not others, and the
-        // calendar decides which. If this ever found no day at all, the tables and the
-        // plan would have come from different booklets.
+        // Every cell of the calendar, all twelve columns of it. If this ever found a
+        // day without a table, the tables and the plan would have come from different
+        // booklets — the check that mattered while the set was still being read.
         var days =
             (from kennziffer in Enumerable.Range(1, BigramTableSet.Flusslauf.Plan.Columns)
              from day in Enumerable.Range(1, 31)
              select BigramTableChoice.From(BigramTableSet.Flusslauf, kennziffer, day, 'A'))
             .ToArray();
 
-        Assert.Contains(days, chosen => chosen.Found);
-        Assert.Contains(days, chosen => !chosen.Found);
-        Assert.All(days, chosen => Assert.Equal("ABCDEFGHJKLMNO".Contains(chosen.Letter), chosen.Found));
+        Assert.All(days, chosen => Assert.True(chosen.Found));
+        Assert.All(days, chosen => Assert.Contains(chosen.Letter, "ABCDEFGHJKLMNOP"));
     }
 
 

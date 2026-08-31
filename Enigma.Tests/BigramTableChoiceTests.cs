@@ -133,10 +133,10 @@ public class BigramTableChoiceTests
     }
 
     [Fact]
-    public void ASetThatNamesFifteenTablesWouldSaySo()
+    public void ASetThatNamesFifteenTablesSaysSo()
     {
-        // Flußlauf's calendar is here before its tables are, so the phrasing it will
-        // need can be checked now rather than after the fact.
+        // The message reads its counts off the plan, so a fifteen-table set has to be
+        // described as one — the phrasing that made Flußlauf's missing tables legible.
         Assert.Equal("A to P without I", Tauschtafelplan.BrunoFlusslauf.TafelRange);
         Assert.Equal(15, Tauschtafelplan.BrunoFlusslauf.Tafeln.Count);
     }

@@ -293,15 +293,15 @@ public class NavalArgumentsTests
     }
 
     [Fact]
-    public void AFlusslaufDayWithoutItsTableIsRefusedRatherThanSubstituted()
+    public void TheFlusslaufDayThatOnceHadNoTableNowReachesIt()
     {
-        // One of its fifteen tables is not transcribed yet, and Monatstag 6 calls
-        // for one of them. A day that wants a missing table has to say so: quietly
-        // handing back Tafel A would decrypt to nonsense.
+        // Monatstag 6 on Kennziffer one calls for Tafel P, the last of the fifteen and
+        // the last to be transcribed. It was refused for as long as the table was
+        // missing; now the whole calendar leads somewhere.
         var read = Read(setName: "Flusslauf", kennziffer: 1, monatstag: 6, indicator: "FNHCGVET");
 
-        Assert.Contains("Tafel P", read.Error);
-        Assert.Contains("15 tables, A to P without I", read.Error);
+        Assert.False(read.Failed);
+        Assert.Same(BigramTables.FlusslaufP, read.Table);
     }
 
     [Fact]

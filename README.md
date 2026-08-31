@@ -312,7 +312,7 @@ The table is reciprocal: if `AK` is written as `BD` then `BD` is written as `AK`
 one table serves both stations without being reversed. It is an involution on pairs
 of letters, exactly as a reflector is on single ones.
 
-**Three sets ship, twenty-seven tables in all.**
+**Three sets ship, twenty-eight tables in all.**
 
 `BigramTables.Quelle` holds Tafels A to H of the set "Quelle", booklet Prüf-Nr. 2499 —
 the set U-534 was using on 1 May 1945, and every table its scan contains. The cover
@@ -323,10 +323,11 @@ without I. It is the complete edition: nine tables and both sides of its
 Tauschtafelplan, so every day of its calendar leads to a table that is actually
 here.
 
-`BigramTables.Flusslauf` holds fourteen of the set "Flußlauf", booklet Prüf-Nr. 3633,
+`BigramTables.Flusslauf` holds all fifteen of the set "Flußlauf", booklet Prüf-Nr. 3633,
 which is a *fifteen* table edition — A to P without I — and not a nine table one.
-Its calendar has twelve Kennziffer columns and is transcribed in full; Tafeln A to O
-are here and one remains. Its scan is the poorest of the three at 150 ppi, half the
+Its calendar has twelve Kennziffer columns and is transcribed in full, and so are
+Tafeln A to P, so every day of it leads to a table that is actually here. It is the
+second complete set. Its scan is the poorest of the three at 150 ppi, half the
 linear resolution of Meer's, which is why the pages are cut on their own printed
 rules and each cell magnified from native pixels rather than read out of an enlarged
 render. `tools/transcribe` holds that pipeline.
@@ -397,8 +398,8 @@ A day that falls on Tafel J stops and says so rather than substituting a table t
 would decipher to plausible nonsense.
 
 Quelle's Tafel J is in neither source and is not shipped, so some days of its calendar
-have no table to offer and say so, and Flußlauf has one table still to transcribe.
-Meer has no such day. Supply your own table and it will be used:
+have no table to offer and say so. Meer and Flußlauf have no such day. Supply your own
+table and it will be used:
 
 ```csharp
 var table = BigramTable.Parse("AK=BD HQ=BJ LK=EM GZ=EJ");
