@@ -76,6 +76,21 @@ public static class KeySheets
                 Positions = "NAQL",
                 Plugboard = "BQ CR DI EJ KW MT OS PX UZ GH"
             },
+            ["doenitz"] = new()
+            {
+                // P1030681: the signal announcing that Doenitz had been named
+                // Hitler's successor, sent over the U-boat command net and
+                // photographed among U-534's papers. These are the settings the
+                // operator turned. Hoerenberg publishes rings AAEL at YOSZ beside
+                // them, which is the same machine written another way, and the test
+                // says so.
+                Name = "Doenitz succession signal (P1030681)",
+                Reflector = "C-Thin",
+                Rotors = "Beta V VI VIII",
+                RingSettings = "EPEL",
+                Positions = "CDSZ",
+                Plugboard = "AE BF CM DQ HU JN LX PR SZ VW"
+            },
             ["enigma-d"] = new()
             {
                 Name = "Enigma D, commercial",

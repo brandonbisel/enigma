@@ -243,6 +243,7 @@ dotnet run --project Enigma.Cmd -- --list-presets
 | `instruction-manual` | Enigma Instruction Manual, 1930 |
 | `u264` | U-264 (Looks), 19 November 1942 — four-rotor M4 |
 | `rasch` | U-106 (Rasch), 19 November 1942 — four-rotor M4 |
+| `doenitz` | The signal naming Dönitz Hitler's successor — M4 with the thin UKW-C |
 
 Decrypting the Barbarossa intercept:
 
@@ -943,6 +944,13 @@ rather than reconstructed, and each is pinned by a test.
   there as photographs of the originals rather than as data, which is what the
   transcription pipeline in `tools/transcribe` exists for: "Quelle", "Meer" and
   "Flußlauf" are read off those scans.
+- **[Michael Hörenberg, *P1030681, the Karl Dönitz message*](https://enigma.hoerenberg.com/index.php?cat=The%20U534%20messages&page=P1030681)**
+  — the signal announcing that Dönitz had been named Hitler's successor, photographed
+  among U-534's papers: the settings, 372 letters of ciphertext and the plaintext
+  with its garbles. It is the only message here on the thin UKW-C, and so the only
+  thing that pins that reflector's wiring to traffic rather than to a table. The page
+  gives the settings twice, as rings EPEL at CDSZ and as AAEL at YOSZ; the second is
+  the same machine written another way, and a test says so.
 - **[Dan Girard, *Solution of the last of the "H.M.S. Hurricane" intercepts*](https://enigma.hoerenberg.com/index.php?cat=M4%20Project%202006&page=Rasch%20Message)**
   (with Michael Hörenberg) — the break of the first of the three signals Ralph
   Erskine published in *Cryptologia* in 1996 as a challenge, unbroken for twenty
@@ -956,6 +964,6 @@ rather than reconstructed, and each is pinned by a test.
   ring, and the statement that the UKW "can be moved by wheel 3", which is what puts
   the reflector at the end of the carry chain.
 
-The historical messages — Barbarossa, Scharnhorst, U-264, U-106 and the 1930
-instruction manual — are published intercepts, and each is decrypted in the test
-suite with its own key sheet.
+The historical messages — Barbarossa, Scharnhorst, U-264, U-106, the Dönitz
+succession signal and the 1930 instruction manual — are published intercepts, and
+each is decrypted in the test suite with its own key sheet.

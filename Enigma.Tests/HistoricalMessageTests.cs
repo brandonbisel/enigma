@@ -13,6 +13,26 @@ public class HistoricalMessageTests
 {
     private static readonly ICharacterMap CharacterMap = new DefaultCharacterMap();
 
+    private const string DoenitzCiphertext =
+        "LANOTCTOUARBBFPMHPHGCZXTDYGAHGUFXGEWKBLKGJWLQXXTGPJJAVTOYJFGSLPPQIHZFXOEBWIIEKFZLCLOAQJULJ" +
+        "OYHSSMBBGWHZANVOIIPYRBRTDJQDJJOQKCXWDNBBTYVXLYTAPGVEATXSONPNYNQFUDBBHHVWEPYEYDOHNLXKZDNWRH" +
+        "DUWUJUMWWVIIWZXIVIUQDRHYMNCYEFUAPNHOTKHKGDNPSAKNUAGHJZSMJBMHVTREQEDGXHLZWIFUSKDQVELNMIMITH" +
+        "BHDBWVHDFYHJOQIHORTDJDBWXEMEAYXGYQXOHFDMYUXXNOJAZRSGHPLWMLRECWWUTLRTTVLBHYOORGLGOWUXNXHMHY" +
+        "FAACQEKTHSJW";
+
+    /// <summary>
+    /// As published, garbles and all: a signal this long, relayed and taken down by
+    /// ear, does not come through clean. ANSTERLE is ANSTELLE and HVRRGRZSSADMIRAL
+    /// is HERR GROSSADMIRAL. The J's around GOERING and BORMANN are quotation marks
+    /// and KK ... KK brackets a covername, which is signalling rather than damage.
+    /// </summary>
+    private const string DoenitzPlaintext =
+        "KRKRALLEXXFOLGENDESISTSOFORTBEKANNTZUGEBENXXICHHABEFOLGENDENBEFEHLERHALTENXXJANSTERLEDESBI" +
+        "SHERIGXNREICHSMARSCHALLSJGOERINGJSETZTDERFUEHRERSIEYHVRRGRZSSADMIRALYALSSEINENNACHFOLGERE" +
+        "INXSCHRIFTLSCHEVOLLMACHTUNTERWEGSXABSOFORTSOLLENSIESAEMTLICHEMASSNAHMENVERFUEGENYDIESICHA" +
+        "USDERGEGENWAERTIGENLAGEERGEBENXGEZXREICHSLEITEIKKTULPEKKJBORMANNJXXOBXDXMMMDURNHFKSTXKOMX" +
+        "ADMXUUUBOOIEXKP";
+
     private const string RaschCiphertext =
         "HCEYZTCSOPUPPZDICQRDLWXXFACTTJMBRDVCJJMMZRPYIKHZAWGLYXWTMJPQUEFSZBOTVRLALZXWVXTSLFFFAUDQFBW" +
         "RRYAPSBOWJMKLDUYUPFUQDOWVHAHCDWAUARSWTKOFVOYFPUFHVZFDGGPOOVGRMBPXXZCANKMONFHXPCKHJZBUMXJWXK" +
@@ -24,7 +44,7 @@ public class HistoricalMessageTests
         "SIWXDVVVJRASCH";
 
     /// <summary>Long enough for two settings that differ at all to show that they do.</summary>
-    private static readonly string LongRun = new('A', 250);
+    private static readonly string LongRun = new('A', 5000);
 
     [Fact]
     public void Barbarossa_DecryptsToTheKnownPlaintext()
@@ -109,6 +129,32 @@ public class HistoricalMessageTests
     }
 
     [Fact]
+    public void Doenitz_DecryptsToTheKnownPlaintext()
+    {
+        // The M4's other thin reflector, on the longest message here: 372 letters,
+        // which is over the 320 a naval signal was supposed to be held to.
+        Assert.Equal(DoenitzPlaintext, Decrypt("doenitz", DoenitzCiphertext));
+    }
+
+    [Fact]
+    public void ThePublishedDoenitzSettingIsTheSameMachineWrittenAnotherWay()
+    {
+        // Rings AAEL at YOSZ are published beside the settings the operator turned,
+        // and here -- unlike Rasch's alternate -- the two really are one machine. Ring
+        // and position are shifted together on the Greek wheel, which never turns,
+        // and on the left wheel, which is driven by the middle wheel's notch rather
+        // than by its own. Both shifts cancel, so no length of message parts them.
+        Assert.True(KeySheets.TryGet("doenitz", out var sheet));
+
+        var published = sheet.Copy();
+        published.RingSettings = "AAEL";
+        published.Positions = "YOSZ";
+
+        Assert.Equal(DoenitzPlaintext, Decrypt(published, DoenitzCiphertext));
+        Assert.Equal(Decrypt(sheet, LongRun), Decrypt(published, LongRun));
+    }
+
+    [Fact]
     public void TheThinRotorNeverMoves()
     {
         // It has no ratchet, so nothing can drive it however long the message runs.
@@ -133,6 +179,7 @@ public class HistoricalMessageTests
     [InlineData("instruction-manual")]
     [InlineData("u264")]
     [InlineData("rasch")]
+    [InlineData("doenitz")]
     [InlineData("default")]
     public void EveryPackagedKeySheetBuildsAMachine(string name)
     {
