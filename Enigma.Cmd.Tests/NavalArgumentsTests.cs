@@ -295,7 +295,7 @@ public class NavalArgumentsTests
     [Fact]
     public void AFlusslaufDayWithoutItsTableIsRefusedRatherThanSubstituted()
     {
-        // Three of its fifteen tables are not transcribed yet, and Monatstag 6 calls
+        // Two of its fifteen tables are not transcribed yet, and Monatstag 6 calls
         // for one of them. A day that wants a missing table has to say so: quietly
         // handing back Tafel A would decrypt to nonsense.
         var read = Read(setName: "Flusslauf", kennziffer: 1, monatstag: 6, indicator: "FNHCGVET");
