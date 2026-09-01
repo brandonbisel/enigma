@@ -2,11 +2,12 @@ namespace Enigma;
 
 public abstract class RotorBase : IRotor
 {
-    private IDictionary<int, int>? _inverseWiring;
+    private int[]? _forward;
+    private int[]? _reverse;
 
     public abstract string Name { get; }
     public virtual bool IsThin => false;
-    public int Contacts => Wiring.Count;
+    public int Contacts => Forward.Length;
     public int Position { get; protected set; }
     public int RingSetting { get; protected set; }
     protected abstract IEnumerable<int> TurnoverPositions { get; }
@@ -16,7 +17,11 @@ public abstract class RotorBase : IRotor
     // translation works from the position net of the ring rather than the raw position.
     private int Offset => Mod(Position - RingSetting);
 
-    private IDictionary<int, int> InverseWiring => _inverseWiring ??= WiringTable.Invert(Wiring);
+    // Both directions are flattened from the one wiring rather than written beside
+    // it, so a wheel cannot be wired one way going and another coming back.
+    private int[] Forward => _forward ??= WiringTable.Flatten(Wiring);
+
+    private int[] Reverse => _reverse ??= WiringTable.Flatten(WiringTable.Invert(Wiring));
 
     protected RotorBase()
     {
@@ -45,12 +50,12 @@ public abstract class RotorBase : IRotor
 
     public int Translate(int input)
     {
-        return Wheel.Translate(Wiring, input, Offset);
+        return Wheel.Translate(Forward, input, Offset);
     }
 
     public int TranslateReverse(int input)
     {
-        return Wheel.Translate(InverseWiring, input, Offset);
+        return Wheel.Translate(Reverse, input, Offset);
     }
 
     /// <summary>
@@ -76,6 +81,6 @@ public abstract class RotorBase : IRotor
 
     private int Mod(int value)
     {
-        return Wheel.Mod(value, Wiring.Count);
+        return Wheel.Mod(value, Forward.Length);
     }
 }

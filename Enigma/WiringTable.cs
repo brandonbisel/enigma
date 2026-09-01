@@ -105,6 +105,35 @@ public static class WiringTable
             .ToArray();
     }
 
+    /// <summary>
+    /// The same wiring as an array indexed by contact. A table is built and checked
+    /// as a dictionary because that is how a wiring is written down and what makes
+    /// its faults nameable; it is then read once per contact per character, which is
+    /// the other thing entirely. Every table here covers its contacts from zero, so
+    /// the two hold the same wiring and only one of them is a hot path.
+    /// </summary>
+    public static int[] Flatten(IDictionary<int, int> wiring)
+    {
+        var table = new int[wiring.Count];
+
+        foreach (var (contact, output) in wiring)
+        {
+            // Named rather than left to surface as an index error further down, which
+            // is the same reason the factory checks contact counts.
+            if (contact < 0 || contact >= table.Length)
+            {
+                throw new ArgumentException(
+                    $"Wiring has {table.Length} contacts but one of them is numbered {contact}; " +
+                    "a table must cover its contacts from zero.",
+                    nameof(wiring));
+            }
+
+            table[contact] = output;
+        }
+
+        return table;
+    }
+
     public static IDictionary<int, int> Invert(IDictionary<int, int> wiring)
     {
         var table = new Dictionary<int, int>(wiring.Count);

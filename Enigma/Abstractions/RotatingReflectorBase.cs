@@ -23,5 +23,5 @@ public abstract class RotatingReflectorBase : ReflectorBase, IRotatingReflector
 
     public void SetRingSetting(int ringSetting) => RingSetting = Wheel.Mod(ringSetting, Contacts);
 
-    public override int Translate(int input) => Wheel.Translate(Wiring, input, Offset);
+    public override int Translate(int input) => Wheel.Translate(Table, input, Offset);
 }

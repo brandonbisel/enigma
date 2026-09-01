@@ -13,10 +13,14 @@ internal static class Wheel
     /// <summary>
     /// Reads a wiring at a given offset: the current enters at the contact the
     /// wheel's rotation brings under the input, and leaves shifted back again.
+    ///
+    /// Takes the wiring flattened to an array rather than as the dictionary it was
+    /// built and checked as. A wheel reads its wiring twice per character, and a
+    /// rotor search reads it a great many more times than that.
     /// </summary>
-    public static int Translate(IDictionary<int, int> wiring, int input, int offset)
+    public static int Translate(int[] wiring, int input, int offset)
     {
-        var contacts = wiring.Count;
+        var contacts = wiring.Length;
 
         return Mod(wiring[Mod(input + offset, contacts)] - offset, contacts);
     }
