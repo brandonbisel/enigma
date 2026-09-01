@@ -1,44 +1,43 @@
 @* The path the current took on the last keypress: in through the board and the
    stator, right to left across the wheels, back off the reflector, then out the
    way it came. This is the machine's own account of itself — the same
-   TranslationTrace the diagnostic log is written from — not a retelling. *@
+   TranslationTrace the diagnostic log is written from — not a retelling.
 
-<section class="signal" data-testid="signal">
-    <h2>Stromweg <span class="gloss">the path of the current</span></h2>
+   It is an aid to reading the machine rather than a part of it, so switched off it
+   is a box to tick and nothing else, and it takes a panel's chrome only once it has
+   a path to show. The name sits on the switch, so there is no heading above it. *@
 
+<section class="signal @(Watching ? null : "signal-shut")" data-testid="signal">
     <label class="watching">
         <input type="checkbox" data-testid="watching" checked="@Watching" @onchange="Watch" />
-        Follow the current
+        Stromweg <span class="gloss">follow the path of the current</span>
     </label>
 
-    @if (!Watching)
+    @if (Watching)
     {
-        <p class="muted" data-testid="signal-off">
-            Tick the box to see the path each keypress takes through the machine.
-        </p>
-    }
-    else if (Trace is null)
-    {
-        <p class="muted" data-testid="signal-idle">Press a key.</p>
-    }
-    else
-    {
-        <p class="signal-ends" data-testid="signal-ends">
-            <span class="signal-key">@Letter(Trace.Input)</span>
-            keyed, lamp
-            <span class="signal-lamp">@Letter(Trace.Output)</span>,
-            window @Window
-        </p>
+        if (Trace is null)
+        {
+            <p class="muted" data-testid="signal-idle">Press a key.</p>
+        }
+        else
+        {
+            <p class="signal-ends" data-testid="signal-ends">
+                <span class="signal-key">@Letter(Trace.Input)</span>
+                keyed, lamp
+                <span class="signal-lamp">@Letter(Trace.Output)</span>,
+                window @Window
+            </p>
 
-        <ol class="steps" data-testid="steps">
-            @foreach (var (step, index) in Trace.Steps.Select((step, index) => (step, index)))
-            {
-                <li class="step @Leg(index)" data-testid="step">
-                    <span class="step-part">@step.Component</span>
-                    <span class="step-flow">@Letter(step.Input) &rarr; @Letter(step.Output)</span>
-                </li>
-            }
-        </ol>
+            <ol class="steps" data-testid="steps">
+                @foreach (var (step, index) in Trace.Steps.Select((step, index) => (step, index)))
+                {
+                    <li class="step @Leg(index)" data-testid="step">
+                        <span class="step-part">@step.Component</span>
+                        <span class="step-flow">@Letter(step.Input) &rarr; @Letter(step.Output)</span>
+                    </li>
+                }
+            </ol>
+        }
     }
 </section>
 

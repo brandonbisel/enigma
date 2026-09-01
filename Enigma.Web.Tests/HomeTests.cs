@@ -35,6 +35,21 @@ public class HomeTests : BunitContext
         Assert.Equal(26, page.FindAll("[data-testid=key]").Count);
     }
 
+    // Which column a panel sits in is markup; how wide the page has to be before the
+    // two stand side by side is CSS, which a component test cannot see. This is the
+    // half it can: the machine and what an operator writes are separable, and the
+    // plugboard counts as machine because it is one — a panel of cables, not a form.
+    [Fact]
+    public void TheMachineAndWhatIsWrittenIntoItStandInColumnsOfTheirOwn()
+    {
+        var page = Page();
+
+        Assert.NotNull(page.Find(".desk-machine [data-testid=panel]"));
+        Assert.NotNull(page.Find(".desk-machine [data-testid=stecker]"));
+        Assert.NotNull(page.Find(".desk-operator [data-testid=settings]"));
+        Assert.NotNull(page.Find(".desk-operator [data-testid=message]"));
+    }
+
     [Fact]
     public void ChoosingAnotherSheetKeysAnotherMachine()
     {
@@ -237,7 +252,7 @@ public class HomeTests : BunitContext
 
         Type(page, "A");
 
-        Assert.NotEmpty(page.FindAll("[data-testid=signal-off]"));
+        Assert.NotEmpty(page.FindAll(".signal-shut"));
         Assert.Empty(page.FindAll("[data-testid=step]"));
     }
 
@@ -329,7 +344,7 @@ public class HomeTests : BunitContext
         page.Find("[data-testid=watching]").Change(false);
 
         Assert.Empty(page.FindAll("[data-testid=step]"));
-        Assert.NotEmpty(page.FindAll("[data-testid=signal-off]"));
+        Assert.NotEmpty(page.FindAll(".signal-shut"));
     }
 
     [Fact]
@@ -487,6 +502,18 @@ public class HomeTests : BunitContext
         page.Find("[data-testid=doubled]").Change(true);
 
         Assert.Contains(Indicator("QWE", doubled: true), page.Find("[data-testid=worked]").TextContent);
+    }
+
+    [Fact]
+    public void AMessageKeyNobodyHasTypedYetIsNotAMistake()
+    {
+        var page = Page();
+
+        page.Find("[data-testid=sheet]").Change("barbarossa");
+        page.Find("[data-testid=procedure]").Change(nameof(IndicatorMode.Sending));
+
+        Assert.Empty(page.FindAll("[data-testid=indicator-error]"));
+        Assert.Equal("BLA", Windows(page));
     }
 
     [Fact]

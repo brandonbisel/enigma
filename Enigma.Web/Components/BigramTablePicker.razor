@@ -40,7 +40,7 @@
             </label>
         }
 
-        <label>Tafel
+        <label>Tafel <span class="gloss">which table</span>
             <select data-testid="tafel" value="@Choice.Letter" @onchange="ChoseTafel"
                     disabled="@(Kennziffer > 0)">
                 @foreach (var letter in Choice.Set.Tables.Keys)

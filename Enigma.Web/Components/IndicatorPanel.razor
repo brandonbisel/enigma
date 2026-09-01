@@ -11,7 +11,7 @@
     <h2>Spruchschlüssel <span class="gloss">the message key</span></h2>
 
     <div class="fields">
-        <label>Procedure
+        <label>Procedure <span class="gloss">how the message key is sent</span>
             <select data-testid="procedure" value="@Mode" @onchange="Choose">
                 <option value="@IndicatorMode.None">none — start at the Grundstellung (ground setting)</option>
                 <option value="@IndicatorMode.Sending">Heer / Luftwaffe, sending — choose a message key</option>
@@ -23,14 +23,14 @@
 
         @if (Mode == IndicatorMode.Sending)
         {
-            <label>Message key
+            <label>Message key <span class="gloss">where the rotors start</span>
                 <input data-testid="message-key" value="@MessageKey" @onchange="Keyed" />
             </label>
         }
 
         @if (Mode == IndicatorMode.Receiving)
         {
-            <label>Indicator
+            <label>Indicator <span class="gloss">the letters sent with the message</span>
                 <input data-testid="indicator-sent" value="@Indicator" @onchange="Sent" />
             </label>
         }

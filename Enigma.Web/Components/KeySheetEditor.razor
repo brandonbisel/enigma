@@ -6,7 +6,7 @@
     <h2>Schlüsseltafel <span class="gloss">the key sheet</span></h2>
 
     <div class="fields">
-        <label>Model
+        <label>Model <span class="gloss">which machine</span>
             <select data-testid="model" value="@_draft.ModelName()" @onchange="Model">
                 @foreach (var name in Parts.LayoutNames)
                 {
@@ -34,7 +34,7 @@
             </select>
         </label>
 
-        <label>Alphabet
+        <label>Alphabet <span class="gloss">the characters it has</span>
             <select data-testid="alphabet" value="@_draft.CharacterMapName()" @onchange="Alphabet">
                 @foreach (var name in Parts.CharacterMapNames)
                 {

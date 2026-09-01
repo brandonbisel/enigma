@@ -25,60 +25,70 @@
 
 @if (_session is not null)
 {
-    <MachinePanel Session="_session" Lit="_lit" OnKeyed="Keyed" OnReleased="Released" @key="_generation" />
+    @* Two columns given the width for them: the machine and its wiring on one side,
+       and everything an operator writes — the message, the key it was sent under,
+       the settings off the sheet — on the other. Narrower than that they fall back into the single
+       column they are written as. *@
+    <div class="desk">
+        <div class="desk-machine">
+            <MachinePanel Session="_session" Lit="_lit" OnKeyed="Keyed" OnReleased="Released" @key="_generation" />
 
-    <SignalPath Alphabet="_session.Alphabet"
-                Trace="_trace"
-                Watching="_watching"
-                OnWatching="Watching" />
+            <SignalPath Alphabet="_session.Alphabet"
+                        Trace="_trace"
+                        Watching="_watching"
+                        OnWatching="Watching" />
 
-    @* String parameters take the attribute literally unless it is an expression,
-       which is why these two carry an @ and the others do not. *@
-    <MessagePanes Plaintext="@_message"
-                  Ciphertext="@Ciphertext"
-                  Prepare="_prepare"
-                  Groups="_groups"
-                  OnPlaintext="Wrote"
-                  OnPrepare="Preparing"
-                  OnGroups="Grouping" />
+            @if (_session.HasPlugBoard)
+            {
+                <PlugBoardPanel Alphabet="_session.Alphabet"
+                                Cables="_session.Cables().ToList()"
+                                OnPatch="Patch"
+                                OnUnpatch="Unpatch" />
+            }
+        </div>
 
-    <IndicatorPanel Mode="_mode"
-                    MessageKey="@_messageKey"
-                    Indicator="@_indicator"
-                    Doubled="_doubled"
-                    Result="_keying"
-                    Error="@_keying?.Error"
-                    OnMode="Procedure_Mode"
-                    OnMessageKey="Procedure_MessageKey"
-                    OnIndicator="Procedure_Indicator"
-                    OnDoubled="Procedure_Doubled"
-                    KeyGroup="@_keyGroup"
-                    MessageGroup="@_messageGroup"
-                    FirstFiller="_firstFiller"
-                    LastFiller="_lastFiller"
-                    Kennziffer="_kennziffer"
-                    Monatstag="_monatstag"
-                    Choice="Chosen"
-                    OnKeyGroup="Procedure_KeyGroup"
-                    OnMessageGroup="Procedure_MessageGroup"
-                    OnFirstFiller="Procedure_FirstFiller"
-                    OnLastFiller="Procedure_LastFiller"
-                    OnSet="Procedure_Set"
-                    OnKennziffer="Procedure_Kennziffer"
-                    OnMonatstag="Procedure_Monatstag"
-                    OnTafel="Procedure_Tafel" />
+        <div class="desk-operator">
+            @* String parameters take the attribute literally unless it is an expression,
+               which is why these two carry an @ and the others do not. *@
+            <MessagePanes Plaintext="@_message"
+                          Ciphertext="@Ciphertext"
+                          Prepare="_prepare"
+                          Groups="_groups"
+                          OnPlaintext="Wrote"
+                          OnPrepare="Preparing"
+                          OnGroups="Grouping" />
 
-    <KeySheetEditor Sheet="_sheet"
-                    ShowsReflectorSetting="_session.ReflectorPosition is not null"
-                    OnChanged="Rekey" />
+            <IndicatorPanel Mode="_mode"
+                            MessageKey="@_messageKey"
+                            Indicator="@_indicator"
+                            Doubled="_doubled"
+                            Result="_keying"
+                            Error="@_keying?.Error"
+                            OnMode="Procedure_Mode"
+                            OnMessageKey="Procedure_MessageKey"
+                            OnIndicator="Procedure_Indicator"
+                            OnDoubled="Procedure_Doubled"
+                            KeyGroup="@_keyGroup"
+                            MessageGroup="@_messageGroup"
+                            FirstFiller="_firstFiller"
+                            LastFiller="_lastFiller"
+                            Kennziffer="_kennziffer"
+                            Monatstag="_monatstag"
+                            Choice="Chosen"
+                            OnKeyGroup="Procedure_KeyGroup"
+                            OnMessageGroup="Procedure_MessageGroup"
+                            OnFirstFiller="Procedure_FirstFiller"
+                            OnLastFiller="Procedure_LastFiller"
+                            OnSet="Procedure_Set"
+                            OnKennziffer="Procedure_Kennziffer"
+                            OnMonatstag="Procedure_Monatstag"
+                            OnTafel="Procedure_Tafel" />
 
-    @if (_session.HasPlugBoard)
-    {
-        <PlugBoardPanel Alphabet="_session.Alphabet"
-                        Cables="_session.Cables().ToList()"
-                        OnPatch="Patch"
-                        OnUnpatch="Unpatch" />
-    }
+            <KeySheetEditor Sheet="_sheet"
+                            ShowsReflectorSetting="_session.ReflectorPosition is not null"
+                            OnChanged="Rekey" />
+        </div>
+    </div>
 }
 
 @code {
@@ -204,7 +214,39 @@
     /// </summary>
     private KeySheet Keyed(KeySheet daily)
     {
-        _keying = _mode switch
+        _keying = Entered ? Worked(daily) : Waiting();
+
+        return _keying?.Sheet ?? daily;
+    }
+
+    /// <summary>
+    /// Whether the operator has written down what the procedure needs. A field they
+    /// have not reached yet is not a mistake, so an empty one is left to be filled
+    /// in rather than reported: the machine sits at the ground setting meanwhile,
+    /// which is where it sat before the procedure was chosen.
+    /// </summary>
+    private bool Entered => _mode switch
+    {
+        IndicatorMode.Sending => Typed(_messageKey),
+        IndicatorMode.Receiving or IndicatorMode.NavalReceiving => Typed(_indicator),
+        IndicatorMode.NavalSending => Typed(_keyGroup) && Typed(_messageGroup),
+        _ => true
+    };
+
+    private static bool Typed(string value) => !string.IsNullOrWhiteSpace(value);
+
+    /// <summary>
+    /// What there is to say while the fields are still empty. A table the set never
+    /// published is true whatever is typed at it, so that one is said straight away;
+    /// there is nothing else to work out yet.
+    /// </summary>
+    private IndicatorResult? Waiting() =>
+        _mode.IsNaval() && Chosen is { Found: false, Missing: var missing }
+            ? new IndicatorResult(null, null, null, null, missing)
+            : null;
+
+    private IndicatorResult? Worked(KeySheet daily) =>
+        _mode switch
         {
             IndicatorMode.Sending => MessageKeying.Send(Procedure, daily, _messageKey, _doubled),
             IndicatorMode.Receiving => MessageKeying.Receive(Procedure, daily, _indicator),
@@ -214,9 +256,6 @@
                 NavalProcedure, daily, table, _indicator)),
             _ => null
         };
-
-        return _keying?.Sheet ?? daily;
-    }
 
     /// <summary>
     /// The naval procedure cannot run without a table, and one of the nine the set

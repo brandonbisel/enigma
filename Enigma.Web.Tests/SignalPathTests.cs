@@ -17,8 +17,10 @@ public class SignalPathTests : BunitContext
     {
         var view = Render(watching: false);
 
-        Assert.NotEmpty(view.FindAll("[data-testid=signal-off]"));
+        // Off, it is the switch and nothing else, which is what the class says.
+        Assert.NotEmpty(view.FindAll(".signal-shut"));
         Assert.Empty(view.FindAll("[data-testid=steps]"));
+        Assert.Empty(view.FindAll("[data-testid=signal-ends]"));
     }
 
     [Fact]

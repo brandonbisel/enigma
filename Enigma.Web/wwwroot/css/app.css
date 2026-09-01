@@ -36,6 +36,25 @@ body {
 
 main { max-width: 44rem; margin: 0 auto; }
 
+/* Given the room, the machine stands beside what is written into it rather than
+   above it, so that plugging a cable and seeing the lamps are the same glance. The
+   threshold is what the two columns need: a keyboard is nine keys wide and does not
+   reflow, and the fields opposite want about as much again. Below it the grid is a
+   single column and the page is what it was. */
+@media (min-width: 64rem) {
+    main { max-width: 70rem; }
+
+    .desk {
+        display: grid;
+        grid-template-columns: minmax(26rem, 30rem) minmax(0, 1fr);
+        gap: 1.2rem;
+        align-items: start;
+    }
+
+    /* Panels space themselves from the one above; the first in a column has none. */
+    .desk > * > :first-child { margin-top: 0; }
+}
+
 h1 { font-size: 1.4rem; font-weight: 600; letter-spacing: 0.08em; margin: 0 0 1rem; }
 
 /* The router focuses the heading on arrival so a screen reader announces the page.
@@ -225,7 +244,10 @@ h1:focus { outline: none; }
     color: var(--muted);
 }
 
-.fields { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 0.8rem; }
+/* Bottom-aligned, because a label is a name over a gloss over a control and not
+   every name has a gloss under it: left to themselves the controls sit at whatever
+   height their own label left them. */
+.fields { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.8rem; margin-bottom: 0.8rem; }
 .fields label, .field-name {
     display: flex;
     flex-direction: column;
@@ -275,13 +297,14 @@ h1:focus { outline: none; }
 .muted { color: var(--muted); letter-spacing: normal; font-family: inherit; }
 
 .signal { margin-top: 1.2rem; padding: 1rem; background: var(--panel); border: 1px solid var(--edge); border-radius: 0.6rem; }
-.signal h2 {
-    margin: 0 0 0.8rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
+
+/* Switched off it is a switch, not a panel: no chrome, and set in from the edge by
+   the padding a panel would have had, so that ticking the box does not shift it. */
+.signal-shut {
+    margin-top: 0.6rem;
+    padding: 0 1rem;
+    background: none;
+    border-color: transparent;
 }
 
 .watching { display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: var(--muted); }

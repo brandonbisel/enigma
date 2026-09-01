@@ -174,6 +174,40 @@ public class NavalIndicatorPanelTests : BunitContext
     }
 
     [Fact]
+    public void GroupsNobodyHasTypedYetAreNotAMistake()
+    {
+        // Choosing the procedure is not the same as having filled it in: the panel
+        // waits to be told the Kenngruppen rather than complaining that they are
+        // empty. The machine stands at the ground setting meanwhile.
+        var page = Naval("u264", IndicatorMode.NavalSending);
+
+        Assert.Empty(page.FindAll("[data-testid=indicator-error]"));
+        Assert.Equal("VJNA", Windows(page));
+    }
+
+    [Fact]
+    public void HalfTheGroupsIsStillNotAMistake()
+    {
+        var page = Naval("u264", IndicatorMode.NavalSending);
+
+        page.Find("[data-testid=key-group]").Change("DUZ");
+
+        Assert.Empty(page.FindAll("[data-testid=indicator-error]"));
+    }
+
+    [Fact]
+    public void AGroupTypedWronglyIsReportedOnceBothAreIn()
+    {
+        var page = Naval("u264", IndicatorMode.NavalSending);
+
+        page.Find("[data-testid=key-group]").Change("DU");
+        page.Find("[data-testid=message-group]").Change("YMU");
+
+        Assert.Contains(
+            "Schlüsselkenngruppe", page.Find("[data-testid=indicator-error]").TextContent);
+    }
+
+    [Fact]
     public void AnIndicatorThatIsNotEightLettersIsReportedNotThrown()
     {
         var page = Naval("u534", IndicatorMode.NavalReceiving);
