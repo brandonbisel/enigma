@@ -91,6 +91,21 @@ public static class KeySheets
                 Positions = "CDSZ",
                 Plugboard = "AE BF CM DQ HU JN LX PR SZ VW"
             },
+            ["graf-spee"] = new()
+            {
+                // Sent to the Admiral Graf Spee the day before the Battle of the
+                // River Plate, and intercepted by the Swedish signals station at
+                // Norrkoeping. Eight plugs rather than ten, which is what the
+                // Kriegsmarine was using in 1939. Hoerenberg gives the setting two
+                // ways, AHX at EKD and AUX at EXD; they are one machine over this
+                // message and the test says how far that holds.
+                Name = "Graf Spee, 12 December 1939",
+                Reflector = "B",
+                Rotors = "I VI V",
+                RingSettings = "AHX",
+                Positions = "EKD",
+                Plugboard = "AO BU CR EW JT KS MP NY"
+            },
             ["enigma-d"] = new()
             {
                 Name = "Enigma D, commercial",

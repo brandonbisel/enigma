@@ -33,6 +33,18 @@ public class HistoricalMessageTests
         "USDERGEGENWAERTIGENLAGEERGEBENXGEZXREICHSLEITEIKKTULPEKKJBORMANNJXXOBXDXMMMDURNHFKSTXKOMX" +
         "ADMXUUUBOOIEXKP";
 
+    private const string GrafSpeeCiphertext =
+        "QQMWTQJWJTMNSXYLNSACMHXZZRXWLNQZZZDZVLVUTKXDXWSLSKNWEZNFCFRGLIUHXPVKINZAJVECMOTVPVNZIMRBUI" +
+        "EUBZGFMZYPRMMEWTFZFGVLQSYQGWNDMQDNRZOVYMGAVLFMRAFZRYRMICPEZSMKBMHJUTDUQSBABROQLEFPRBZFJQSR" +
+        "PMRYXWOXIJLDVIFVXJLMRQFGYHIMELRSDOTAIVVXMXMDPISBHLIMMBFMKJSWTJMCCPEGKPJAVBWKJUZQBDEWDJYBMT" +
+        "YM";
+
+    private const string GrafSpeePlaintext =
+        "GRAFSPEEVONSEEKRIEGSLTGXXJDEVONSHIREJJDEYONSHIRAJWESTLICHSCHOTTLANDXJYOLBERTJJCOLBERTJJAIG" +
+        "LEJJAIGLEJMIGTELMEERYJALGERIEJJALGERIEJJJULOSVERNEJJJULESDERNEJVONXASABLANCANACHGIBRALTARX" +
+        "ENGLISCHJAFRICSTARJJAFRICSTARJMITZWOHECKGESCHUETZENNEUNXEINSLWOXTENERIFEAUSNACHBUENOSAIRES" +
+        "DF";
+
     private const string RaschCiphertext =
         "HCEYZTCSOPUPPZDICQRDLWXXFACTTJMBRDVCJJMMZRPYIKHZAWGLYXWTMJPQUEFSZBOTVRLALZXWVXTSLFFFAUDQFBW" +
         "RRYAPSBOWJMKLDUYUPFUQDOWVHAHCDWAUARSWTKOFVOYFPUFHVZFDGGPOOVGRMBPXXZCANKMONFHXPCKHJZBUMXJWXK" +
@@ -155,6 +167,41 @@ public class HistoricalMessageTests
     }
 
     [Fact]
+    public void GrafSpee_DecryptsToTheKnownPlaintext()
+    {
+        // The earliest wartime message here, and the only one on eight plugs: in
+        // 1939 the Kriegsmarine was still cabling eight pairs rather than ten. A
+        // three wheel M3 with naval wheels, intercepted by the Swedish station at
+        // Norrkoeping the day before the Battle of the River Plate.
+        Assert.Equal(GrafSpeePlaintext, Decrypt("graf-spee", GrafSpeeCiphertext));
+    }
+
+    [Fact]
+    public void TheTwoGrafSpeeSettingsAreOneMachine()
+    {
+        // The setting is published two ways, rings AHX at EKD and rings AUX at EXD,
+        // and that is not a doubt about the reading. Ring and position are shifted
+        // together by thirteen on the middle wheel, so its offset is unchanged, and
+        // the middle wheel is VI -- one of the naval wheels with two notches, M and
+        // Z, which are themselves thirteen apart. The shift maps the notch set onto
+        // itself, so the two settings step alike and no length of message parts them.
+        Assert.True(KeySheets.TryGet("graf-spee", out var sheet));
+
+        var alternate = sheet.Copy();
+        alternate.RingSettings = "AUX";
+        alternate.Positions = "EXD";
+
+        Assert.Equal(GrafSpeePlaintext, Decrypt(alternate, GrafSpeeCiphertext));
+        Assert.Equal(Decrypt(sheet, LongRun), Decrypt(alternate, LongRun));
+
+        var middle = BuildFactory().Create(sheet).Rotors.Skip(1).First();
+        var turnovers = middle.GetTurnoverPositions().Order().ToArray();
+
+        Assert.Equal("VI", middle.Name);
+        Assert.Equal(13, turnovers[1] - turnovers[0]);
+    }
+
+    [Fact]
     public void TheThinRotorNeverMoves()
     {
         // It has no ratchet, so nothing can drive it however long the message runs.
@@ -180,6 +227,7 @@ public class HistoricalMessageTests
     [InlineData("u264")]
     [InlineData("rasch")]
     [InlineData("doenitz")]
+    [InlineData("graf-spee")]
     [InlineData("default")]
     public void EveryPackagedKeySheetBuildsAMachine(string name)
     {

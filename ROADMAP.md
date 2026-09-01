@@ -41,11 +41,12 @@ it runs; it is done when something published says it runs correctly.
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard, both indicator procedures |
 
-704 tests, including six historical messages — Barbarossa, Scharnhorst, U-264,
-U-106, the signal naming Dönitz Hitler's successor and the 1930 instruction manual —
-each verified against its published ciphertext, and a differential suite comparing
-against an independently written oracle. The Dönitz signal is what pins the thin
-UKW-C: every other message here runs on B.
+707 tests, including seven historical messages — Barbarossa, Scharnhorst, Graf Spee,
+U-264, U-106, the signal naming Dönitz Hitler's successor and the 1930 instruction
+manual — each verified against its published ciphertext, and a differential suite
+comparing against an independently written oracle. The Dönitz signal is what pins the
+thin UKW-C, every other message here running on B; the Graf Spee signal is the
+earliest, and the only one cabled with eight plugboard pairs rather than ten.
 
 The web front end is complete. It is a Blazor WebAssembly page with the verified
 library running unchanged in the browser: no server, so nothing typed into it is

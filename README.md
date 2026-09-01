@@ -244,6 +244,7 @@ dotnet run --project Enigma.Cmd -- --list-presets
 | `u264` | U-264 (Looks), 19 November 1942 — four-rotor M4 |
 | `rasch` | U-106 (Rasch), 19 November 1942 — four-rotor M4 |
 | `doenitz` | The signal naming Dönitz Hitler's successor — M4 with the thin UKW-C |
+| `graf-spee` | Graf Spee, 12 December 1939 — naval M3, and eight plugs rather than ten |
 
 Decrypting the Barbarossa intercept:
 
@@ -944,6 +945,16 @@ rather than reconstructed, and each is pinned by a test.
   there as photographs of the originals rather than as data, which is what the
   transcription pipeline in `tools/transcribe` exists for: "Quelle", "Meer" and
   "Flußlauf" are read off those scans.
+- **[Michael Hörenberg, *Graf Spee* (the Norrköping intercepts)](https://enigma.hoerenberg.com/index.php?cat=Norrk%C3%B6ping%20messages&page=PAGE_69_OWLS%20Graf%20Spee)**
+  — a signal from the Seekriegsleitung to the Admiral Graf Spee on 12 December 1939,
+  taken by the Swedish signals station at Norrköping and photographed from its
+  archive: the settings, 272 letters of ciphertext and the plaintext. It is cabled
+  with eight plugboard pairs rather than ten, which is what the Kriegsmarine was
+  doing in 1939. Its setting is given two ways, rings AHX at EKD and rings AUX at
+  EXD, and that is one machine rather than two readings of a smudged sheet: ring and
+  position are shifted together by thirteen on the middle wheel, and that wheel is
+  VI, whose two notches are themselves thirteen apart, so the shift maps the notch
+  set onto itself and nothing the machine does can tell the settings apart.
 - **[Michael Hörenberg, *P1030681, the Karl Dönitz message*](https://enigma.hoerenberg.com/index.php?cat=The%20U534%20messages&page=P1030681)**
   — the signal announcing that Dönitz had been named Hitler's successor, photographed
   among U-534's papers: the settings, 372 letters of ciphertext and the plaintext
@@ -964,6 +975,6 @@ rather than reconstructed, and each is pinned by a test.
   ring, and the statement that the UKW "can be moved by wheel 3", which is what puts
   the reflector at the end of the carry chain.
 
-The historical messages — Barbarossa, Scharnhorst, U-264, U-106, the Dönitz
-succession signal and the 1930 instruction manual — are published intercepts, and
-each is decrypted in the test suite with its own key sheet.
+The historical messages — Barbarossa, Scharnhorst, Graf Spee, U-264, U-106, the
+Dönitz succession signal and the 1930 instruction manual — are published intercepts,
+and each is decrypted in the test suite with its own key sheet.
