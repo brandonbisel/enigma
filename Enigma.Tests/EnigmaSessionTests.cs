@@ -152,6 +152,26 @@ public class EnigmaSessionTests
     }
 
     [Fact]
+    public void AFaultIsReportedAsItsSentenceAndNotAsAnArgumentName()
+    {
+        // ArgumentException appends the parameter it was thrown for. That is a note
+        // to whoever called the method, and in a trimmed WebAssembly build it comes
+        // through as its own resource key, so it reached the panel as neither
+        // English nor German. Only what was written to be read is shown.
+        var result = EnigmaSession.Open(BuildFactory(), new KeySheet
+        {
+            Reflector = "B",
+            Rotors = "I II NOSUCHWHEEL",
+            RingSettings = "AAA",
+            Positions = "AAA"
+        });
+
+        Assert.DoesNotContain("Parameter", result.Error);
+        Assert.DoesNotContain("Arg_", result.Error);
+        Assert.EndsWith(".", result.Error);
+    }
+
+    [Fact]
     public void APlugboardOnAMachineWithNoBoardIsReportedNotThrown()
     {
         var result = EnigmaSession.Open(BuildFactory(), new KeySheet

@@ -111,6 +111,23 @@ public class MessageKeyingTests
     }
 
     [Fact]
+    public void AGroupThatIsNoTrigramIsReportedInTheWordsOnThePanel()
+    {
+        // ArgumentException writes the parameter it was thrown for on a second
+        // line. That line named the field 'keyGroup' at an operator, and in the
+        // trimmed WebAssembly build it arrived as a resource key rather than as
+        // words at all, so only the sentence is kept.
+        var keyed = MessageKeying.SendNaval(
+            NavalProcedure(), Daily(), Table, string.Empty, "QWE", 'X', 'X');
+
+        Assert.False(keyed.Succeeded);
+        Assert.Contains("Schlüsselkenngruppe", keyed.Error);
+        Assert.DoesNotContain("keyGroup", keyed.Error);
+        Assert.DoesNotContain("Parameter", keyed.Error);
+        Assert.DoesNotContain("Arg_", keyed.Error);
+    }
+
+    [Fact]
     public void AKeySheetTheMachineCannotBeBuiltFromIsReportedNotThrown()
     {
         var broken = Daily();
@@ -142,6 +159,12 @@ public class MessageKeyingTests
 
     private static IIndicatorProcedure Procedure() =>
         Services().GetRequiredService<IIndicatorProcedure>();
+
+    private static INavalIndicatorProcedure NavalProcedure() =>
+        Services().GetRequiredService<INavalIndicatorProcedure>();
+
+    /// <summary>Enough of a table to fail before it is ever consulted.</summary>
+    private static readonly BigramTable Table = BigramTable.Parse("FN=KY HC=DM GV=UU ET=ZZ");
 
     private static IEnigmaMachineFactory Factory() =>
         Services().GetRequiredService<IEnigmaMachineFactory>();

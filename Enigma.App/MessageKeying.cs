@@ -111,7 +111,7 @@ public static class MessageKeying
         catch (Exception exception)
             when (exception is ArgumentException or FormatException or InvalidOperationException)
         {
-            return new IndicatorResult(null, null, null, null, exception.Message);
+            return new IndicatorResult(null, null, null, null, OperatorMessage.Of(exception));
         }
     }
 }

@@ -25,8 +25,8 @@ public class NavalIndicatorProcedure : INavalIndicatorProcedure
         ArgumentNullException.ThrowIfNull(dailyKey);
         ArgumentNullException.ThrowIfNull(table);
 
-        var key = Trigram(keyGroup, nameof(keyGroup));
-        var message = Trigram(messageGroup, nameof(messageGroup));
+        var key = Trigram(keyGroup, "Schlüsselkenngruppe", nameof(keyGroup));
+        var message = Trigram(messageGroup, "Verfahrenkenngruppe", nameof(messageGroup));
 
         return new NavalIndicator(
             key,
@@ -108,15 +108,20 @@ public class NavalIndicatorProcedure : INavalIndicatorProcedure
     private static string Substitute(BigramTable table, string upper, string lower) =>
         string.Concat(upper.Zip(lower, (a, b) => table.Substitute(string.Concat(a, b))));
 
-    private static string Trigram(string value, string field)
+    /// <summary>
+    /// A group off the Kenngruppenbuch. The fault is named the way the operator
+    /// knows the field, in German, while the exception carries the parameter it was
+    /// thrown for — the two are not the same word and the message is the one read.
+    /// </summary>
+    private static string Trigram(string value, string field, string parameter)
     {
         var cleaned = Clean(value);
 
         return cleaned.Length == 3
             ? cleaned
             : throw new ArgumentException(
-                $"{field} is a trigram from the Kenngruppenbuch, but '{value}' is {cleaned.Length} letters.",
-                field);
+                $"The {field} is a trigram from the Kenngruppenbuch, but '{value}' is {cleaned.Length} letters.",
+                parameter);
     }
 
     private static string Clean(string? value) =>

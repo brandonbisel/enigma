@@ -31,5 +31,6 @@ public sealed class MachineBuildResult
 
     internal static MachineBuildResult Keyed(EnigmaSession session) => new(session, null, null);
 
-    internal static MachineBuildResult Rejected(Exception fault) => new(null, fault.Message, fault);
+    internal static MachineBuildResult Rejected(Exception fault) =>
+        new(null, OperatorMessage.Of(fault), fault);
 }
