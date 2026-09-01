@@ -108,6 +108,32 @@ var groupsOption = new Option<int?>("--groups")
     Description = "Write the result in groups of this many letters, as a signaller would. Try 5."
 };
 
+var recoverOption = new Option<bool>("--recover")
+{
+    Description = "Attack the input instead of enciphering it: search for the wheels and where they were set."
+};
+
+var wheelsOption = new Option<string?>("--wheels")
+{
+    Description = "Recovery: the wheels that could have been in the machine, such as \"I II III IV V\". " +
+                  "Defaults to the ones the key sheet names."
+};
+
+var fittedOption = new Option<int?>("--fitted")
+{
+    Description = "Recovery: how many wheels the machine carries. Defaults to the number on the key sheet."
+};
+
+var reflectorsOption = new Option<string?>("--reflectors")
+{
+    Description = "Recovery: the reflectors to try, such as \"B C\". Defaults to the one on the key sheet."
+};
+
+var candidatesOption = new Option<int?>("--candidates")
+{
+    Description = "Recovery: how many settings to report. Defaults to five."
+};
+
 var verboseOption = new Option<bool>("--verbose", "-v")
 {
     Description = "Trace every character through the plugboard, rotors and reflector."
@@ -145,6 +171,11 @@ var root = new RootCommand(
     fillersOption,
     prepareOption,
     groupsOption,
+    recoverOption,
+    wheelsOption,
+    fittedOption,
+    reflectorsOption,
+    candidatesOption,
     verboseOption,
     logFileOption,
     initKeySheetOption
@@ -173,6 +204,11 @@ root.SetAction((parseResult, cancellationToken) => RunAsync(
     parseResult.GetValue(fillersOption),
     parseResult.GetValue(prepareOption),
     parseResult.GetValue(groupsOption),
+    parseResult.GetValue(recoverOption),
+    parseResult.GetValue(wheelsOption),
+    parseResult.GetValue(fittedOption),
+    parseResult.GetValue(reflectorsOption),
+    parseResult.GetValue(candidatesOption),
     parseResult.GetValue(verboseOption),
     parseResult.GetValue(logFileOption),
     parseResult.GetValue(initKeySheetOption),
@@ -200,6 +236,11 @@ async Task<int> RunAsync(
     string? fillers,
     bool prepare,
     int? groups,
+    bool recover,
+    string? wheels,
+    int? fitted,
+    string? reflectors,
+    int? candidates,
     bool verbose,
     FileInfo? logFile,
     FileInfo? initKeySheet,
@@ -251,6 +292,15 @@ async Task<int> RunAsync(
     {
         await Console.Error.WriteLineAsync(
             "Give either --message-key to encipher or --indicator to decipher, not both.");
+
+        return 1;
+    }
+
+    if (recover && (messageKey is not null || indicator is not null))
+    {
+        await Console.Error.WriteLineAsync(
+            "A search recovers a setting; it cannot also be told one. " +
+            "Give --recover on its own, without --message-key or --indicator.");
 
         return 1;
     }
@@ -313,22 +363,56 @@ async Task<int> RunAsync(
             return 1;
         }
     }
-    builder.Services.AddSingleton(new ConsoleOptions(
-        input, output, messageKey, indicator, doubled, prepare, groups,
-        naval.Table, naval.KeyGroup, naval.MessageGroup, naval.FirstFiller, naval.LastFiller));
-    builder.Services.AddHostedService<EnigmaConsole>();
+    // The key sheet has to be settled first: what is not given on the command line --
+    // the box of wheels, how many are fitted, the reflector -- is read off it.
+    KeySheet sheet;
+
     if (preset is not null && keySheets.TryGet(preset, out var packaged))
     {
+        sheet = packaged;
         builder.Services.AddSingleton(Options.Create(packaged));
     }
     else
     {
-        builder.Services.Configure<KeySheet>(KeySheetConfiguration(builder, keySheetFile));
+        var configuration = KeySheetConfiguration(builder, keySheetFile);
+
+        sheet = configuration.Get<KeySheet>() ?? new KeySheet();
+        builder.Services.Configure<KeySheet>(configuration);
     }
+
+    var recovery = RecoveryArguments.Read(
+        recover, wheels, fitted, reflectors, candidates, RotorNames(sheet), sheet.ReflectorName());
+
+    if (recovery.Error is { } refused)
+    {
+        await Console.Error.WriteLineAsync(refused);
+        return 1;
+    }
+
+    builder.Services.AddSingleton(new ConsoleOptions(
+        input, output, messageKey, indicator, doubled, prepare, groups,
+        naval.Table, naval.KeyGroup, naval.MessageGroup, naval.FirstFiller, naval.LastFiller,
+        recovery));
+    builder.Services.AddHostedService<EnigmaConsole>();
 
     await builder.Build().RunAsync(cancellationToken);
 
     return Environment.ExitCode;
+}
+
+// The wheels a key sheet names, which is what a search falls back to for its box.
+// Read through the sheet's own parser so that "K-I" stays one wheel.
+static IReadOnlyList<string> RotorNames(KeySheet sheet)
+{
+    try
+    {
+        return sheet.Wheels().Select(wheel => wheel.Name).ToList();
+    }
+    catch (FormatException)
+    {
+        // A sheet that names no rotors is one a search has to be told about.
+        return [];
+    }
 }
 
 // A key sheet file replaces the configured machine outright. It may hold the key

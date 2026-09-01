@@ -1,3 +1,4 @@
+using Enigma.Analysis;
 using Enigma.App;
 using Enigma.Models;
 using Microsoft.Extensions.Hosting;
@@ -9,6 +10,7 @@ namespace Enigma.Cmd;
 public class EnigmaConsole : BackgroundService
 {
     private readonly IEnigmaMachineFactory _factory;
+    private readonly IPartsCatalogue _parts;
     private readonly IIndicatorProcedure _procedure;
     private readonly INavalIndicatorProcedure _naval;
     private readonly IHostApplicationLifetime _lifetime;
@@ -18,6 +20,7 @@ public class EnigmaConsole : BackgroundService
 
     public EnigmaConsole(
         IEnigmaMachineFactory factory,
+        IPartsCatalogue parts,
         IIndicatorProcedure procedure,
         INavalIndicatorProcedure naval,
         IHostApplicationLifetime lifetime,
@@ -26,6 +29,7 @@ public class EnigmaConsole : BackgroundService
         IOptions<KeySheet> keySheet)
     {
         _factory = factory;
+        _parts = parts;
         _procedure = procedure;
         _naval = naval;
         _lifetime = lifetime;
@@ -66,6 +70,13 @@ public class EnigmaConsole : BackgroundService
 
     private async Task RunAsync(CancellationToken stoppingToken)
     {
+        if (_options.Recovery is { Wanted: true } recovery)
+        {
+            await RecoverAsync(recovery, stoppingToken);
+
+            return;
+        }
+
         var keyed = EnigmaSession.Open(_factory, KeyTheMachine());
 
         if (!keyed.Succeeded)
@@ -114,6 +125,106 @@ public class EnigmaConsole : BackgroundService
                 await fileWriter.DisposeAsync();
             }
         }
+    }
+
+    /// <summary>
+    /// Attacks the input instead of enciphering it: sweeps the wheels for the setting
+    /// that makes the ciphertext look most like language, and reports what it finds.
+    ///
+    /// What comes back is the wheels, not the message. The board is not recovered, so
+    /// none of these settings reads as German — that is said plainly on the way out
+    /// rather than left for the reader to discover.
+    /// </summary>
+    private async Task RecoverAsync(RecoveryArguments recovery, CancellationToken stoppingToken)
+    {
+        var reader = _options.Input is null ? Console.In : new StreamReader(_options.Input.FullName);
+
+        try
+        {
+            var space = SearchSpace.Of(
+                _parts, _keySheet, recovery.Box, recovery.Fitted, recovery.Reflectors);
+
+            var ciphertext = space.Read(await reader.ReadToEndAsync(stoppingToken));
+
+            if (ciphertext.Length < 2)
+            {
+                await Console.Error.WriteLineAsync("No ciphertext to work on.");
+                Environment.ExitCode = 1;
+
+                return;
+            }
+
+            await Console.Error.WriteLineAsync(
+                $"Searching {space.Arrangements.Count} arrangements, {space.Settings:N0} settings, " +
+                $"over {ciphertext.Length} letters.");
+
+            if (!string.IsNullOrWhiteSpace(_keySheet.Plugboard))
+            {
+                await Console.Error.WriteLineAsync(
+                    "The key sheet's cables are ignored: a search runs the machine with the board empty.");
+            }
+
+            var found = new RotorSearch(_factory).Run(
+                space, ciphertext, recovery.Candidates, progress: Reporting(), cancellationToken: stoppingToken);
+
+            var writer = _options.Output is null ? Console.Out : new StreamWriter(_options.Output.FullName);
+
+            try
+            {
+                var rank = 0;
+
+                foreach (var candidate in found)
+                {
+                    await writer.WriteLineAsync(
+                        $"{++rank,2}  {candidate.Score:F5}  rotors {candidate.Settings.Rotors}, " +
+                        $"reflector {candidate.Settings.Reflector}, " +
+                        $"Ringstellung {candidate.Settings.RingSettings}, " +
+                        $"Grundstellung {candidate.Settings.Positions}");
+                }
+
+                await writer.FlushAsync(stoppingToken);
+            }
+            finally
+            {
+                if (_options.Output is not null)
+                {
+                    await writer.DisposeAsync();
+                }
+            }
+
+            await Console.Error.WriteLineAsync(
+                "These are wheel settings with no plugboard. Unless the machine had none, " +
+                "they will not read as German.");
+        }
+        finally
+        {
+            if (_options.Input is not null)
+            {
+                reader.Dispose();
+            }
+        }
+    }
+
+    // A sweep of a few million settings takes long enough that silence looks like a
+    // hang. It goes to standard error, with the results, like every other diagnostic.
+    private IProgress<SearchProgress> Reporting()
+    {
+        var shown = -1;
+
+        return new Progress<SearchProgress>(progress =>
+        {
+            var tenth = (int)(progress.Fraction * 10);
+
+            if (tenth <= shown)
+            {
+                return;
+            }
+
+            shown = tenth;
+
+            Console.Error.WriteLine(
+                $"  {progress.Fraction,4:P0}  best so far {progress.Best?.Score:F5}");
+        });
     }
 
     /// <summary>

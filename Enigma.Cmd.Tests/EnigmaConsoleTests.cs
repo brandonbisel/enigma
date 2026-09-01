@@ -237,6 +237,7 @@ public class EnigmaConsoleTests : IDisposable
 
         var console = new EnigmaConsole(
             services.GetRequiredService<IEnigmaMachineFactory>(),
+            services.GetRequiredService<IPartsCatalogue>(),
             services.GetRequiredService<IIndicatorProcedure>(),
             services.GetRequiredService<INavalIndicatorProcedure>(),
             new Lifetime(),

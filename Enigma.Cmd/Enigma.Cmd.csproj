@@ -24,6 +24,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Enigma\Enigma.csproj" />
+      <ProjectReference Include="..\Enigma.Analysis\Enigma.Analysis.csproj" />
       <ProjectReference Include="..\Enigma.App\Enigma.App.csproj" />
     </ItemGroup>
 

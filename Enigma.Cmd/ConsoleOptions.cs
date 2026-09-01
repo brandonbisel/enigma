@@ -11,6 +11,11 @@ namespace Enigma.Cmd;
 /// </param>
 /// <param name="KeyGroup">The Schlüsselkenngruppe, when sending the naval way.</param>
 /// <param name="MessageGroup">The Verfahrenkenngruppe, when sending the naval way.</param>
+/// <param name="Recovery">
+/// What to search for, when the input is to be attacked rather than enciphered. The
+/// machine is reciprocal, so every other option here describes one that is already
+/// keyed; this is the one that describes a machine that is not.
+/// </param>
 public record ConsoleOptions(
     FileInfo? Input,
     FileInfo? Output,
@@ -23,10 +28,12 @@ public record ConsoleOptions(
     string? KeyGroup = null,
     string? MessageGroup = null,
     char FirstFiller = 'X',
-    char LastFiller = 'X')
+    char LastFiller = 'X',
+    RecoveryArguments? Recovery = null)
 {
     // A banner would corrupt piped ciphertext or a file, so it is only shown when
     // a person is plainly sitting at the terminal.
     public bool ShowBanner =>
+        Recovery is not { Wanted: true } &&
         Input is null && Output is null && !Console.IsInputRedirected && !Console.IsOutputRedirected;
 }
