@@ -39,10 +39,11 @@ it runs; it is done when something published says it runs correctly.
 | Swiss K, Railway, Tirpitz | Complete — the same pattern with other wheels |
 | Norenigma and KD | Complete — an Enigma I rewired, and a K with a UKW-D |
 | Enigma Z30 | Complete — ten contacts, figures, a pawl-driven reflector, a rotor-body notch |
+| Cryptanalysis | An index-of-coincidence wheel search. Breaks the machines with no plugboard; does not break a steckered one, and there is a test that says so |
 | Front ends | A command line tool and a browser panel, over a shared session layer |
 | The panel | Windows, lamps, keyboard, signal path, message, key sheet, plugboard, both indicator procedures |
 
-714 tests, including seven historical messages — Barbarossa, Scharnhorst, Graf Spee,
+752 tests, including seven historical messages — Barbarossa, Scharnhorst, Graf Spee,
 U-264, U-106, the signal naming Dönitz Hitler's successor and the 1930 instruction
 manual — each verified against its published ciphertext, and a differential suite
 comparing against an independently written oracle. The Dönitz signal is what pins the
@@ -179,13 +180,65 @@ one new drive, and nothing else. What remains is therefore a matter of sourcing
 wirings rather than writing mechanism, and the standard above decides which of them
 can ship.
 
+### The wheel search, and where it stops
+
+`Enigma.Analysis` recovers the wheels from ciphertext alone, after Gillogly's method:
+sweep every arrangement at every starting position with the board empty, score each
+decipherment by its index of coincidence, and let the right setting rise; then sweep
+the ring settings that decide where in the message the wheels carry each other over,
+and the alignment again against those, until neither improves.
+
+**It breaks the machines that have no plugboard.** That is the Enigma D and K, the
+Swiss K, the Railway and Tirpitz machines, the Zählwerk G-31 and the Z30 — most of
+what this library has grown, and the machines for which no intercept survives to pin
+a break against.
+
+The rate is measured rather than asserted: over 24 random settings of an unsteckered
+Enigma I, 400 letters each, across all 60 orderings of the five Wehrmacht wheels, it
+recovered the wheel order 15 times, and every one of those 15 returned a setting that
+read at least 378 of the 400 letters. The other 9 read fewer than 30 — it either
+breaks a message or it is nowhere near, with nothing in between. Most of the failures
+are the first phase's blind spot: it assumes the rings sit at A, and a fast wheel
+whose ring is far from A puts the true setting out of reach of any shortlist taken on
+score.
+
+**It does not break a service Enigma, and that is a test rather than a caveat.** The
+plugboard sits *inside* the rotor sandwich rather than outside it, so running the
+machine without cables does not relabel the plaintext — it shreds it. At the true
+setting of the Graf Spee signal, the longest three-wheel message here and the one on
+the fewest cables, the unsteckered decipherment scores 0.040 against a random 0.038,
+while the best wrong setting in the same sweep reaches 0.049. The signal is real and
+it is smaller than the noise.
+`TheIndexOfCoincidenceCannotBreakASteckeredServiceMachine` pins exactly that, so a
+later change cannot quietly claim the break.
+
+The measure is the whole of the reason. The index of coincidence needs no corpus, so
+nothing had to be sourced to ship it — and it is blunt. What closes the gap is
+scoring against German rather than against structure: bigrams, trigrams, the hexagram
+scoring Ostwald and Weierud used. That is a table of statistics, which is data, which
+falls under the rule at the top of this file. It waits on a source, exactly as the
+Uhr table did.
+
 ## Future
 
-**Cryptanalysis** — bombe simulation, index-of-coincidence rotor search, and
-ciphertext-only attack. This is deliberately placed after the simulator is
-complete rather than alongside it: an attack is only worth writing against a
-machine already known to be right, and a wrong machine would make a broken attack
-look successful.
+**Better scoring, and with it the steckered break.** A German n-gram table, published
+or derived from a named corpus with the derivation shipped the way
+`tools/transcribe` is. That is what a plugboard hill-climb would need to work
+against, and what would take the wheel search from the commercial machines to the
+service ones.
+
+**Bombe simulation.** Crib-driven rather than statistical, and so not blocked on the
+sourcing question above at all. The intention is the machine rather than the result:
+menus, the twelve Enigma equivalents, the diagonal board, and stops an operator
+checks — modelled the way the rest of this library models things, and pinned against
+published worked menus.
+
+The original entry read "bombe simulation, index-of-coincidence rotor search, and
+ciphertext-only attack", placed after the simulator on the grounds that "an attack is
+only worth writing against a machine already known to be right, and a wrong machine
+would make a broken attack look successful." That judgement held up: every failure
+found while writing the search turned out to be in the search or in the measure, and
+the machine underneath was never in question.
 
 ## Not scheduled
 

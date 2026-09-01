@@ -8,12 +8,13 @@ what is a future goal, and what is deliberately not scheduled.
 
 ```bash
 dotnet build              # whole solution
-dotnet test               # whole suite, currently 714 tests
+dotnet test               # whole suite, currently 752 tests
 dotnet test --filter FullyQualifiedName~RotorTests
 echo "AAAAA" | dotnet run --project Enigma.Cmd
 dotnet run --project Enigma.Web    # the panel, on http://localhost:5298
 dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
 dotnet run --project Enigma.Cmd -- --preset barbarossa
+dotnet run --project Enigma.Cmd -- --recover --wheels "I II III IV V" < cipher.txt
 ```
 
 There is no linter or formatter configured. Match the surrounding style.
@@ -27,12 +28,14 @@ Enigma/                 The library
   Rotors/               RotorI..RotorVIII plus the thin Beta and Gamma
   Reflectors/           ReflectorA/B/C plus the thin B and C of the M4
   Extensions/           DI registration
+Enigma.Analysis/        Attacks on the machine, namespace Enigma.Analysis
 Enigma.App/             Orchestration shared by the front ends, namespace Enigma.App
 Enigma.Cmd/             Console app, packaged as a tool named enigma
 Enigma.Web/             Blazor WebAssembly front end
   Components/           The panel: windows, lamps, keyboard
 Enigma.Tests/           xUnit tests
   Reference/            An independent implementation used as a test oracle
+Enigma.Analysis.Tests/  Tests for the attacks, including the ones that pin their limits
 Enigma.Web.Tests/       Component tests, on bUnit
 Enigma.Cmd.Tests/       Console app tests: argument handling and the whole path
 tools/transcribe/       Reading a bigram booklet off its scan; Python, not built
@@ -78,6 +81,54 @@ whichever the neighbouring files use.
   *formatted from* that structure rather than assembled beside it, so anything that
   wants to watch the machine — a log, a display — sees the same thing. Do not grow
   a second path description.
+
+## Cryptanalysis
+
+`Enigma.Analysis` attacks the machine. It depends on `Enigma` and on nothing else —
+not on `Enigma.App` — so the arrow only ever points one way: an attack knows about
+the machine, the machine knows nothing about attacks.
+
+- **An attack drives the real machine.** `RotorSearch` builds key sheets and hands
+  them to `IEnigmaMachineFactory` like any other caller. It must not grow a faster
+  private copy of the cipher. The only sanctioned duplicate implementation here is
+  `Enigma.Tests/Reference`, and it is a test oracle; a second one inside an attack
+  would be a second place for the cipher to be wrong, in the component whose whole
+  job is to say when something is right. Where speed is needed, make the real
+  machine faster — that is what the flattened wiring on `RotorBase` is.
+- **A machine is reused between settings, and that is load-bearing.** Building a
+  machine costs about twice what running one over a few hundred letters does, so a
+  sweep winds one back instead: every wheel's position and ring, and the reflector on
+  the machines whose drive turns it. If anything else ever becomes mutable during a
+  message, it has to be wound back here too.
+  `RotorSearchTests.WindingTheWheelsBackIsTheSameAsBuildingTheMachineAgain` is what
+  catches that, by rebuilding every answer from the key sheet it wrote and requiring
+  the same score.
+- **A recovered setting is an equivalence class, not a string.** Never assert that a
+  break equals a key sheet. Ring and position shifted together on a wheel whose notch
+  drives nothing give the same machine, and a message pins the wheels only as far as
+  it runs. `SettingsEquivalence` has the three questions worth asking: `ReadTheSame`
+  for one message, `AgreeOn` for how much of it, and `AreOneMachine` for whether any
+  message could part them. The last is a proof rather than a sample — every letter at
+  every state — so do not replace it with a long run of one letter.
+- **The search is parallel and must stay deterministic.** Ties go to the earlier
+  setting, in both the per-worker merge and the final ordering. An attack that
+  answered differently on a machine with more cores could not be tested.
+- **Scoring data is data.** `IndexOfCoincidence` needs no corpus, which is why it is
+  what ships. Anything stronger — bigrams, trigrams, hexagrams — is a table of German
+  statistics and falls under the sourcing rule above like any wiring: it needs a
+  publication, or a derivation script and a named corpus. Do not generate one.
+- **What it does and does not break is written down as tests, not as prose.** It
+  recovers the wheels of a machine with no plugboard. It cannot touch a steckered
+  service Enigma, and `TheIndexOfCoincidenceCannotBreakASteckeredServiceMachine`
+  pins that with the Graf Spee signal so that nobody later mistakes a change for a
+  break. `ARingSettingFarFromAHidesTheTrueSettingFromTheFirstPhase` pins the other
+  known blind spot. Neither is a caveat to be tidied away; they are the measured
+  shape of the thing.
+
+The analysis suite takes tens of seconds where the rest of the suite takes about one.
+That is not waste: a sweep of a hundred thousand settings over four hundred letters
+is a hundred million passes through a real Enigma, and there is no way to have the
+one without the other.
 
 ## Transcribing a bigram table
 
