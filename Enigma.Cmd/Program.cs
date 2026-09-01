@@ -69,12 +69,13 @@ var listSetsOption = new Option<bool>("--list-sets")
 
 var tafelOption = new Option<string?>("--tafel")
 {
-    Description = "Naval: the Doppelbuchstabentauschtafel to use, A to H of the set \"Quelle\"."
+    Description = "Naval: the Doppelbuchstabentauschtafel to use, named by its letter. See --list-sets."
 };
 
 var kennzifferOption = new Option<int?>("--kennziffer")
 {
-    Description = "Naval: take the table from the Tauschtafelplan instead, using this column (1-6). Needs --monatstag."
+    Description = "Naval: take the table from the Tauschtafelplan instead, using this column. " +
+                  "See --list-sets for how many a set has. Needs --monatstag."
 };
 
 var monatstagOption = new Option<int?>("--monatstag")
