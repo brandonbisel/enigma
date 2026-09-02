@@ -12,7 +12,7 @@ namespace Enigma;
 /// <see cref="IPlugBoard.TranslateReverse"/> exists.
 ///
 /// This models the substitution an Uhr produces, not the dial that selects it.
-/// See the note on the Uhr in the README for what is missing.
+/// See the note on the Uhr in docs/plugboard.md for what is missing.
 ///
 /// The reason a non-paired board leaves the machine reciprocal is the same reason
 /// the rotors may be non-paired: the current passes through each of them twice,

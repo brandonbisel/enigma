@@ -10,7 +10,7 @@ namespace Enigma.Tests;
 /// <summary>
 /// The Zählwerk Enigma G31. Its wheels are turned by cogs rather than pawls, so
 /// there is no double step; its reflector is both set and driven; and it has no
-/// plugboard at all. See the README for where the wirings and the drive come from.
+/// plugboard at all. See docs/sources.md for where the wirings and the drive come from.
 /// </summary>
 public class ZaehlwerkTests
 {

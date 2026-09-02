@@ -1,8 +1,57 @@
 # AGENTS.md
 
 Guidance for automated coding agents working in this repository. See `README.md`
-for what the project is and how to use it, and `ROADMAP.md` for what is planned,
-what is a future goal, and what is deliberately not scheduled.
+for what the project is and how to use it, `docs/` for the long form of any part of
+it, and `ROADMAP.md` for what is planned, what is a future goal, and what is
+deliberately not scheduled.
+
+**Read the next section before writing anything.** It is the one rule here that a
+capable model is most likely to break, and least likely to notice breaking.
+
+## The one rule: no cipher data without a source
+
+**No cipher data ships unless it is pinned to a published source or a published
+vector.** The full statement, and the list of every source this repository is built
+on, is [docs/sources.md](docs/sources.md). This section is the working form of it.
+
+**What counts as cipher data.** Rotor wirings. Notch and turnover positions. Reflector
+wirings and UKW-D pair sets. Entry wheel orders. Bigram tables and Tauschtafelplan
+calendars. Key sheets. Test vectors. The Uhr's forty-position table. Language
+statistics of any kind — an n-gram, trigram or hexagram table is data exactly as a
+wiring is. If it is a table of letters that decides what the machine does, it is data.
+
+**What counts as a source.** A publication that can be cited, and is, in
+`docs/sources.md` — a museum page, a paper, a reference implementation, a photographed
+original. Or a derivation from a *named* corpus with the derivation script shipped in
+the repository, the way `tools/transcribe` ships the pipeline that reads a bigram
+booklet off its scan. Nothing else.
+
+**What is never acceptable is writing it from memory.** This is the failure mode this
+rule exists for, and it is a specifically dangerous one for a language model, because
+this data is exactly the kind a model will produce fluently and confidently and
+wrongly. A plausible reconstruction of rotor VIII is not a cheap approximation of the
+real thing; it is a different machine that will not read a single historical message.
+
+Note how it fails. Wrong cipher data does not crash and does not throw. It produces
+plausible wrong ciphertext, which looks like output. In an attack it is worse: a wrong
+scoring table makes a broken search report the wrong break as the right one, in the one
+component whose entire job is to say when something is correct.
+
+**What has actually happened here.** A hand-written Uhr table was produced during
+development, failed its first test, and was deleted rather than patched into agreement
+— the feature waited until published forty-position vectors turned up. The G-31's
+wheels were withheld until its stepping rule was confirmed by two independent sources.
+Both are the rule working as intended.
+
+**When a mechanism is understood but its data is not, ship the mechanism and say so.**
+That is a real and available answer, not a failure: `GearDrive` is here and tested
+while the Enigma Z Mk II it belongs to is not, because no wiring for that machine is
+published. Record the gap in `ROADMAP.md` and leave it open. An honest gap is worth
+more than a filled one nobody can check.
+
+If you believe a piece of data is needed and no source is at hand, **stop and say so**
+rather than supplying it. That is the correct outcome, and it is what the roadmap's
+"waiting on evidence" items are.
 
 ## Commands
 
@@ -39,6 +88,8 @@ Enigma.Analysis.Tests/  Tests for the attacks, including the ones that pin their
 Enigma.Web.Tests/       Component tests, on bUnit
 Enigma.Cmd.Tests/       Console app tests: argument handling and the whole path
 tools/transcribe/       Reading a bigram booklet off its scan; Python, not built
+docs/                   Feature documentation, one file per feature
+  plans/                Detailed plans for what the roadmap has not built yet
 ```
 
 Folders do not always map to namespaces: `Abstractions/` is `namespace Enigma`,
@@ -82,6 +133,29 @@ whichever the neighbouring files use.
   wants to watch the machine — a log, a display — sees the same thing. Do not grow
   a second path description.
 
+## Documenting a change
+
+Three places, each with one job. Keep them that way.
+
+- **`README.md`** describes a finished feature the way a user meets it: what it does,
+  one example, a few paragraphs at most, and a link to its document. Nothing that
+  needs the reader to already care goes here.
+- **`docs/<feature>.md`** carries the rest — the reasoning, the evidence, the measured
+  numbers, the edge case that surprised somebody. One file per feature, listed in
+  `docs/README.md`. This is where detail belongs, so the README stays a tour.
+- **`ROADMAP.md`** covers only what is *not* built. Detailed plans live in
+  `docs/plans/`, one per item, linked from the roadmap line.
+
+**When work lands, the roadmap entry and its plan document are deleted**, and the
+feature is written up in `docs/` and summarised in the README. Do not move a finished
+item to a "completed" list: git already keeps that history, and a roadmap that
+accumulates finished work stops being a roadmap.
+
+New cipher data (a wiring, a table, a vector) also gets a bullet in `docs/sources.md`
+saying where it came from and what it settled. That is not optional: it is the second
+half of [the one rule](#the-one-rule-no-cipher-data-without-a-source), and a source
+list is the only place that rule can be enforced from.
+
 ## Cryptanalysis
 
 `Enigma.Analysis` attacks the machine. It depends on `Enigma` and on nothing else —
@@ -115,8 +189,9 @@ the machine, the machine knows nothing about attacks.
   answered differently on a machine with more cores could not be tested.
 - **Scoring data is data.** `IndexOfCoincidence` needs no corpus, which is why it is
   what ships. Anything stronger — bigrams, trigrams, hexagrams — is a table of German
-  statistics and falls under the sourcing rule above like any wiring: it needs a
-  publication, or a derivation script and a named corpus. Do not generate one.
+  statistics and falls under [the one rule](#the-one-rule-no-cipher-data-without-a-source)
+  like any wiring: it needs a publication, or a derivation script and a named corpus.
+  **Do not generate one.**
 - **What it does and does not break is written down as tests, not as prose.** It
   recovers the wheels of a machine with no plugboard. It cannot touch a steckered
   service Enigma, and `TheIndexOfCoincidenceCannotBreakASteckeredServiceMachine`
@@ -183,7 +258,7 @@ vectors for all forty positions, not reconstructed, and every vector is a test.
 Three properties hold and are asserted rather than assumed: position 00 reproduces
 plain cables, an `a` plug always reaches a `b` plug in every position, and exactly
 every fourth position is reciprocal, which was the flaw in the device. Do not
-regenerate the table from memory — see the Sources section of the README. An
+regenerate the table from memory — see `docs/sources.md`. An
 earlier hand-written attempt was deleted for failing the position 00 test. `UhrSetting` covers only the two letter notation that carried a
 dial setting, which the plates inside the Uhr's lid document in full; the plates
 are stamped letters, so it is Latin by construction and does not follow a machine's

@@ -6,7 +6,7 @@ namespace Enigma.Tests;
 /// <summary>
 /// The Uhr's dial, checked against published test vectors for all forty positions.
 /// The vectors use ten cables plugged in order, 1a-1b as A-B through 10a-10b as
-/// S-T, leaving UVWXYZ unplugged. See the README for where they come from.
+/// S-T, leaving UVWXYZ unplugged. See docs/sources.md for where they come from.
 /// </summary>
 public class EnigmaUhrTests
 {

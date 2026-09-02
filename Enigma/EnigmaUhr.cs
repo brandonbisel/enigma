@@ -24,7 +24,7 @@ public class EnigmaUhr : IPlugBoard
     // Which cable's b plug each cable's a plug reaches, per dial position, and the
     // same the other way. Derived from published test vectors covering all forty
     // positions, and checked against a second vector with a different plug set.
-    // See the Sources section of the README for where they come from.
+    // See docs/sources.md for where they come from.
     private static readonly string[] AToB =
     [
         "0123456789",  // 00

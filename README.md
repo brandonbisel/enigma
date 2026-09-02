@@ -1,26 +1,37 @@
 # Enigma
 
-A simulator of the Wehrmacht and Kriegsmarine Enigma machines, written in C# on .NET 10.
+A simulator of the Enigma machines, written in C# on .NET 10.
 
-It models the machine as it actually worked: a plugboard, a set of rotors that step
-as you type, and a reflector that sends the current back through the rotors in
-reverse. Both the three-rotor Wehrmacht and Kriegsmarine machines and the
-four-rotor naval M4 are supported. Because the reflector never maps a letter to itself, the machine is
-reciprocal — the same settings both encipher and decipher, which is exactly the
-property that made it breakable.
+It models the machine as it actually worked: a plugboard, a set of rotors that step as
+you type, and a reflector that sends the current back through the rotors in reverse.
+Because the reflector never maps a letter to itself, the machine is reciprocal — the
+same settings both encipher and decipher, which is exactly the property that made it
+breakable.
 
-What is planned next, and what is deliberately out of scope, is in
-[ROADMAP.md](ROADMAP.md).
+It is not one machine but a family of them. The Wehrmacht Enigma I and M3, the
+four-rotor naval M4, the commercial D and K and the machines built on them, the
+Abwehr's gear-driven Zählwerk G-31, and the Enigma Z30, which has no letters at all.
+Every wiring, table and vector here is taken from a published source and pinned by a
+test that decrypts a real message or reproduces a published vector.
+
+| | |
+|---|---|
+| **How to use it** | this file, and [docs](docs/) for the long form of any part of it |
+| **What is planned** | [ROADMAP.md](ROADMAP.md) |
+| **How to work in the repository** | [AGENTS.md](AGENTS.md) |
 
 ## Layout
 
 | Project | What it is |
 |---|---|
 | `Enigma` | The library: rotors, reflectors, plugboard, machine, and DI wireup |
+| `Enigma.Analysis` | Attacks on the machine: the ciphertext-only wheel search |
 | `Enigma.App` | Orchestration shared by the front ends: sessions, key sheet catalogue |
 | `Enigma.Cmd` | A console app, installable as a tool named `enigma` |
 | `Enigma.Web` | A browser front end: the machine as an operator's panel |
 | `Enigma.Tests` | xUnit tests, including a differential suite against an independent oracle |
+| `Enigma.Analysis.Tests` | Tests for the attacks, including the ones that pin their limits |
+| `Enigma.Cmd.Tests` | Console app tests: argument handling and the whole path |
 | `Enigma.Web.Tests` | Component tests for the panel, on bUnit |
 
 ## Building and running
@@ -31,151 +42,79 @@ dotnet test
 echo "ATTACKATDAWN" | dotnet run --project Enigma.Cmd
 ```
 
+## Documentation
+
+Each feature below is described here in a few paragraphs and in full in `docs/`.
+
+| | |
+|---|---|
+| [Key sheets](docs/key-sheets.md) | The settings file, and the packaged historical sheets |
+| [The machines](docs/machines.md) | Every model the library builds |
+| [The plugboard, the Uhr and UKW-D](docs/plugboard.md) | What a key sheet could rewire |
+| [Parts and alphabets](docs/parts-and-alphabets.md) | Wheels, stators and alphabets of your own |
+| [The indicator procedures](docs/indicator-procedures.md) | How each service sent its message key |
+| [The bigram tables](docs/bigram-tables.md) | The three naval sets, and how far each is trusted |
+| [Writing a message out](docs/message-text.md) | The signaller's conventions |
+| [The command line](docs/command-line.md) | Every option |
+| [The panel](docs/panel.md) | The browser front end |
+| [Using the library](docs/library.md) | The API, the trace, and the suite |
+| [Breaking a message](docs/cryptanalysis.md) | The wheel search and where it stops |
+| [Sources](docs/sources.md) | Where all of it came from |
+
 ## The panel
 
 ```bash
 dotnet run --project Enigma.Web
 ```
 
-The machine as an operator faced it: the wheel windows above, the lamps below them
-and the keys below those. Press a key and the wheels turn *before* the lamp
-lights, which is the order the machine works in. A lamp stays lit only while its
-key is held, and the keyboard takes one key at a time, as the real one did. The
-letter that lights, pressed back on a machine returned to the same setting, gives
-the original — reciprocity, which is the first thing anyone tries.
+The machine as an operator faced it: the wheel windows above, the lamps below them and
+the keys below those. Press a key and the wheels turn *before* the lamp lights, which
+is the order the machine works in. The letter that lights, pressed back on a machine
+returned to the same setting, gives the original.
 
-The panel is built from whatever machine the key sheet names. An Enigma I shows
-three windows and an M4 four, for its fourth wheel; a three-wheel Zählwerk machine
-shows four as well, but the extra one is its reflector, which turns and so is part
-of the setting. The keyboard is laid out from the machine's own alphabet rather
-than from a constant, so a machine that does not work in letters gets its own keys.
+The panel is built from whatever machine the key sheet names — three windows for an
+Enigma I, four for an M4, four again for a Zählwerk machine because its reflector
+turns and so is part of the setting. It is labelled as the machine was, Walzenlage and
+Ringstellung and Steckerbrett, with the English alongside each term. Below the windows
+are the message, both indicator procedures, the key sheet and the plugboard, all of
+them live: change any setting and the same message is keyed again.
 
-The panel is labelled as the machine was — Walzenlage, Ringstellung, Steckerbrett —
-with the English alongside each term, so the words can be picked up rather than
-looked up.
-
-Under *Spruchschlüssel* the panel offers both indicator procedures, because the two
-services worked out where the rotors start in quite different ways. Choose **Heer /
-Luftwaffe** and the message key is enciphered at the ground setting and shown in
-clear, as it travelled. Choose **Kriegsmarine** and nothing goes in clear at all: the
-two Kenngruppen and their padding letters when sending, the eight transmitted letters
-when receiving, and both hidden under a Doppelbuchstabentauschtafel.
-
-Which **Satz** — which booklet you are holding — comes first, because a set of tables
-and the calendar issued with it are useless apart. Choosing one changes what the rest
-of the panel offers: Quelle has eight Tafeln and six Kennziffer columns, Meer nine and
-twelve, Flußlauf fifteen and twelve.
-
-Which table is then a choice the operator did not make. Give the panel a Kennziffer column
-— the one his cipher net was allotted — and a day of the month, and the
-Tauschtafelplan names the table, exactly as it did aboard. Pick nothing and any of the
-set's shipped tables can be chosen by hand instead. A day that falls on Quelle's Tafel
-J, the one never recovered, says so rather than failing quietly.
-
-U-534's real message runs through it: load the *U-534, 1 May 1945* key sheet, choose
-Kriegsmarine receiving, Kennziffer six on the first of the month, and type the
-transmitted `FNHC GVET`. The windows come up `ODFF` — the setting the operator wrote
-on his own message sheet.
-
-Under the machine, the current can be followed. Tick **Follow the current** and
-each keypress is set out step by step: in through the board and the stator, right
-to left across the wheels, back off the reflector — marked, because it is the
-turning point — and out the way it came. Every letter shown comes from the
-`TranslationTrace` the machine itself reports, which is the same structure the
-diagnostic log is written from, so the view is the machine's own account rather
-than a retelling.
-
-It is asked for rather than assumed: a machine nobody is watching builds no trace,
-which is what keeps a long message cheap.
-
-Below the machine is the message. The keyboard and the plaintext pane are two ways
-of entering one message, not two messages: type on the keys and the text grows a
-letter at a time, or write the whole thing and it is keyed from the start. Either
-way the ciphertext is the same, because the machine is the only thing deciding it.
-
-Two conventions of the signaller sit behind toggles. **Fit to the keyboard** applies
-`MessageText.Prepare`, expanding umlauts, spelling digits out and writing spaces as
-X, so ordinary German can be keyed on a machine that has none of those. **Groups of**
-breaks the ciphertext into fives, as it was transmitted, so a miscount showed up at
-the far end. Grouping is how the message is written out rather than how it was
-enciphered, so it moves no wheels — a lamp still held stays lit.
-
-Changing any setting keys the same message again, which is the point of being able
-to change them: the same text, keyed a different way. Clearing the message is what
-puts the wheels back; there is no separate reset, because a machine with nothing
-typed on it is a machine at its start.
-
-Under the message is the indicator procedure, if one is in use. Sending, you choose
-a message key and the page works out the indicator to transmit with it; the wheels
-move to your key rather than to the sheet's Grundstellung, which becomes the ground
-setting. Receiving, you enter the indicator and the message key is worked back.
-Either way an indicator that will not work is reported and the wheels are left
-where they were, because mistyping one is an ordinary thing to do.
-
-Below that is its key sheet, set by hand. The wheels, reflector, entry
-wheel and alphabet are chosen from the parts catalogue, so a wheel defined in a
-parts file appears in the list without the page knowing it exists. Adding a
-fourth wheel offers a thin one, because that is the only kind that fits beside a
-thin reflector. Settings that will not build a machine are reported, and the
-machine already in use is left alone — being midway through setting up is not the
-same as holding a broken machine.
-
-The Steckerbrett is below that: click a letter to take up a plug, click another to
-run the cable, and click a cabled letter to pull it out. A machine built without a
-board — a Zählwerk Enigma — is offered none at all rather than one whose cables
-would be refused.
+Tick **Follow the current** and each keypress is set out step by step, in through the
+board and the stator, right to left across the wheels, back off the reflector and out
+the way it came. What is shown is the machine's own `TranslationTrace` rather than a
+retelling.
 
 It is a WebAssembly page with no server behind it: the library runs in the browser
-unchanged, and nothing typed into it is transmitted anywhere. `dotnet publish`
-produces a folder of static files — about 2.1 MB over the wire once compressed —
-that can be served from anywhere. Hosting it under a subpath means changing
-`<base href="/" />` in `wwwroot/index.html` to match.
+unchanged, and nothing typed into it is transmitted anywhere.
 
-## Command line
+**Full detail: [docs/panel.md](docs/panel.md).**
 
-```
--s, --settings <file>   JSON file describing the machine
--i, --input <file>      Read the message from this file instead of standard input
--o, --output <file>     Write the result to this file instead of standard output
--v, --verbose           Trace every character through the plugboard, rotors and reflector
-    --log-file <file>   Also write the diagnostic log to this file
-    --init-settings <file>
-                        Write a settings file holding the default machine, then exit
-    --recover           Attack the input instead of enciphering it: search for the
-                        wheels and where they were set
-    --wheels <names>    Recovery: the wheels that could have been in the machine
-    --fitted <n>        Recovery: how many wheels it carries
-    --reflectors <names>
-                        Recovery: the reflectors to try
-    --candidates <n>    Recovery: how many settings to report
--?, -h, --help          Show help
-```
-
-With no `--input`, it reads standard input line by line. The rotors keep stepping
-across lines, exactly as the real machine does — running the program again is what
-returns them to their configured starting position. So enciphering and deciphering
-are two separate runs with the same settings:
+## The command line
 
 ```bash
 echo "ATTACKATDAWN" | dotnet run --project Enigma.Cmd   # BZHGNOCRRTCM
 echo "BZHGNOCRRTCM" | dotnet run --project Enigma.Cmd   # ATTACKATDAWN
 ```
 
-Diagnostics go to standard error and enciphered text to standard output, so piping
-and redirection stay clean.
+It reads a message on standard input, or from `--input`, and writes the result on
+standard output. Diagnostics go to standard error, so piping stays clean. The rotors
+keep stepping across lines exactly as the real machine does; running the program again
+is what returns them to their starting position, which is why enciphering and
+deciphering are two runs of the same settings.
 
-Individual settings can be overridden with configuration keys, which compose with
-the named options:
+`--key-sheet` names a machine and `--preset` names a packaged one. `--verbose` traces
+every character through every component. `--prepare` and `--groups` handle the
+signaller's conventions, `--message-key` and `--indicator` the Army's indicator
+procedure and `--tafel` and `--kenngruppen` the Navy's, and `--recover` attacks the
+input instead of enciphering it.
 
-```bash
-echo "AAAAA" | dotnet run --project Enigma.Cmd -- --KeySheet:Reflector=C
-```
+**Full detail: [docs/command-line.md](docs/command-line.md).**
 
 ## Key sheets
 
 The machine is configured with a **key sheet**, written the way a real one was: the
-rotor order (*Walzenlage*), the ring settings (*Ringstellung*), the starting
-positions (*Grundstellung*) and the plugboard pairs (*Steckerverbindungen*).
+rotor order (*Walzenlage*), the ring settings (*Ringstellung*), the starting positions
+(*Grundstellung*) and the plugboard pairs (*Steckerverbindungen*).
 
 ```json
 {
@@ -189,71 +128,14 @@ positions (*Grundstellung*) and the plugboard pairs (*Steckerverbindungen*).
 ```
 
 Rotors are listed left to right as they sit in the machine, so the last is the fast
-rotor. Ring settings and positions may be written as letters (`AAA`, or `A A A`) or
-as the one-based numbers printed on real sheets (`01 01 01`), where 01 is A.
-Plugboard pairs are letter pairs, `AV BS CG DL`, and each letter may take only one
-cable. Rotors `I`–`V` are the Wehrmacht set and `VI`–`VIII` the Kriegsmarine additions.
-Reflectors `A`, `B` and `C` are the full-width ones.
+rotor. Settings may be written as letters or as the one-based numbers printed on real
+sheets. `--init-key-sheet` writes one out to edit, and individual fields can be
+overridden from the command line.
 
-For the four-rotor naval **M4**, give four wheels with a thin rotor leftmost and a
-thin reflector, which is the only pairing that physically fits: `Beta` or `Gamma`
-with `B-Thin` ("Bruno") or `C-Thin` ("Caesar"). The thin rotor has no ratchet and
-no notch, so it never steps and never drives its neighbour — it is set once and
-stays put for the whole message. Combinations that could not be assembled, such as
-four wheels with a full-width reflector or a thin rotor anywhere but leftmost, are
-rejected.
-
-Setting an M4's thin rotor to `A` with the `B-Thin` reflector reproduces a plain
-`B` reflector exactly, which is how an M4 could exchange traffic with an M3.
-
-```json
-{
-  "Name": "U-boat M4",
-  "Reflector": "B-Thin",
-  "Rotors": "Beta II IV I",
-  "RingSettings": "AAAV",
-  "Positions": "VJNA",
-  "Plugboard": "AT BL DF GJ HM NW OP QY RZ VX"
-}
-```
-
-Have the program write one for you and edit it:
-
-```bash
-dotnet run --project Enigma.Cmd -- --init-key-sheet my-machine.json
-dotnet run --project Enigma.Cmd -- --key-sheet my-machine.json
-```
-
-It will not overwrite an existing file. A key sheet file may hold the settings at
-the root or wrapped in a `KeySheet` section, so a copy of `appsettings.json` works
-as a starting point either way. Individual fields can be overridden from the
-command line, which composes with everything else:
-
-```bash
-echo "AAAAA" | dotnet run --project Enigma.Cmd -- --KeySheet:Rotors="II IV V"
-```
-
-### Packaged key sheets
-
-Some historical key sheets ship with the program. Each is verified in the test
-suite by decrypting the published ciphertext of the real message it belongs to.
-
-```bash
-dotnet run --project Enigma.Cmd -- --list-presets
-```
-
-| Preset | Message |
-|---|---|
-| `default` | Wehrmacht Enigma I, everything at A |
-| `barbarossa` | Operation Barbarossa, 7 July 1941 |
-| `scharnhorst` | Scharnhorst, 26 December 1943 |
-| `instruction-manual` | Enigma Instruction Manual, 1930 |
-| `u264` | U-264 (Looks), 19 November 1942 — four-rotor M4 |
-| `rasch` | U-106 (Rasch), 19 November 1942 — four-rotor M4 |
-| `doenitz` | The signal naming Dönitz Hitler's successor — M4 with the thin UKW-C |
-| `graf-spee` | Graf Spee, 12 December 1939 — naval M3, and eight plugs rather than ten |
-
-Decrypting the Barbarossa intercept:
+Eight historical key sheets ship, each verified in the test suite by decrypting the
+published ciphertext of the real message it belongs to — Barbarossa, Scharnhorst, the
+Graf Spee signal, U-264, U-106, the signal naming Dönitz Hitler's successor, and the
+1930 instruction manual. `--list-presets` names them.
 
 ```bash
 $ echo "EDPUDNRGYSZRCXNUYTPOMRMBOFKTBZREZKMLXLVEFGUEY..." \
@@ -261,22 +143,40 @@ $ echo "EDPUDNRGYSZRCXNUYTPOMRMBOFKTBZREZKMLXLVEFGUEY..." \
 AUFKLXABTEILUNGXVONXKURTINOWAXKURTINOWAXNORDWESTLXSEBEZ...
 ```
 
-That is *Aufklärungsabteilung von Kurtinowa nordwestlich Sebez* — a reconnaissance
-report, with `X` for spaces and `Q` for *ch*.
+**Full detail: [docs/key-sheets.md](docs/key-sheets.md).**
 
-## The indicator procedure
+## The machines
 
-A key sheet fixed the wheel order, ring settings and plugboard for the day, but not
-where the rotors started. The sender chose that himself: he set the rotors to a
-**ground setting** (*Grundstellung*), enciphered his chosen **message key**
-(*Spruchschlüssel*) at it, and transmitted the ground setting in clear together
-with the enciphered result — the **indicator**. The receiver set the same ground
-setting, deciphered the indicator to recover the message key, and set his rotors
-to it.
+A model is *parts plus a layout*: what drive it runs, what stator it takes, whether it
+has a plugboard at all, and which arrangements of parts could actually have been
+assembled. A key sheet names one with `Model`, and the service machines are the
+default.
 
-With `--message-key` the key sheet's positions are taken as the ground setting,
-and the indicator is reported on standard error so it does not contaminate the
-ciphertext:
+| Model | What separates it |
+|---|---|
+| Enigma I, M3 | Pawls, the double step, and the Army's plugboard |
+| Naval M4 | A thin reflector frees the width for a fourth wheel, which has no ratchet and never turns |
+| Norenigma | An Enigma I rewired by the Norwegians after the war |
+| Enigma D, K | The commercial pattern: keyboard-order stator, a reflector set but never driven, no plugboard |
+| Swiss K, Railway, Tirpitz | The same pattern with other wheels; the Tirpitz has a stator of its own |
+| Enigma KD | A commercial K whose reflector is a field-rewired UKW-D |
+| Zählwerk G-31 | Cogwheels rather than pawls, so no double step, and a reflector that turns |
+| Enigma Z30 | Ten contacts and no letters at all, its reflector driven by an extra pawl |
+
+The D, the K and the A28/G31 were fitted with the same three wheel wirings and the
+same reflector; what separates them is entirely in where the notches are cut and what
+drives them. That is the kind of detail the machine documentation exists for.
+
+**Full detail: [docs/machines.md](docs/machines.md).**
+
+## The indicator procedures
+
+A key sheet fixed the wheel order, the rings and the plugboard for the day, but not
+where the rotors started. The sender chose that himself, and how he told the receiver
+is the indicator procedure. Both services' are here, in both front ends.
+
+The Army enciphered its message key at a ground setting and sent the ground setting in
+clear beside it:
 
 ```bash
 $ echo "ATTACKATDAWN" | dotnet run --project Enigma.Cmd -- --message-key RTZ
@@ -284,109 +184,10 @@ Ground setting AAA, indicator VZA
 YDFDLZKIPIQE
 ```
 
-The receiver needs only the day's key sheet, the ground setting and that indicator:
-
-```bash
-$ echo "YDFDLZKIPIQE" | dotnet run --project Enigma.Cmd -- --indicator VZA
-ATTACKATDAWN
-```
-
-Until 1938 the message key was sent **twice**, so the receiver could tell a
-garbled indicator from a good one. `--doubled` does that, and a six-letter
-indicator whose halves disagree is rejected on the way back. The two halves
-encipher differently because the rotors move between them — the repetition that
-gave Rejewski the relation he used to reconstruct the wiring.
-
-## The naval indicator procedure
-
-The Army sent its ground setting in clear. The Kriegsmarine sent nothing in clear
-at all.
-
-Its operator took two trigrams from the **Kenngruppenbuch**: a *Schlüsselkenngruppe*
-saying which key was in force, and a *Verfahrenkenngruppe* which, typed at the day's
-Grundstellung, gave him the message key. He then padded the first with a letter in
-front and the second with a letter behind, wrote them one above the other, and read
-downwards:
-
-```
-A H L G      filler, then the Schlüsselkenngruppe
-K Q K Z      the Verfahrenkenngruppe, then a filler
-```
-
-The four column pairs — `AK HQ LK GZ` — went through a
-**Doppelbuchstabentauschtafel**, a double-letter conversion table, becoming
-`BD BJ EM EJ`, and those eight letters travelled with the message. Letters that
-were sent together had never been next to each other.
-
-The table is reciprocal: if `AK` is written as `BD` then `BD` is written as `AK`, so
-one table serves both stations without being reversed. It is an involution on pairs
-of letters, exactly as a reflector is on single ones.
-
-**Three sets ship, thirty-two tables in all.**
-
-`BigramTables.Quelle` holds Tafels A to H of the set "Quelle", booklet Prüf-Nr. 2499 —
-the set U-534 was using on 1 May 1945, and every table its scan contains. The cover
-says the edition held nine, "A bis J ohne I", but Tafel J is not reproduced.
-
-`BigramTables.Meer` holds all nine of the set "Meer", booklet Prüf-Nr. 3733, A to J
-without I. It is the complete edition: nine tables and both sides of its
-Tauschtafelplan, so every day of its calendar leads to a table that is actually
-here.
-
-`BigramTables.Flusslauf` holds all fifteen of the set "Flußlauf", booklet Prüf-Nr. 3633,
-which is a *fifteen* table edition — A to P without I — and not a nine table one.
-Its calendar has twelve Kennziffer columns and is transcribed in full, and so are
-Tafeln A to P, so every day of it leads to a table that is actually here. It is the
-second complete set. Its scan is the poorest of the three at 150 ppi, half the
-linear resolution of Meer's, which is why the pages are cut on their own printed
-rules and each cell magnified from native pixels rather than read out of an enlarged
-render. `tools/transcribe` holds that pipeline.
-
-A transcription of a table is worth more than a transcription of a wiring, because it
-can be checked. All 676 entries are present, every one pairs with its mirror, and no
-bigram enciphers to itself — a single mistyped cell would break a pair and show up.
-Eighteen cells did, across Quelle's eight tables, and each time the rest of the table
-said what the cell had to be — then the glyph at magnification agreed. `B`/`E` is the
-commonest slip and `F`/`P` the next. Eight of the eighteen are in Tafel G alone, whose
-two pages are the poorest scan in the booklet. Meer's nine tables needed four such
-cells and Flußlauf's fifteen needed five, which is twenty-seven over the three sets and
-not one of them guessed at: the mirror said what each had to be, and only then was the
-glyph looked at again. Six further cells of Quelle's Tafel E are
-covered by later hand-written ink and could not be read at all; they were rebuilt from
-their mirrors, which on an involution is the same fact written twice. On top of all
-that, the four cells the U-534 message needed were published separately with the
-working of that message, and they agree.
-
-The whole message now runs end to end in the test suite: the transmitted indicator
-`FNHC GVET`, through the real table, to the message key `ODFF` the operator wrote on
-his sheet — and back again.
-
-**The calendar ships too.** `Tauschtafelplan.BrunoQuelle` is the *Tauschtafelplan
-"Bruno"* for this set, transcribed from Michael Hörenberg's photograph of the
-original: thirty-one days by six Kennziffer columns, the column chosen by cipher net.
-It agrees with the traffic at the one point it can be checked — U-534 sent on Tafel A
-on 1 May 1945, and the column pencilled "Mai 45" reads `A` on the first.
-
-```csharp
-var tafel = Tauschtafelplan.BrunoQuelle.Tafel(kennziffer: 6, dayOfMonth: 1);  // 'A'
-```
-
-Each set carries its own, and the other two are better sheets. `BrunoMeer` and
-`BrunoFlusslauf` are clean print with no pen corrections, and both sides of the Meer
-one are reproduced — which is what shows that a full plan has **twelve** Kennziffer
-columns, not six. The Quelle photograph stops at six and is footed "Fortsetzung
-Rückseite!"; `BrunoQuelle` is half a plan, and remains the weakest evidence here.
-
-A calendar cannot be checked the way a table can. It is 372 independent letters with
-no involution to break, so a mistyped cell leaves no trace — a mutation test confirmed
-that, changing one cell and leaving the suite green. The Meer plan was therefore read
-a second time from a *different physical booklet* of the same edition, Prüf-Nr. 4002,
-separately photographed, and all 372 cells agreed. It is the only cipher data here
-with a check of that kind.
-
-**The command line offers the procedure too.** A table is what makes it naval — the
-Navy's indicator cannot be worked without one, and the Army's never wants one — so
-`--tafel` or `--kennziffer` is the whole switch. Reading a message:
+The Kriegsmarine sent nothing in clear at all. Its operator took two trigrams from the
+Kenngruppenbuch, padded each with a letter, wrote them one above the other and read
+downwards; the four column pairs went through a **Doppelbuchstabentauschtafel** before
+transmission, so letters that were sent together had never been next to each other.
 
 ```bash
 $ echo "..." | dotnet run --project Enigma.Cmd -- \
@@ -395,392 +196,59 @@ Tauschtafelplan Bruno, Kennziffer 6, Monatstag 1: Tafel A
 Ground setting IBFK, Schlüsselkenngruppe DUZ, Verfahrenkenngruppe YMU, indicator FNHCGVET, rotors ODFF
 ```
 
-`--set` picks the booklet and `--list-sets` says what is on offer; `--kennziffer` with
-`--monatstag` reads the table off that set's Tauschtafelplan, as an operator did, and
-`--tafel A` names one outright for anyone working without a calendar.
-Sending takes the two trigrams and the two padding letters, and produces the eight
-letters that went out:
+That is U-534's real message of 1 May 1945, run from the transmitted indicator through
+to the message key its operator wrote on his own sheet.
 
-```bash
-$ echo "..." | dotnet run --project Enigma.Cmd -- \
-      --preset u534 --tafel A --kenngruppen "DUZ YMU" --fillers KZ
-Ground setting IBFK, Schlüsselkenngruppe DUZ, Verfahrenkenngruppe YMU, indicator FNHCGVET, rotors ODFF
-```
+**Full detail: [docs/indicator-procedures.md](docs/indicator-procedures.md).**
 
-A day the calendar sends to a table the set does not have stops and says so rather than
-substituting one that would decipher to plausible nonsense.
+## The bigram tables
 
-Quelle's Tafel J is in neither source and is not shipped, so some days of its calendar
-have no table to offer and say so. Meer and Flußlauf have no such day. Supply your own
-table and it will be used:
+The naval procedure runs on tables that survive only as photographs of the originals,
+because the Kriegsmarine printed its cipher documents in water-soluble ink. Three of
+the Crypto Museum's booklets are transcribed here and ship as data.
 
-```csharp
-var table = BigramTable.Parse("AK=BD HQ=BJ LK=EM GZ=EJ");
-var sent = navalProcedure.Send(dailyKey, table, "HLG", "KQK", 'A', 'Z');
-```
-
-One detail worth knowing, and one this library got wrong until a real message caught
-it: the Kenngruppenbuch lists trigrams, and three letters cannot key four wheels.
-What sets an M4's fourth wheel is the **filler** — the letter that padded the
-trigram out to fill its bigram column. Both stations have it, the sender by choosing
-it and the receiver by reading it out of the indicator, so the group typed at the
-ground setting is the trigram and its filler, taken to as many letters as the
-machine has wheels.
-
-That is pinned by traffic rather than by reasoning. Message P1030690 from U-534,
-1 May 1945: the indicator `FNHC GVET` decodes through "Quelle" Tafel A to the
-Schlüsselkenngruppe `DUZ` and the Verfahrenkenngruppe `YMU`, and `YMUZ` typed at the
-Grundstellung `IBFK` on that day's key gives the message key `ODFF` — which is what
-the operator's own sheet says it was.
-
-## Writing a message out
-
-An Enigma has twenty six letter keys, no space bar and no digits, so a signaller
-fitted his text to the machine before typing it. `--prepare` does the same:
-umlauts expanded, the sharp s doubled, digits spelled out in German, spaces
-written as `X`, and everything else dropped. `--groups` breaks the result into the
-groups it was transmitted in, five letters at a time by convention, so that a
-miscount shows up at the far end.
-
-```bash
-$ echo "Angriff um 06:30 Uhr, Größe 12 Männer" | enigma --prepare --groups 5
-BQIUD QDAPV HMVYV DTYJT FQTUS HMOEC QJPTL BSJZT AURHZ ISDUH RHJCY H
-```
-
-Deciphering ignores the grouping, and gives back the prepared text:
-
-```
-ANGRIFFXUMXNULLSECHSDREINULLXUHRXGROESSEXEINSZWOXMAENNER
-```
-
-Operators also wrote *ch* as `Q`, which is why the intercepts read `BEOBAQTET` and
-`RIQTUNG`. That is deliberately **not** applied: it was a habit rather than a rule,
-it was not universal, and it would quietly rewrite any word containing those two
-letters.
-
-## A reflector rewired in the field
-
-UKW-D could be rewired by the unit, which made the reflector part of the daily key
-rather than a fixed property of the machine. Give thirteen wire pairs on the key
-sheet and the reflector is built from them:
-
-```json
-{
-  "Name": "Luftwaffe with UKW-D",
-  "Reflector": "D",
-  "ReflectorPairs": "AQ BG CK DI EL FX HZ MW NV OT PU RS JY",
-  "Rotors": "I II III",
-  "RingSettings": "AAA",
-  "Positions": "AAA"
-}
-```
-
-Thirteen wires have to cover all twenty six contacts — a letter left unwired would
-have nowhere to go — so anything else is refused.
-
-Two things this does not do. The printed UKW-D settings used the wheel's own
-contact lettering rather than the alphabet, and that mapping is **not** applied
-here: it is a data-entry convention for which this implementation has no verified
-source, so the pairs above are plain letters. And the pair that was fixed on the
-real wheel is not forced, for the same reason.
-
-## The Uhr
-
-The Enigma Uhr replaced the plugboard cables with a forty position switch. Its
-cryptographic point is that the plugboard stopped being a set of pairs: an ordinary
-board joins A to V and V back to A, while under the Uhr A may go to V with V going
-somewhere else entirely.
-
-Fit one by naming the dial setting. Ten cables are required, and the order they are
-written in is part of the setting, because the first pair is the box's cable 1:
-
-```json
-{
-  "Rotors": "II IV V",
-  "RingSettings": "BUL",
-  "Positions": "BLA",
-  "Plugboard": "AV BS CG DL FU HZ IN KM OW RX",
-  "Uhr": "GD"
-}
-```
-
-The setting may be written as the number, `"11"`, or as the two letter group read
-off the plates inside the lid of the Uhr's box, `"GD"`. Those plates divide the
-alphabet into four bands giving the tens digit and ten bands giving the units,
-which is where the forty positions come from. Several groups stand for the same
-setting, and between them the forty settings account for all 676 pairs of letters
-exactly once.
-
-```csharp
-UhrSetting.Encode(11);        // "GD"
-UhrSetting.Decode("GD");      // 11
-UhrSetting.AllGroupsFor(11);  // GD, GE, HD, HE, ... fourteen in all
-```
-
-At position 00 the box reproduces ten ordinary patch cords exactly. The machine
-stays reciprocal at every other position too, which is worth understanding: it
-requires the *reflector* to be paired and never required it of the plugboard, since
-the current passes through the board twice, once each way.
-
-The device had a flaw. Because its `b` wires were paired rather than fully
-scrambled, **every fourth position is reciprocal after all** — positions 0, 4, 8 and
-so on give away the very advantage the box was fitted to provide.
-`EnigmaUhr.IsReciprocalAt` reports it, and a test derives the same set from the
-wiring rather than asserting it by hand.
-
-## The Zählwerk Enigma (G-31)
-
-The Abwehr's Enigma G is the one machine here that differs in *mechanism* rather
-than in wiring. Name it as the model:
-
-```json
-{
-  "Model": "G-31",
-  "Reflector": "G",
-  "Rotors": "G-I G-II G-III",
-  "RingSettings": "AAA",
-  "Positions": "AAA",
-  "ReflectorPosition": "A",
-  "ReflectorRingSetting": "A"
-}
-```
-
-Four things set it apart:
-
-- **Cogwheels rather than pawls.** The wheels turn as a plain odometer, so there is
-  **no double step** — the middle wheel advances only when the wheel to its right
-  passes a notch, never twice in succession.
-- **The reflector turns.** It is set to a starting position like a wheel, and is
-  driven round by the leftmost wheel during encipherment, so it takes an active part
-  in the cipher.
-- **Many notches.** Seventeen, fifteen and eleven on wheels I, II and III, numbers
-  chosen because they are relatively prime to twenty six, which stretches the
-  machine's period enormously.
-- **No plugboard.** The Steckerbrett was reserved for the Army, and a key sheet that
-  gives cables to a G-31 is refused.
-
-The entry wheel is the keyboard-wired one, and a key sheet need not say so: leave
-`EntryWheel` unset and the model supplies it. The commercial A28/G31 wheels are
-`G-I`…`G-III` with reflector `G`; the Abwehr set from the Bletchley Park machine is
-`G312-I`…`G312-III` with reflector `G312`.
-
-Because of all this a Zählwerk machine cannot exchange messages with an Enigma I,
-which is exactly what its makers intended.
-
-## The commercial machines: Enigma D and K
-
-The Enigma D of 1926 and the Enigma K that followed it were sold to whoever would
-buy them, and are the ancestors of everything else here. Three wheels driven by
-pawls, a keyboard-order entry wheel, a reflector set to a position but never driven,
-and no plugboard — the Steckerbrett was an Army fitting.
-
-```json
-{
-  "Model": "Commercial",
-  "Reflector": "G",
-  "Rotors": "K-III K-II K-I",
-  "RingSettings": "AAA",
-  "Positions": "AAA",
-  "ReflectorPosition": "A"
-}
-```
-
-The D, the K and the Zählwerk A28/G31 were fitted with **the same three wheel
-wirings and the same reflector**, which is why they share them here too. What
-separates them is entirely in the notches:
-
-| | Notches | Cut into | Driven by |
+| Set | Booklet | Tables | Calendar |
 |---|---|---|---|
-| Enigma D | Z, Z, Z | the rotor body | pawls, double stepping |
-| Enigma K | Y, E, N | the letter ring | pawls, double stepping |
-| A28 / G31 | 17, 15, 11 | the letter ring | cogwheels, no double step |
+| Quelle | Prüf-Nr. 2499 | 8 of 9 — A to H | front only: Kennziffer one to six |
+| Meer | Prüf-Nr. 3733 | 9 — A to J without I | both sides: one to twelve |
+| Flußlauf | Prüf-Nr. 3633 | 15 — A to P without I | both sides: one to twelve |
 
-The D's notch placement has a consequence its makers may not have intended: since
-the notch keeps its place against the wiring, moving the ring moves the turnover
-with it, and a Ringstellung is only ever a different starting position. As the
-Crypto Museum puts it, "the cryptographic effect of the Ringstellung is null. It
-does not enhance the machine's key space." A test proves it by setting ring and
-position together and getting the same ciphertext back.
+Each set carries its Tauschtafelplan, the calendar naming which table a given
+Kennziffer column used on a given day, so the table is chosen the way an operator
+chose it rather than by hand. A day that falls on a table no source reproduces says so
+instead of failing quietly.
 
-### The same pattern, other wheels
+A transcribed table can be checked in a way a transcribed wiring cannot: it is an
+involution with no fixed point, so 676 independently read cells all have to pair up,
+and a mistyped letter breaks its pair and is named rather than shipped.
 
-Three more machines are the commercial arrangement with different parts, and need
-no new mechanism at all:
+**Full detail: [docs/bigram-tables.md](docs/bigram-tables.md).**
 
-| | Wheels | Reflector | Stator | Notes |
-|---|---|---|---|---|
-| Swiss K | `SK-I`…`SK-III` | `G` | QWERTZ | the Swiss rewired the wheels and left the rest |
-| Railway | `R-I`…`R-III` | `R` | QWERTZ | the wiring found in machine K438 |
-| Tirpitz | `T-I`…`T-VIII` | `T` | its own | eight wheels, five notches each |
+## The plugboard, the Uhr and UKW-D
 
-The Railway Enigma has two published wirings: Bletchley Park's wartime
-reconstruction and the original, recovered from machine K438 in 2023. They are
-equivalent up to ring settings, but BP's has the turnovers of wheels I and III
-swapped through a misidentification. The original is what ships.
-
-The Enigma T is the one machine here whose entry wheel is neither straight through
-nor the keyboard order, and forgetting it would encipher perfectly well and
-wrongly — so its model supplies it, and a key sheet need not say so. Its eight
-wheels carry five notches apiece, which is what stretches its period.
-
-### Two machines that are other machines rewired
-
-The **Norenigma** is an Enigma I. The Norwegian police security service kept theirs
-after the war and gave it new wheels (`N-I`…`N-V`) and a new reflector (`N`),
-leaving the plugboard, the straight-through stator and the pawls exactly as they
-were — so it is a service machine and needs no model named at all. Its notches sit
-where the service wheels of the same numbers had them, wheel I still carrying at Q.
-
-The **Enigma KD** is a commercial K with a rewirable UKW-D in place of its
-reflector. That is the one thing that separates it: a UKW-D has no position to set,
-so it needs its own model, `KD`, which is the commercial one with that requirement
-relaxed. Its three wheels carry nine notches apiece.
+Three things a key sheet could change about the wiring itself. The **plugboard** is
+letter pairs, `AV BS CG DL`. The **Uhr** replaced its ten cables with a forty-position
+switch, so that A might go to V while V went somewhere else entirely — and its wiring
+had a flaw, in that every fourth position is reciprocal after all, giving away the
+advantage the box was fitted for. **UKW-D** was a reflector the unit could rewire,
+which made the reflector part of the daily key rather than a property of the machine.
 
 ```json
-{
-  "Model": "KD",
-  "Reflector": "D",
-  "ReflectorPairs": "AK BO CT DV EP FN GL HM IJ QW RY SX UZ",
-  "Rotors": "KD-III KD-II KD-I"
-}
+{ "Plugboard": "AV BS CG DL FU HZ IN KM OW RX", "Uhr": "GD" }
 ```
 
-Those pairs are the wiring of the KD machine held by the FRA in Sweden, written as
-the plain letter pairs this library takes rather than in the printed UKW-D notation,
-which uses the wheel's own contact lettering and is not applied here.
+**Full detail: [docs/plugboard.md](docs/plugboard.md).**
 
-## The Enigma Z, a machine of figures
+## Custom parts and alphabets
 
-The Z30 has no letters at all: ten contacts per wheel, a keyboard of a single row
-of figures, and no plugboard. It was built for traffic that was numeric to begin
-with, such as weather reports.
-
-```json
-{
-  "Model": "Z30",
-  "CharacterMap": "Digits",
-  "Reflector": "Z",
-  "Rotors": "Z-III Z-II Z-I",
-  "RingSettings": "000",
-  "Positions": "000",
-  "ReflectorPosition": "0"
-}
-```
-
-Its reflector is driven, as the Zählwerk machines' is, but by pawls rather than
-cogs: there is one pawl more than there are wheels, and the extra one rides the
-leftmost wheel's notch ring. That gives the leftmost wheel a double step of its
-own, for the same reason the middle wheel has one on an Enigma I — and it is
-exactly the pawl a service machine does not have.
-
-The wheel wirings are published by the Crypto Museum indexed 1 to 0 and by Daniel
-Palloks' simulator indexed 0 to 9; converting between the two makes them identical.
-The vectors in the test suite come from that simulator.
-
-The machine reached the Spanish Foreign Ministry in 1931 as a 600-Reichsmark offer
-alongside the commercial A27 and the printing H29, and the papers that survive there
-are most of what is known about it. Its key had two parts and no plugboard: an
-*inner* key naming the wheels and their order, and an *outer* key of four figures —
-three wheels and the reflector — written like `III I II 5 2 8 1`.
-
-Those papers also describe a machine that counts. The wheels and the reflector are
-"coupled to each other in the manner of a normal decade counter", so the windows
-tell the operator how many figures have been enciphered, and the brochure claims a
-period of 10,000: every wheel back where it started after ten thousand keystrokes.
-
-That is an odometer, and it is a claim worth testing. This library's `GearDrive`
-has a period of exactly 10,000 on four ten-position wheels. The pawl drive of the
-Mk I shipped here never returns to its starting window at all — a double step makes
-the stepping non-injective, so some windows can never be reached and all zeros is
-one of them. So the brochure describes the geared Mk II rather than this machine,
-and both tests are in the suite.
-
-Whether that Mk II was ever built is itself uncertain, and only the Mk I survives —
-one machine, Z103, held by the FRA in Sweden. Its wheels are what this library
-carries; the geared drive is here because the Zählwerk machines need it anyway.
-
-Its notch sits somewhere unusual, and it matters. On an Enigma I or K the notch is
-cut into the index ring, so a wheel carries its neighbour at a fixed letter in the
-window whatever the Ringstellung — rotor I always at Q. On the Z30, as on the older
-Enigma D, it is cut into the rotor body instead, so it keeps its place against the
-wiring and setting the ring carries the turnover with it. `RotorBase` models both,
-and every wheel is of the first kind unless it says otherwise.
-
-That is not a detail one can reason out from first principles: the same corpus that
-settles it for the service machines says nothing about this one. It is settled here
-because the Crypto Museum states it outright, and because the simulator's vectors
-with ring settings only match once the notch is in the right place.
-
-## The entry wheel
-
-The entry wheel (*Eintrittswalze*) is the fixed stator between the plugboard and
-the first rotor, deciding which contact each key is wired to. Every service Enigma
-wired it straight through in alphabet order, so it changes nothing and needs no
-mention. The commercial and railway machines wired it in **keyboard** order
-instead, which is why their traffic could not be read on a service machine even
-with identical wheels.
-
-Name it on the key sheet with `"EntryWheel": "QWERTZ"`, or define your own in a
-parts file. A definition gives the keyboard in the order its keys are wired to
-contacts, which is the form the wiring is published in:
-
-```json
-{ "EntryWheels": [ { "Name": "Railway", "Keyboard": "QWERTZUIOASDFGHJKPYXCVBNML" } ] }
-```
-
-So `Q` is wired to the first contact, `W` to the second, and a wheel reading
-`ABCDEFGHIJKLMNOPQRSTUVWXYZ` is wired straight through.
-
-## Custom alphabets
-
-Every service Enigma worked in the twenty six capital letters, but nothing in the
-mechanism requires that. A parts file can define an alphabet, and the machine is
-then built entirely in it — the wiring, the notches, the ring settings, the
-plugboard pairs and the message itself:
-
-```json
-{
-  "CharacterMaps": [ { "Name": "Digits", "Characters": "0123456789" } ],
-  "Rotors": [
-    { "Name": "D-I",   "Wiring": "1357902468", "Notches": "4" },
-    { "Name": "D-II",  "Wiring": "2468013579", "Notches": "2" },
-    { "Name": "D-III", "Wiring": "3052749618", "Notches": "7" }
-  ],
-  "Reflectors": [ { "Name": "D-UKW", "Wiring": "5678901234" } ]
-}
-```
-
-Name it from the key sheet with `"CharacterMap": "Digits"`. Parts in the file take
-that alphabet automatically when the file defines exactly one; otherwise each names
-its own.
-
-The alphabet is the **single authority** for how many contacts a machine has. A
-wheel wired for a different one is refused by name rather than failing later with
-an index error:
-
-```
-'I' has 26 contacts, but the Digits alphabet has 10 characters.
-```
-
-Ring settings and positions are numbered within the alphabet, so a ten character
-machine numbers its wheels 01 to 10. A reflector needs an even number of
-characters, since it wires them in pairs.
-
-Two things stay Latin. `--prepare` expands German umlauts and spells out German
-numerals, which only means anything in that alphabet. And the `QWERTZ` entry wheel
-is a fixed twenty six key layout; the straight-through one exists for any alphabet,
-being the identity.
-
-## Custom rotors and reflectors
-
-A parts file defines wheels and reflectors the library does not ship with, which
-is enough to run machines it knows nothing about:
+A parts file defines rotors, reflectors, entry wheels and alphabets the library does
+not ship with, which is enough to run machines it knows nothing about. It is laid over
+the built-in parts rather than replacing them, so it need only define what is missing.
 
 ```json
 {
   "Rotors": [
-    { "Name": "K-I",  "Wiring": "PEZUOHXSCVFMTBGLRINQJWAYDK", "Notches": "Y" },
-    { "Name": "K-II", "Wiring": "ZOUESYDKFWPCIQXHMVBLGNJRAT", "Notches": "E" }
+    { "Name": "K-I",  "Wiring": "PEZUOHXSCVFMTBGLRINQJWAYDK", "Notches": "Y" }
   ],
   "Reflectors": [
     { "Name": "UKW-K", "Wiring": "IMETCGFRAYSQBZXWLHKDVUPOJN" }
@@ -788,17 +256,31 @@ is enough to run machines it knows nothing about:
 }
 ```
 
-`Notches` lists the letters showing in the window when the wheel turns the one to
-its left. Add `"Thin": true` for a half-width wheel, which then takes no notches.
-Definitions are checked when the file is read, so a wiring that is not a
-permutation, or a reflector that is not paired, is reported before any enciphering
-starts.
+The alphabet is a first-class part of the machine rather than an assumption: define
+one and the wiring, the notches, the ring settings, the plugboard pairs and the
+message are all expressed in it. A wheel wired for a different alphabet is refused by
+name rather than failing later with an index error.
 
-The file is laid over the built-in parts rather than replacing them, so it need
-only define what is missing. A definition whose name matches a built-in part
-**takes its place**, which is what makes it possible to model a machine whose
-wheels happen to share our names — the substitution is reported as a warning,
-because ciphertext produced that way cannot be reproduced without the same file.
+**Full detail: [docs/parts-and-alphabets.md](docs/parts-and-alphabets.md).**
+
+## Writing a message out
+
+An Enigma has twenty six letter keys, no space bar and no digits, so a signaller
+fitted his text to the machine before typing it. `--prepare` does the same — umlauts
+expanded, the sharp s doubled, digits spelled out in German, spaces written as `X` —
+and `--groups` breaks the result into the groups it was transmitted in, so that a
+miscount showed up at the far end.
+
+```bash
+$ echo "Angriff um 06:30 Uhr, Größe 12 Männer" | enigma --prepare --groups 5
+BQIUD QDAPV HMVYV DTYJT FQTUS HMOEC QJPTL BSJZT AURHZ ISDUH RHJCY H
+```
+
+Operators also wrote *ch* as `Q`, which is why the intercepts read `BEOBAQTET`. That
+is deliberately **not** applied: it was a habit rather than a rule, and it would
+quietly rewrite any word containing those two letters.
+
+**Full detail: [docs/message-text.md](docs/message-text.md).**
 
 ## Breaking a message
 
@@ -806,18 +288,13 @@ because ciphertext produced that way cannot be reproduced without the same file.
 nothing else, `RotorSearch` sweeps every arrangement of the wheels at every starting
 position with the board empty, scores each decipherment by its **index of
 coincidence**, and lets the right setting rise; then it sweeps the ring settings that
-decide where in the message the wheels carry each other over, and the alignment again
-against those, until neither improves. It is Gillogly's method, and it runs the real
-machine — the same factory, the same key sheets, no faster private copy of the cipher.
+place the turnovers, and the alignment again against those, until neither improves. It
+is Gillogly's method, and it runs the real machine.
 
 ```bash
 dotnet run --project Enigma.Cmd -- --key-sheet machine.json --recover \
     --wheels "K-I K-II K-III" --candidates 3 < cipher.txt
 ```
-
-The key sheet says what is already known — the model, the alphabet, the reflector —
-and the search finds the rest. Four hundred letters of German enciphered on an
-Enigma K at `K-II K-III K-I`, Ringstellung QRS, Grundstellung QMT:
 
 ```
 Searching 6 arrangements, 105,456 settings, over 400 letters.
@@ -826,95 +303,19 @@ Searching 6 arrangements, 105,456 settings, over 400 letters.
  3  0.04248  rotors K-I K-II K-III, reflector G, Ringstellung ACZ, Grundstellung ETV
 ```
 
-The wheel order is right and the gap to the runner-up is not close. The setting is
-not the one written on the sheet, and it does not need to be — set the machine to it
-and the message comes out:
+**It breaks the machines with no plugboard** — the Enigma D and K, the Swiss K, the
+Railway and Tirpitz machines, the Zählwerk G-31 and the Z30. Over 24 random settings
+of an unsteckered Enigma I it recovered the wheel order 15 times, and every one of
+those 15 read at least 378 of the message's 400 letters. The other 9 read fewer than
+30: it either breaks a message or it is nowhere near, with nothing in between.
 
-```
-XKTZWOABTEILUNGXVONXKURTINOWAXKURTINOWAXNORDWESTLXSEBEZXSEBEZXUAFFLIEGERSTRASZE...
-AUFKLXABTEILUNGXVONXKURTINOWAXKURTINOWAXNORDWESTLXSEBEZXSEBEZXUAFFLIEGERSTRASZE...
-```
+**It does not break a steckered service Enigma, and that is a test rather than a
+caveat.** The board sits inside the rotor sandwich, so running the machine without
+cables does not relabel the plaintext, it shreds it. Closing that gap needs a measure
+that knows what German looks like, which is a table of statistics, which is data,
+which under this repository's one rule needs a published source.
 
-Six letters of garble and then the signal, because the recovered setting sits one
-letter from the true one and the two machines converge at the first turnover. That is
-what a break looks like, and it is why `SettingsEquivalence` asks three different
-questions rather than comparing strings: `ReadTheSame` for one message, `AgreeOn` for
-how much of it, and `AreOneMachine` for whether any message of any length could tell
-two settings apart.
-
-### What it costs
-
-Measured, on 272 letters and 32 cores:
-
-| Search | Arrangements | Settings | Time |
-|---|---|---|---|
-| Enigma I, the five Wehrmacht wheels | 60 | 1,054,560 | 17s |
-| M3, all eight naval wheels | 336 | 5,905,536 | 75s |
-
-That is a hundred million and more passes through a real Enigma, which is where the
-time goes. It is also why there is no faster private copy of the cipher inside the
-search: the machine everything else is checked against is the machine being swept, so
-where speed was needed it was the machine itself that got faster — the wirings each
-wheel reads are flattened from the dictionary they are checked as, once, and the
-existing suite is what proves that changed nothing.
-
-### What it breaks
-
-**The machines with no plugboard.** The Enigma D and K, the Swiss K, the Railway and
-Tirpitz machines, the Zählwerk G-31, the Z30 — which is most of what this library has
-grown, and the machines for which no intercept survives to pin a break against.
-
-How often, measured rather than asserted: over **24 random settings** of an
-unsteckered Enigma I, 400 letters of German each, searched across all 60 orderings of
-the five Wehrmacht wheels, it recovered the wheel order **15 times**. In every one of
-those 15 the setting it returned read at least 378 of the 400 letters, and in 8 it
-read all 400. The other 9 read fewer than 30. There is nothing in between: it either
-breaks the message or it does not come close, so a result needs no judging — you can
-see which happened by reading it.
-
-**Not a service Enigma.** Not the Wehrmacht's ten cables, and not the Kriegsmarine's
-eight. The reason is worth stating because it is easy to get backwards: the index of
-coincidence is untouched by *relabelling* the alphabet, which is why one might expect
-it to see through a plugboard — but the board sits **inside** the rotor sandwich, not
-outside it. Running the machine with the cables pulled out does not relabel the
-plaintext, it shreds it. Only the letters that were unsteckered at both ends come
-through, and with eight cables that is about one character in seven.
-
-The numbers, on the Graf Spee signal — 272 letters, the longest three-wheel message
-here and the one on the fewest cables:
-
-| | index of coincidence |
-|---|---|
-| Text with no structure | 0.0385 |
-| The true setting, cables pulled out | 0.0401 |
-| The best *wrong* setting the sweep finds | 0.0490 |
-| The true setting, cables in | 0.0618 |
-
-The signal is real and it is smaller than the noise. A test pins this, so that a
-later change cannot quietly claim a break that has not happened. Closing the gap
-needs a measure that knows what German looks like rather than merely that it has
-structure — bigrams or trigrams — and that is a table of statistics, which is data,
-which under this repository's one rule needs a published source. See
-[ROADMAP.md](ROADMAP.md).
-
-### The other blind spot
-
-The first phase leaves every ring at A and sweeps the positions, which covers every
-alignment of the wiring but gets the turnovers wrong. How wrong depends on the
-Ringstellung it is looking for: a fast wheel whose ring really sits at Q has its
-turnovers sixteen keypresses out of phase, and the true setting then scores 0.0385 —
-the rate of text with no structure at all. It is not ranked low, it is invisible.
-
-What survives is the wheel *order*, which still ranks at or near the top because the
-wiring is right even when the stepping is not. So the second phase is handed the best
-of each wheel order rather than the best few settings overall, and climbs from a
-mediocre starting point to the setting itself. That is also a test.
-
-It is also most of the nine failures above. Sweeping the fast wheel's ring in the
-first phase as well would fix it and would cost twenty-six times the work, which on a
-full eight-wheel sweep is hours rather than seconds. The cheaper fix is a measure that
-can see the true setting through a wrong turnover — the same n-gram scoring that the
-plugboard needs. Both roads out of here lead to the same missing table.
+**Full detail: [docs/cryptanalysis.md](docs/cryptanalysis.md).**
 
 ## Using the library
 
@@ -925,185 +326,45 @@ var machine = factory.Create(keySheet);
 var cipher = machine.Translate(plaintextIndices);
 ```
 
-`AddEnigmaServices` registers rotors and reflectors as keyed services under the
-names used on a key sheet. Rotors and plugboards are **transient** because they
-carry state — two machines sharing a rotor instance would silently corrupt each
-other's positions. `IEnigmaMachineFactory` builds a configured machine, which is
-what selects three rotors out of eight and applies their positions and ring
-settings.
-
-To work a machine rather than build one, `Enigma.App` has a session: a machine
-keyed for the day, pressed a key at a time. A key sheet it cannot be built from
-comes back as a message rather than an exception, which is what a front end needs.
+`AddEnigmaServices` registers rotors and reflectors as keyed services under the names
+used on a key sheet. To work a machine rather than build one, `Enigma.App` has a
+session: a machine keyed for the day, pressed a key at a time, whose failures come
+back as messages rather than exceptions because that is what a front end needs.
 
 ```csharp
-var keyed = EnigmaSession.Open(factory, keySheet);
-
-if (!keyed.Succeeded)
-{
-    Console.Error.WriteLine(keyed.Error);
-    return;
-}
-
-var session = keyed.Session!;
+var session = EnigmaSession.Open(factory, keySheet).Session!;
 
 session.Press('A');           // the lamp that lit, or null for a key it has not got
-session.Type("ATTACKATDAWN"); // the same, for a run of text
 session.WindowText;           // where the wheels stand
 session.Patch('A', 'V');      // run a cable, as the board itself allows it
-session.Reset();              // back to the key sheet, rebuilt rather than wound back
 ```
 
-## Watching it work
-
-`--verbose` traces each character through every component, with the rotor window
-alongside. Primed names are the return leg, after the reflector.
-
-```
-A -> B   window AAB   plug A>A | Standard A>A | III A>C | II C>D | I D>F | B F>S | I' S>S | II' S>E | III' E>B | Standard' B>B | plug B>B
-```
-
-The same path is available as data rather than text. Subscribe to a machine's
-`Translated` event and each keypress arrives as a `TranslationTrace`, carrying the
-key, the lamp, the rotor window, and every component the current passed through.
-The log line above is formatted from exactly that structure, so a trace and a
-diagnostic cannot disagree. A machine nobody is watching builds nothing.
-
-```csharp
-machine.Translated += trace =>
-{
-    // Contacts are numbers in the machine's own alphabet, so map them to read them.
-    var window = string.Concat(trace.Window.Select(machine.CharacterMap.GetCharacter));
-
-    Console.WriteLine($"window {window}, {trace.Steps.Count} components");
-};
-```
+**Full detail: [docs/library.md](docs/library.md).**
 
 ## Testing
 
-The suite covers published test vectors, the reciprocity and no-self-encipherment
-invariants, rotor stepping including the double step, and the DI lifetimes.
+752 tests. They cover published test vectors, the reciprocity and no-self-encipherment
+invariants, rotor stepping including the double step, seven historical messages
+verified against their published ciphertext, and the DI lifetimes.
 
 Alongside it sits an independent implementation in `Enigma.Tests/Reference`, written
-from the mechanical description of the machine rather than ported from the library,
-and anchored on the published vectors. Randomised configurations are run through
-both and compared, which covers ground fixed vectors cannot: a bug that reads the
-notch from the ring-adjusted offset rather than the window position, for instance,
-is invisible to every vector taken at ring setting zero.
+from the mechanical description of the machine rather than ported from the library.
+Randomised configurations are run through both and compared, which covers ground fixed
+vectors cannot: a bug that reads the notch from the ring-adjusted offset rather than
+the window position, for instance, is invisible to every vector taken at ring setting
+zero.
+
+```bash
+dotnet test
+```
 
 ## Sources
 
-The wirings, key sheets and test vectors here are taken from published sources
-rather than reconstructed, and each is pinned by a test.
+The wirings, key sheets and test vectors here are taken from published sources rather
+than reconstructed, and each is pinned by a test. One rule governs what may be added:
+**no cipher data ships unless it is pinned to a published source or a published
+vector.** A hand-written Uhr table was produced during development, failed its first
+test, and was deleted rather than patched into agreement.
 
-- **[Crypto Museum](https://www.cryptomuseum.com/crypto/enigma/uhr/index.htm)** —
-  the Enigma Uhr, including the photograph of the plates inside the lid from which
-  the two letter setting notation is read, and the cable ordering `1a-1b` through
-  `10a-10b`.
-- **[John Savard, quadibloc](http://www.quadibloc.com/crypto/ro020402.htm)** — the
-  Uhr's construction: eighty contacts in two rings, the `a` wires in order and the
-  `b` wires scrambled, and the reason every fourth position is reciprocal. Savard
-  credits Frode Weierud for the facts behind it, and cites a paper in *Cryptologia*,
-  July 1999, for the authoritative account.
-- **[Arduino Enigma](https://arduinoenigma.blogspot.com/2020/03/enigma-uhr-switch-test-vectors.html)**
-  — test vectors for all forty dial positions, generated with Daniel Palloks'
-  Universal Enigma and partly hand verified. The Uhr table in this repository is
-  derived from those vectors, and every one of them is a test. A
-  [companion post](https://arduinoenigma.blogspot.com/2020/05/designing-uhr-switch-for-arduino-based.html)
-  gives an independent vector with a different plug set, which the same table
-  reproduces.
-
-- **[Palloks, *Universal Enigma*](https://palloks.2ix.de/enigma/index_en.html)** —
-  the geared drive. Its `engage_gear` gives the carry chain the Zählwerk machines
-  use and where it ends, and its `etq` table independently confirms the direction of
-  the keyboard-wired entry wheel used here.
-- **[Crypto Museum, *Enigma Z*](https://www.cryptomuseum.com/crypto/enigma/z/index.htm)**
-  — the Z30's wheel and reflector wirings, indexed 1 to 0, and where its notch is
-  cut: "The notch is attached to the rotor body, which means that altering the
-  Ringstellung does not alter its position with respect to the wiring... different
-  from the rotors of later machines like Enigma K and Enigma I where the notch is
-  attached to the index ring."
-- **Arturo Quirantes, *Model Z: a numbers-only Enigma version*** — the paper that
-  found the machine in the Spanish Foreign Affairs Ministry archives (reference
-  007459-4-R), with the 1931 offer, the two-part key, and the brochure's claim of "a
-  period of 10,000... thereby suggesting a non-Enigma (odometer) stepping". Its
-  worked example, 25183 91467 enciphering to 38760 15924, cannot be used as a vector
-  here: as the paper says, no machine settings are given with it.
-- **The Z30 instruction manual (Spanish) and brochure (German)**, both from those
-  archives — the decade-counter description of the drive, and the key count of
-  1,200,000,000 with six cylinders fitted three at a time, which is exactly 120 wheel
-  orders times ten thousand window positions times a thousand ring settings.
-- **[Palloks, *Enigma Z*](https://palloks.2ix.de/enigma/index_en.html)** — the same
-  wirings indexed 0 to 9, which agree exactly once converted; the pawl chain that
-  reaches the reflector; and the vectors the Z30 tests are built on, taken from it
-  before any of this was written.
-- **[Crypto Museum, *Enigma D*](https://www.cryptomuseum.com/crypto/enigma/d/index.htm)**
-  and **[*Enigma K*](https://www.cryptomuseum.com/crypto/enigma/k/index.htm)** — the
-  commercial wirings the D, the K and the A28/G31 share, their notch positions, and
-  the difference that matters between them: the D's "notch ring is attached to the
-  body of the rotor (rather than to the letter ring)", while the K's is "attached to
-  the letter ring rather than rotor body".
-- **Crypto Museum, [*Swiss K*](https://www.cryptomuseum.com/crypto/enigma/k/swiss.htm),
-  [*Railway Enigma*](https://www.cryptomuseum.com/crypto/enigma/k/railway.htm) and
-  [*Enigma T*](https://www.cryptomuseum.com/crypto/enigma/t/index.htm)** — their
-  wheels, notches, reflectors and, for the T, its own entry wheel. The Railway page
-  also records that its two published wirings differ by a misidentification, "with
-  turnover positions of rotors I and III swapped" in Bletchley Park's version, and
-  that Friedman's report of a moving reflector on that machine was mistaken.
-- **Palloks, *Universal Enigma*, model tables** — the Norenigma's five wheels and
-  reflector, the KD's nine-notch wheels, and the UKW-D wiring of the KD machine
-  held by the FRA in Sweden, which is the one the packaged key sheet carries.
-- **[Dirk Rijmenants, *Enigma Procedures*](https://ciphermachinesandcryptology.com/en/enigmaproc.htm)**
-  — the Kriegsmarine indicator procedure step by step, and the worked example the
-  tests reproduce: groups HLG and KQK with fillers A and Z becoming BDBJ EMEJ under
-  bigram table B. Four entries of that table are published with it, and those four
-  are all this library claims to know.
-- **[Michael Hörenberg, *The Kenngruppen System*](https://enigma.hoerenberg.com/index.php?cat=The+U534+messages&page=The+Kenngruppen+System)**
-  — message P1030690 from U-534 worked right through: the transmitted indicator, the
-  four entries of "Quelle" Tafel A it needs, the day's key, and the message key
-  `ODFF` that comes out. The naval procedure here is pinned by that, and it is what
-  showed the M4's fourth wheel is set by the filler.
-- **[Crypto Museum, *Bigram tables*](https://www.cryptomuseum.com/crypto/codebook/bigram.htm)**
-  — what the tables were and how they were used. The recovered ones are published
-  there as photographs of the originals rather than as data, which is what the
-  transcription pipeline in `tools/transcribe` exists for: "Quelle", "Meer" and
-  "Flußlauf" are read off those scans.
-- **[Michael Hörenberg, *Graf Spee* (the Norrköping intercepts)](https://enigma.hoerenberg.com/index.php?cat=Norrk%C3%B6ping%20messages&page=PAGE_69_OWLS%20Graf%20Spee)**
-  — a signal from the Seekriegsleitung to the Admiral Graf Spee on 12 December 1939,
-  taken by the Swedish signals station at Norrköping and photographed from its
-  archive: the settings, 272 letters of ciphertext and the plaintext. It is cabled
-  with eight plugboard pairs rather than ten, which is what the Kriegsmarine was
-  doing in 1939. Its setting is given two ways, rings AHX at EKD and rings AUX at
-  EXD, and that is one machine rather than two readings of a smudged sheet: ring and
-  position are shifted together by thirteen on the middle wheel, and that wheel is
-  VI, whose two notches are themselves thirteen apart, so the shift maps the notch
-  set onto itself and nothing the machine does can tell the settings apart.
-- **[Michael Hörenberg, *P1030681, the Karl Dönitz message*](https://enigma.hoerenberg.com/index.php?cat=The%20U534%20messages&page=P1030681)**
-  — the signal announcing that Dönitz had been named Hitler's successor, photographed
-  among U-534's papers: the settings, 372 letters of ciphertext and the plaintext
-  with its garbles. It is the only message here on the thin UKW-C, and so the only
-  thing that pins that reflector's wiring to traffic rather than to a table. The page
-  gives the settings twice, as rings EPEL at CDSZ and as AAEL at YOSZ; the second is
-  the same machine written another way, and a test says so.
-- **[Dan Girard, *Solution of the last of the "H.M.S. Hurricane" intercepts*](https://enigma.hoerenberg.com/index.php?cat=M4%20Project%202006&page=Rasch%20Message)**
-  (with Michael Hörenberg) — the break of the first of the three signals Ralph
-  Erskine published in *Cryptologia* in 1996 as a challenge, unbroken for twenty
-  years after the M4 Project took the other two. It gives the settings, the corrected
-  ciphertext and the plaintext, which is the whole of what the `rasch` key sheet and
-  its test need. A second Ringstellung and Grundstellung are published with it; they
-  read this message identically and are not the same machine.
-- **James J. Gillogly, "Ciphertext-Only Cryptanalysis of Enigma"**, *Cryptologia*
-  19(4), 1995 — the decomposition `RotorSearch` follows: sweep the wheel order and
-  the starting positions with the board empty and score by the index of coincidence,
-  then place the turnovers by sweeping the ring settings. What is here is that method
-  and the measure it starts from, not the plugboard hill-climb it goes on to, because
-  that needs statistics this repository has no source for.
-- **Reuvers & Simons, *Enigma G-111: A rare version of Zählwerk Enigma G31***
-  (Crypto Museum, 2013) — the mechanism in the machine's own terms: cogwheels rather
-  than pawls and levers, no double stepping anomaly, notches attached to the letter
-  ring, and the statement that the UKW "can be moved by wheel 3", which is what puts
-  the reflector at the end of the carry chain.
-
-The historical messages — Barbarossa, Scharnhorst, Graf Spee, U-264, U-106, the
-Dönitz succession signal and the 1930 instruction manual — are published intercepts,
-and each is decrypted in the test suite with its own key sheet.
+**[docs/sources.md](docs/sources.md)** states that rule in full and lists every source
+held to it, with what each one settled.

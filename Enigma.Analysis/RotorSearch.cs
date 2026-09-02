@@ -16,10 +16,10 @@ namespace Enigma.Analysis;
 /// <para><b>What it will and will not break.</b> The measure is the index of
 /// coincidence, which needs no language data and therefore no source. From a few
 /// hundred letters it recovers the wheels of a machine with no plugboard — about two
-/// times in three over a full sweep, the measured rate being in ROADMAP.md — and it
-/// has been seen to manage a board of three cables. It does <em>not</em> recover a
-/// service Enigma cabled the way the Wehrmacht cabled one, on any length of message.
-/// The reason is that the board sits inside the
+/// times in three over a full sweep, the measured rate being in
+/// docs/cryptanalysis.md — and it has been seen to manage a board of three cables.
+/// It does <em>not</em> recover a service Enigma cabled the way the Wehrmacht cabled
+/// one, on any length of message. The reason is that the board sits inside the
 /// rotor sandwich rather than outside it, so pulling it out does not relabel the
 /// plaintext, it shreds it: at the true setting of the Graf Spee signal the
 /// unsteckered decipherment scores 0.040 against a random 0.038, while the best
