@@ -368,3 +368,7 @@ test, and was deleted rather than patched into agreement.
 
 **[docs/sources.md](docs/sources.md)** states that rule in full and lists every source
 held to it, with what each one settled.
+
+## License
+
+[MIT](LICENSE).
